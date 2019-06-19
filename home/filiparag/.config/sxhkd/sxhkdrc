@@ -65,7 +65,7 @@ super + @F2
 # Paste yanked node
 super + @F3
 	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d);
-	echo "" > "/tmp/bspcyank"
+	rm "/tmp/bspcyank"
 
 # Change window tiling mode
 super + shift + @space
@@ -209,7 +209,7 @@ super + XF86AudioMicMute
 
 # Sleep
 super + @Delete
-	nohup $HOME/.screen/layout/set.sh "LVDS-1"; \
+	$HOME/.screen/layout/set.sh "LVDS-1"; \
 	$HOME/.screen/lockscreen/lock.sh; \
 	systemctl suspend; \
 	$HOME/.config/bspwm/scripts/backlight.sh = 100; \
@@ -252,6 +252,10 @@ super + Return
 # Launch RXVT Unicode as root
 super + shift + Return
 	sudo urxvt
+
+# Launch scratchpad terminal
+super + BackSpace
+	urxvt -e tmux new-session -A -s scratchpad
 
 # Launch Firefox
 super + b
