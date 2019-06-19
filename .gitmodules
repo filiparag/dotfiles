@@ -1,0 +1,6 @@
+[submodule "home/filiparag/.local/share/omf"]
+	path = home/filiparag/.local/share/omf
+	url = https://github.com/oh-my-fish/oh-my-fish.git
+[submodule "home/filiparag/.vim_runtime"]
+	path = home/filiparag/.vim_runtime
+	url = https://github.com/amix/vimrc.git

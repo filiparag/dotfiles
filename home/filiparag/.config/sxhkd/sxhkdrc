@@ -1,0 +1,296 @@
+#! /bin/dash
+
+# Show application launcher
+super + d
+	rofi -modi drun,run,combi -combi-modi drun,run -show combi -theme Arc-Dark \
+		 -width 25 -lines 8 -show-icons -icon-theme -font "Source Code Pro 12"
+
+# Show all running windows
+super + grave
+	rofi -show window -theme Arc-Dark -width 40 -lines 8 -show-icons \
+		 -icon-theme -font "Source Code Pro 12"
+
+# Switch to last node / desktop
+{alt, super} + @Tab
+	bspc {node,desktop} --focus last
+
+# Quit bspwm
+super + shift + e : Return
+	bspc quit 1
+
+# Reload config
+super + alt + r
+	pkill -USR1 -x sxhkd; \
+	$HOME/.config/bspwm/scripts/monitors.sh; \
+	$HOME/.config/bspwm/scripts/polybar.sh; \
+	$HOME/.screen/wallpaper/set.sh; \
+	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
+
+# Close application
+super + shift + q
+	bspc node -c
+
+# Kill application
+super + ctrl + shift + q
+	bspc node -k
+
+# Change desktop on current monitor
+super + {1-9}
+	bspc desktop -f {1-9}.local
+
+# Move through neighbouring desktops on current monitor
+super + {@Home,@End}
+	bspc desktop -f {prev,next}.local
+
+# Move focused window to desktop on current monitor
+super + shift + {1-9}
+	bspc node -d {1-9}.local -f
+
+# Move focused window to neighbouring desktop on current monitor
+super + shift + {@Home,@End}
+	bspc node -d {prev,next}.local -f
+
+# Toggle monocle mode for focused window
+super + f 
+	bspc desktop -l next
+
+# Select parent node
+super + @F1
+	bspc node -f @parent
+
+# Yank current node
+super + @F2
+	echo $(bspc query -N -n) > "/tmp/bspcyank"
+
+# Paste yanked node
+super + @F3
+	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d);
+	echo "" > "/tmp/bspcyank"
+
+# Change window tiling mode
+super + shift + @space
+	if [ "$(bspc query -N -n focused.floating)" ]; then \
+		bspc node focused -t pseudo_tiled; \
+	elif [ "$(bspc query -N -n focused.tiled)" ]; then \
+		bspc node focused -t floating; \
+	else \
+		bspc node focused -t tiled; \
+	fi
+
+# Select window if tiled
+super + {@Up,@Down,@Left,@Right}
+	if [ -z "$(bspc query -N -n focused.floating)" ]; then \
+		bspc node -f {north,south,west,east}; \
+	fi
+
+# Move window if tiling
+super + shift + {@Up,@Down,@Left,@Right}
+	if [ -z "$(bspc query -N -n focused.floating)" ]; then \
+		node=$(bspc query -N -n); \
+		bspc node -s {north,south,west,east}; \
+		bspc node -f ${node}; \
+	fi
+
+# Move window if floating
+super + {Up,Down,Left,Right}
+	if [ "$(bspc query -N -n focused.floating)" ]; then \
+		bspc node -v {0 -10,0 10,-10 0,10 0}; \
+	fi
+
+# Resize window (Up)
+super + alt + @Up
+	if [ "$(bspc query -N -n focused.tiled)" ]; then \
+		bspc node @north -r -10; \
+		bspc node @south -r -10; \
+	else \
+		bspc node -z bottom 0 -20; \
+	fi
+
+# Resize window (Down)
+super + alt + @Down
+	if [ "$(bspc query -N -n focused.tiled)" ]; then \
+		bspc node @north -r +10; \
+		bspc node @south -r +10; \
+	else \
+		bspc node -z bottom 0 +20; \
+	fi
+
+# Resize window (Left)
+super + alt + @Left
+	if [ "$(bspc query -N -n focused.tiled)" ]; then \
+		bspc node @east -r -10; \
+		bspc node @west -r -10; \
+	else \
+		bspc node -z right -10 0; \
+	fi
+
+# Resize window (Right)
+super + alt + @Right
+	if [ "$(bspc query -N -n focused.tiled)" ]; then \
+		bspc node @east -r +10; \
+		bspc node @west -r +10; \
+	else \
+		bspc node -z right +10 0; \
+	fi
+
+# Preselect
+super + ctrl + {@Up,@Down,@Left,@Right}
+ 	bspc node -p {north,south,west,east}
+
+# Cancel preselect
+super + Escape
+	bspc node -p cancel
+
+# Rotate current leaf
+super + r
+	bspc node @parent -R 90
+
+# Rotate current display
+super + shift + r
+	bspc node @/ -R 90
+
+# Swap places of current and last focused window
+super + w
+	bspc node -s last
+
+# Turn on gaps for current desktop
+super + bracketright
+	bspc config -d focused window_gap 15; \
+	bspc config -d focused border_width 2
+
+# Turn off gaps for current desktop
+super + bracketleft
+	bspc config -d focused window_gap 0; \
+	bspc config -d focused border_width 1
+
+# Change volume using standard keys for all sinks
+super + {Prior, Next}
+	for sink in `pactl list sinks | grep -E "Sink \#[0-9]+" | sed -r 's/Sink \#//g'`; do \
+	   pactl set-sink-volume $sink {+,-}2%; \
+	done
+
+# Change volume using media keys for all sinks
+{XF86AudioRaiseVolume,XF86AudioLowerVolume}
+	for sink in `pactl list sinks | grep -E "Sink \#[0-9]+" | sed -r 's/Sink \#//g'`; do \
+	   pactl set-sink-volume $sink {+,-}2%; \
+	done
+
+#Toggle volume using standard keys for all sinks
+super + End
+	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
+
+#Toggle volume using media keys for all sinks
+XF86AudioMute
+	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
+
+# Change brightness using media keys
+super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
+	$HOME/.config/bspwm/scripts/backlight.sh {-,+} 2
+
+# Set brightess to low / high using media keys
+ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
+	$HOME/.config/bspwm/scripts/backlight.sh = {2,100}
+
+# Select monitor layout
+XF86AudioMicMute
+	$HOME/.screen/layout/set.sh
+
+# Set monitor layout to LVDS-1
+control + XF86AudioMicMute
+	$HOME/.screen/layout/set.sh "LVDS-1"
+
+# Launch Pulseaudio control interface
+super + XF86AudioMute
+	pavucontrol
+
+# Launch ARandR
+super + XF86AudioMicMute
+	arandr
+
+# Sleep
+super + @Delete
+	nohup $HOME/.screen/layout/set.sh "LVDS-1"; \
+	$HOME/.screen/lockscreen/lock.sh; \
+	systemctl suspend; \
+	$HOME/.config/bspwm/scripts/backlight.sh = 100; \
+	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
+
+# Shut down
+super + shift + @Delete : Enter
+	systemctl poweroff
+
+# Reboot
+super + shift + ctrl + @Delete : Enter
+	systemctl reboot
+
+# Lock the device
+XF86Launch1
+	physlock -m -d
+
+# Lock screen and turn off screen
+super + l
+	$HOME/.screen/lockscreen/lock.sh; \
+	sleep 0.2; \
+	xset dpms force off
+
+# Hardened mode (hide polybar)
+super + h
+	if [ -e /tmp/hardened ]; then \
+		rm /tmp/hardened; \
+		$HOME/.config/bspwm/scripts/polybar.sh; \
+		bspc config bottom_padding 24; \
+	else \
+		touch /tmp/hardened; \
+		pkill polybar; \
+		bspc config bottom_padding 0; \
+	fi
+
+# Launch RXVT Unicode
+super + Return
+	urxvt
+
+# Launch RXVT Unicode as root
+super + shift + Return
+	sudo urxvt
+
+# Launch Firefox
+super + b
+	firefox
+
+# Steal shortcut from Firefox
+ctrl + q
+	true
+
+# Launch Firefox in private mode
+super + shift + b
+	firefox -private-window
+
+# Launch PCManFM file manager
+super + n
+	pcmanfm
+
+# Launch PCManFM file manager as root
+super + shift + n
+	sudo pcmanfm
+
+# Launch Visual Studio Code
+super + v
+	code
+
+# Launch Sublime Text 3
+super + s
+	subl3
+
+# Show emoji menu
+super + z
+	$HOME/.config/bspwm/scripts/emoji.sh
+
+# Show calculator
+super + @less
+	rofi -show calc -modi calc -no-show-match -no-sort -theme Arc-Dark \
+		 -width 30 -lines 5 -show-icons -icon-theme -font "Source Code Pro 12"
+
+# Print screen
+super + p
+	flameshot gui -p $HOME/Pictures/Screenshots/
+

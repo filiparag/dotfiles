@@ -1,0 +1,13 @@
+[Unit]
+Description=Serveo.net SSH tunnel
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/
+ExecStart=/usr/bin/autossh -M 22000 serveo.net -R $hostname:22:localhost:22
+Restart=never
+
+[Install]
+WantedBy=multi-user.target

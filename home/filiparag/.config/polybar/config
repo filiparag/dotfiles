@@ -1,0 +1,384 @@
+
+;==========================================================
+;
+;
+;   ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗
+;   ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗
+;   ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝
+;   ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗
+;   ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║
+;   ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝
+;
+;
+;   Modified By Aditya Shakya.
+;
+;==========================================================
+
+[color]
+
+trans = #00000000
+white = #FFFFFF
+black = #000000
+
+bg = #040404
+fg = #FFFFFF
+fg-alt = #A9ABB0
+
+acolor = #ffb300
+curgent = #e53935
+coccupied = #1e88e5
+
+## Material Colors
+
+red = #e53935
+pink = #d81b60
+purple = #8e24aa
+deep-purple = #5e35b1
+indigo = #3949ab
+blue = #1e88e5
+light-blue = #039be5
+cyan = #00acc1
+teal = #00897b
+green = #43a047
+light-green = #7cb342
+lime = #c0ca33
+yellow = #fdd835
+amber = #ffb300
+orange = #fb8c00
+deep-orange = #f4511e
+brown = #6d4c41
+grey = #757575
+blue-gray = #546e7a
+
+;==========================================================
+
+[bar/main]
+monitor = ${env:MONITOR:}
+width = 100%
+height = 24
+offset-x = 0%
+offset-y = 0%
+bottom = true
+fixed-center = true
+line-size = 2
+
+;dpi-x = 85
+;dpi-y = 85
+
+background = ${color.bg}
+foreground = ${color.fg}
+
+border-size = 0
+border-color = ${color.bg}
+
+module-margin-left = 1
+module-margin-right = 2
+
+override-redirect = false
+
+wm-restack = bspwm
+
+tray-detached = false
+tray-position = right
+tray-padding = 1
+
+;==========================================================
+
+font-0 = "Roboto:size=10;2"
+font-1 = "Font Awesome:size=10;2"
+
+;==========================================================
+
+cursor-click = pointer
+;cursor-scroll = ns-resrize
+
+;tray-position = right
+;tray-padding = 0
+;tray-maxsize = 16
+
+scroll-up = bspwm-deskprev
+scroll-down = bspwm-desknext
+
+;== Module Location ========================================================
+
+modules-left = bspwm
+modules-right = battery volume filesystem wifi lan cpu memory temperature fan keyboard date host
+ 
+;== Modules ========================================================
+
+[module/host]
+type = custom/script
+exec = echo `cat /etc/hostname` / `whoami`
+interval = 90
+format =   <label>
+format-background = ${color.bg}
+format-foreground = ${color.fg}
+format-underline = ${color.blue-gray}
+format-margin-right = 5
+
+[module/bspwm]
+type = internal/bspwm
+
+pin-workspaces = true
+inline-mode = false
+enable-click = true
+enable-scroll = true
+reverse-scroll = false
+fuzzy-match = true
+
+;format = <label-monitor><label-state>
+format = <label-state>
+label-monitor = "%name%"
+label-focused = "%name%"
+label-occupied = "%name%"
+label-urgent = "%name%"
+label-empty = 
+
+label-monitor-foreground = ${color.grey}
+label-monitor-background = ${color.bg}
+label-monitor-underline  =  ${color.bg}
+label-monitor-padding = 2
+
+label-focused-foreground = ${color.fg}
+label-focused-background = ${color.bg}
+label-focused-underline  =  ${color.fg}
+label-focused-padding = 2
+
+label-occupied-padding = 2
+label-occupied-foreground = ${color.grey}
+label-occupied-background = ${color.bg}
+label-occupied-underline  =  ${color.bg}
+
+label-empty-padding = 2
+label-empty-foreground = ${color.grey}
+label-empty-background = ${color.bg}
+label-empty-underline  =  ${color.bg}
+
+label-urgent-padding = 2
+label-urgent-foreground = ${color.yellow}
+label-urgent-background = ${color.bg}
+label-urgent-underline  =  ${color.yellow}
+
+; Separator in between workspaces
+label-separator =
+label-separator-padding = 0
+label-separator-foreground = ${color.bg}
+
+;==========================================================
+
+[module/cpu]
+type = internal/cpu
+
+; Seconds to sleep between updates
+; Default: 1
+interval = 5
+
+format = <label>  
+;<ramp-coreload>
+
+; Available tokens:
+;   %percentage% (default) - total cpu load averaged over all cores
+;   %percentage-sum% - Cumulative load on all cores
+;   %percentage-cores% - load percentage for each core
+;   %percentage-core[1-9]% - load percentage for specific core
+label =   %percentage%%
+label-foreground = ${color.fg}
+format-underline = ${color.lime}
+
+; Spacing between individual per-core ramps
+ramp-coreload-spacing = 1
+ramp-coreload-0 = 
+ramp-coreload-1 = 
+ramp-coreload-2 = 
+ramp-coreload-3 = 
+ramp-coreload-4 = 
+ramp-coreload-5 = 
+ramp-coreload-6 = 
+ramp-coreload-7 = 
+
+[module/memory]
+type = internal/memory
+interval = 5
+label = %gb_used%
+format =   <label>
+label-foreground = ${color.fg}
+format-underline = ${color.lime}
+
+[module/temperature]
+type = internal/temperature
+interval = 5
+thermal-zone = 0
+hwmon-path = /sys/devices/virtual/thermal/thermal_zone1/temp
+warn-temperature = 79
+units = false
+format =   <label>
+format-warn =   <label-warn>  
+label = %temperature-c%°C
+label-warn = %temperature-c%°C
+label-warn-foreground = ${color.fg}
+label-foreground = ${color.fg}
+format-underline = ${color.green}
+format-warn-underline = ${color.curgent}
+
+[module/fan]
+type = custom/script
+;exec = awk '{print $0 " RPM"}' /sys/devices/platform/thinkpad_hwmon/hwmon/hwmon1/fan1_input
+exec = cat /proc/acpi/ibm/fan | grep -oP "speed:\s+\K(\d+)" | awk '{print "  " $0 " RPM"}'
+interval = 5
+exec-if = "test -e /proc/acpi/ibm/fan"
+tail = true
+format-padding = 0
+format-background = ${color.bg}
+format-foreground = ${color.fg}
+format-underline = ${color.green}
+
+[module/battery]
+type = internal/battery
+full-at = 100
+time-format = %H:%M
+battery = BAT0
+adapter = AC
+;format-charging = <animation-charging>  <label-charging>
+format-charging =   <label-charging>
+;label-charging = %percentage%% (%time%)
+label-charging = %percentage%%
+label-full = %percentage%%
+format-discharging = <ramp-capacity>  <label-discharging>
+;label-discharging = %percentage%% (%time%)
+label-discharging = %percentage%% (%time%) %consumption% W
+format-full = 
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+ramp-capacity-0-foreground = ${color.curgent}
+ramp-capacity-foreground   = ${color.fg}
+bar-capacity-width = 300
+
+animation-charging-0 = ""
+animation-charging-1 = ""
+animation-charging-2 = ""
+animation-charging-3 = ""
+animation-charging-4 = ""
+
+animation-charging-framerate = 500
+
+format-charging-underline = ${color.blue}
+format-discharging-underline = ${color.blue}
+format-full-underline = ${color.blue}
+
+[module/keyboard]
+type = internal/xkeyboard
+
+; List of indicators to ignore
+blacklist-0 = num lock
+blacklist-1 = scroll lock
+format =   <label-layout><label-indicator>
+format-spacing = 0
+
+; Available tokens:
+;   %layout%
+;   %name%
+;   %number%
+; Default: %layout%
+label-layout = %name%
+label-layout-padding = 0
+
+label-indicator = C
+label-indicator-padding = 1
+
+format-background = ${color.bg}
+format-foreground = ${color.fg}
+format-underline = ${color.teal}
+
+[module/filesystem]
+type = internal/fs
+
+mount-0 = /
+mount-1 = /home
+# mount-2 = /data
+
+interval = 10
+
+fixed-values = true
+
+# spacing = 4
+
+format-mounted = <label-mounted>
+
+format-unmounted = <label-unmounted>
+label-mounted =   %mountpoint%  %free%
+label-unmounted =   %mountpoint%
+label-mounted-foreground = ${color.fg}
+label-unmounted-foreground = ${color.fg}
+label-mounted-underline = ${color.red}
+label-unmounted-underline = ${color.grey}
+
+[module/volume]
+type = internal/pulseaudio
+;speaker-mixer = Speaker
+;headphone-mixer = Headphone
+;headphone-id = 16
+;mapped = true
+format-volume = <ramp-volume>  <label-volume>
+label-volume = %percentage%%
+format-muted-prefix = 
+label-muted =   %percentage%%
+format-muted-foreground = ${color.grey}
+format-volume-foreground = ${color.fg}
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+ramp-volume-3 = 
+ramp-volume-4 = 
+ramp-volume-5 = 
+ramp-volume-6 = 
+
+format-volume-underline = ${color.purple}
+format-muted-underline = ${color.grey}
+
+[module/wifi]
+type = internal/network
+interface = ${env:WLP:}
+interval = 2
+accumulate-stats = false
+unknown-as-up = true
+format-connected = <label-connected>
+format-disconnected = <label-disconnected>
+format-packetloss = <animation-packetloss> <label-connected>
+label-connected =   %essid% [ %local_ip% ] %signal%%
+label-connected-foreground = ${color.fg}
+label-disconnected = 
+label-disconnected-foreground = ${color.grey}
+format-connected-underline = ${color.orange}
+format-disconnected-underline = ${color.grey}
+
+[module/lan]
+type = internal/network
+interface = ${env:ENP:}
+interval = 2
+accumulate-stats = false
+unknown-as-up = true
+format-connected = <label-connected>
+format-disconnected = <label-disconnected>
+format-packetloss = <animation-packetloss> <label-connected>
+label-connected =   [ %local_ip% ]
+label-connected-foreground = ${color.fg}
+label-disconnected = 
+label-disconnected-foreground = ${color.grey}
+format-connected-underline = ${color.yellow}
+format-disconnected-underline = ${color.grey}
+
+[module/date]
+type = internal/date
+interval = 1
+label =  %time%
+time =  %H:%M:%S  
+time-alt =   %A, %d/%m/%Y
+label-underline = ${color.indigo}
+
+;== EOF ========================================================
