@@ -176,7 +176,7 @@ super + {Prior, Next}
 	done
 
 #Toggle volume using standard keys for all sinks
-super + End
+super + Insert
 	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
 
 #Toggle volume using media keys for all sinks
@@ -216,11 +216,11 @@ super + @Delete
 	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
 
 # Shut down
-super + shift + @Delete : Enter
+super + shift + @Delete : Return
 	systemctl poweroff
 
 # Reboot
-super + shift + ctrl + @Delete : Enter
+super + shift + ctrl + @Delete : Return
 	systemctl reboot
 
 # Lock the device

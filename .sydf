@@ -1,5 +1,6 @@
 !.git#
 !.gitignore#
+!.gitmodules#
 !.stfolder#
 !.stignore#
 !old.tar.gz#
