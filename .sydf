@@ -1,9 +1,8 @@
+&acda4fc6bf94a2d27f08c52bc4d7efbc1510c82d#
+!pkglist#
 !.git#
 !.gitignore#
 !.gitmodules#
-!.stfolder#
-!.stignore#
-&ad7a6f3a370a1aa07ef3f9cd78804b7a3bd46710#
 >/home/filiparag/.config/bspwm#
 >/home/filiparag/.config/fish#
 >/home/filiparag/.config/i3#
@@ -12,3 +11,5 @@
 >/home/filiparag/.local/share/omf#
 >/home/filiparag/.screen#
 >/home/filiparag/.vim_runtime#
+!.stfolder#
+!.stignore#

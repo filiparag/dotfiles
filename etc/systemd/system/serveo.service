@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 User=root
 WorkingDirectory=/
-ExecStart=/usr/bin/autossh -M 22000 serveo.net -R $hostname:22:localhost:22
-Restart=never
+ExecStart=/bin/bash -c '/usr/bin/autossh -M 22000 serveo.net -R "$(cat /etc/hostname)":22:localhost:22'
+Restart=no
 
 [Install]
 WantedBy=multi-user.target
