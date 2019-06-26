@@ -1,5 +1,4 @@
 &acda4fc6bf94a2d27f08c52bc4d7efbc1510c82d#
-!pkglist#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -11,5 +10,6 @@
 >/home/filiparag/.local/share/omf#
 >/home/filiparag/.screen#
 >/home/filiparag/.vim_runtime#
+!pkglist#
 !.stfolder#
 !.stignore#
