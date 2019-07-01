@@ -20,7 +20,7 @@ client.unfocused                    	#111111   #000000   #FFFFFF   #000000
 bindsym Ctrl+Q 							exec "exit"
 
 # Startup
-exec 	--no-startup-id 				$HOME/.i3/polybar.sh
+exec 	--no-startup-id 				$HOME/.config/.i3/polybar.sh
 
 exec	--no-startup-id                	"redshift-gtk"
 exec 	--no-startup-id                	"numlockx on"
@@ -62,8 +62,8 @@ for_window [class="Spotify"] 			move container to workspace Spotify
 # Rofi menu
 bindsym $mod+D                      	exec "rofi -modi drun,run,combi -combi-modi drun,run -show combi -theme Arc-Dark -width 25 -lines 8 -show-icons -icon-theme -font Source\ Code\ Pro\ 12"
 bindsym $mod+Tab                    	exec "rofi -show window -theme Arc-Dark -width 40 -lines 8 -show-icons -icon-theme -font Source\ Code\ Pro\ 12"
-bindsym $mod+Z                    		exec "$HOME/.i3/emoji.sh"
-bindsym $mod+S							exec "$HOME/.i3/search.sh"
+bindsym $mod+Z                    		exec "$HOME/.config/.i3/emoji.sh"
+bindsym $mod+S							exec "$HOME/.config/.i3/search.sh"
 bindsym $mod+Shift+S 					exec "rofi -show calc -modi calc -width 25 -lines 5 -theme Arc-Dark -font Source\ Code\ Pro\ 12"
 
 # Window controls
@@ -93,7 +93,7 @@ workspace_layout                    	tabbed
 
 # Key remapping
 exec 	--no-startup-id                	"setxkbmap -layout \"us,rs,rs\" -variant \",latinunicode,\" -option grp:alt_shift_toggle"
-exec	--no-startup-id                	"sleep 2; $HOME/.i3/keymap.sh"
+exec	--no-startup-id                	"sleep 2; $HOME/.config/.i3/keymap.sh"
 
 # Switch workspaces
 bindsym $mod+grave                  	workspace 0
@@ -130,7 +130,7 @@ bindsym $mod+Shift+V       				exec "urxvt -hold -e windscribe connect"
 bindsym $mod+Control+Shift+V    		exec "urxvt -hold -e windscribe disconnect"
 
 # Screenshot
-bindsym --release $mod+P   				exec "$HOME/.i3/screenshot.sh"
+bindsym --release $mod+P   				exec "$HOME/.config/.i3/screenshot.sh"
 bindsym --release $mod+Shift+P			exec "flameshot gui -p $HOME/Pictures/Screenshots/"
 
 # Audio
@@ -141,8 +141,8 @@ bindsym $mod+Next			        	exec "pactl set-sink-volume 0 -2%"
 
 bindsym XF86AudioMute               	exec "amixer -D pulse set Master toggle"
 
-bindsym $mod+XF86AudioLowerVolume  		exec "$HOME/.i3/backlight.sh - 2"
-bindsym $mod+XF86AudioRaiseVolume  		exec "$HOME/.i3/backlight.sh + 2"
+bindsym $mod+XF86AudioLowerVolume  		exec "$HOME/.config/.i3/backlight.sh - 2"
+bindsym $mod+XF86AudioRaiseVolume  		exec "$HOME/.config/.i3/backlight.sh + 2"
 #bindsym Control+XF86AudioLowerVolume  	exec "$HOME/.config/i3/backlight.sh = 3"
 #bindsym Control+XF86AudioRaiseVolume  	exec "$HOME/.config/i3/backlight.sh = 100"
 
@@ -159,7 +159,7 @@ bindsym $mod+XF86AudioMicMute       	exec "arandr"
 exec 	--no-startup-id					"sudo bash -c \"echo '0 off' > /proc/acpi/ibm/led\""
 
 # Power control
-bindsym $mod+Shift+R                	exec "i3-msg restart; $HOME/.i3/polybar.sh; $wallpaper; "
+bindsym $mod+Shift+R                	exec "i3-msg restart; $HOME/.config/.i3/polybar.sh; $wallpaper; "
 bindsym $mod+Shift+E                	exec "i3-nagbar -t warning -m 'End i3 session?' -b 'Yes' 'i3-msg exit'"
 bindsym $mod+Shift+Delete           	exec "systemctl poweroff"
 bindsym $mod+Shift+Ctrl+Delete      	exec "systemctl reboot"
