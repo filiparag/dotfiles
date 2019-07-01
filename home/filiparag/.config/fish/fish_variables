@@ -14,6 +14,8 @@ SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
 SETUVAR _fish_abbr_akita:ssh\x20\x2dJ\x20serveo\x2enet\x20akita
+SETUVAR _fish_abbr_badger:ssh\x20\x2dJ\x20serveo\x2enet\x20badger
+SETUVAR _fish_abbr_lapwing:ssh\x20\x2dJ\x20serveo\x2enet\x20lapwing
 SETUVAR _fish_abbr_led:sudo\x20bash\x20\x2dc\x20\x22echo\x20\x270\x20off\x27\x20\x3e\x20/proc/acpi/ibm/led\x22
 SETUVAR _fish_abbr_tapir:ssh\x20\x2dJ\x20serveo\x2enet\x20tapir
 SETUVAR _fish_abbr_yr:yay\x20\x2dRcs

@@ -11,8 +11,11 @@ if status --is-interactive
     abbr --add yss 		'yay -Ss'
     abbr --add yr 		'yay -Rcs'
 
+    abbr --add badger 	'ssh -J serveo.net badger'
+    abbr --add lapwing 	'ssh -J serveo.net lapwing'
     abbr --add tapir 	'ssh -J serveo.net tapir'
     abbr --add akita 	'ssh -J serveo.net akita'
+
     abbr --add led 		'sudo bash -c "echo \'0 off\' > /proc/acpi/ibm/led"'
 
 end
