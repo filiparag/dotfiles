@@ -75,7 +75,8 @@ function rofi_menu() { # {{{
 	rofi -theme Arc-Dark -width 25 -lines 8 -dmenu -i -p 'emoji' \
 		-kb-row-tab '' \
 		-kb-row-select Tab \
-		-kb-custom-1 Ctrl+c
+		-kb-custom-1 Ctrl+c \
+		-icon-theme -font "Twitter Color Emoji 11"
 }
 # }}}
 
