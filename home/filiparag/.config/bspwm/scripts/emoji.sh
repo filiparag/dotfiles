@@ -72,7 +72,7 @@ function download() {
 }
 
 function rofi_menu() { # {{{
-	rofi -theme Arc-Dark -width 25 -lines 8 -dmenu -i -p 'emoji' \
+	rofi -theme Arc-Dark -width 25 -lines 8 -dmenu -i -p 'character' \
 		-kb-row-tab '' \
 		-kb-row-select Tab \
 		-kb-custom-1 Ctrl+c \

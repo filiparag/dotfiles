@@ -4122,6 +4122,57 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ yolo
 ⊹╰(⌣ʟ⌣)╯⊹ omm
 (V)(°,,,,°) zombie
 [¬º-°]¬ zoidberg
+∞ infinity
+‰ per-mille
+√ square root
+∠ angle
+° degree
+⊥ perpendicular
+∥ parallel
+≅ congruent to
+≡ equivalence
+≠ not equal
+≈ approximately equal
+≥ less than or equal to
+≪ much less than
+≥ greater than or equal to
+≫ much greater than
+⌊⌋ floor brackets
+⌈⌉ ceiling brackets
+× cross
+· dot
+÷ division
+⊗ tensor product
+∩ intersection
+∪ union
+⊆ subset
+⊂ strict subset
+⊄ not subset
+⊇ superset
+⊃ strict superset
+⊅ not superset
+∈ element of
+∉ not element of
+Ø empty set
+⊕ oplus
+⊖ ominus
+± plus-minus
+¬ not
+⇒ implies
+⇔ equivalent
+∀ for all
+∃ there exists
+∄ there does not exist
+∴ therefore
+∫ integral
+∮ line integral
+ℕ natural number set
+ℝ real number set
+ℚ rational number set
+𝕀 irrational number set
+ℂ complex number set
+𝕌 universal set
+ℵ aleph
 Α Alpha
 Β Beta
 Γ Gamma
