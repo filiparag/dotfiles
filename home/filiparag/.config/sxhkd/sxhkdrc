@@ -233,16 +233,18 @@ super + l
 	sleep 0.2; \
 	xset dpms force off
 
-# Hardened mode (hide polybar)
+# Hardened mode (hide polybar and notifications)
 super + h
-	if [ -e /tmp/hardened ]; then \
-		rm /tmp/hardened; \
+	if [ -e /tmp/$USER.bspwm_hardened ]; then \
+		rm /tmp/$USER.bspwm_hardened; \
 		$HOME/.config/bspwm/scripts/polybar.sh; \
 		bspc config bottom_padding 24; \
+		dunst; \
 	else \
-		touch /tmp/hardened; \
-		pkill polybar; \
+		touch /tmp/$USER.bspwm_hardened; \
+		pkill -15 polybar; \
 		bspc config bottom_padding 0; \
+		pkill -15 dunst; \
 	fi
 
 # Launch RXVT Unicode

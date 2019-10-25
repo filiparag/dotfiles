@@ -1,0 +1,13 @@
+[Unit]
+Description=User suspend actions
+Before=sleep.target
+
+[Service]
+User=%I
+Type=forking
+Environment=DISPLAY=:0
+ExecStart=/home/%I/.screen/lockscreen/lock.sh
+ExecStartPost=/usr/bin/sleep 1
+
+[Install]
+WantedBy=sleep.target
