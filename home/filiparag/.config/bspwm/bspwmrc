@@ -7,7 +7,7 @@ $SCRIPTS/keymap.sh &
 $SCRIPTS/polybar.sh &
 $SCRIPTS/battery.sh &
 
-sudo su -c "echo -n 120 > /sys/devices/platform/i8042/serio1/sensitivity"
+sudo su -c "echo -n 140 > /sys/devices/platform/i8042/serio1/sensitivity"
 sudo su -c "echo -n 0 > /sys/devices/platform/i8042/serio1/press_to_select"
 
 bspc config top_padding 				0
