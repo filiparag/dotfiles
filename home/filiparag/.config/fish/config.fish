@@ -37,6 +37,11 @@ set -x NAME     "Filip Parag"
 set -x EMAIL    "filiparag@protonmail.com"
 set -x EDITOR   "vim"
 
+#  Go path
+set -x GOPATH   $HOME/Projects/golang
+# set -x GOROOT   $HOME/Projects/golang
+set -x PATH     "$PATH:$GOPATH/bin"
+
 setenv SSH_ENV $HOME/.ssh_environment
 
 function start_agent                                                                                                                                                                    
