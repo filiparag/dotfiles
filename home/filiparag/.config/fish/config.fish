@@ -42,6 +42,10 @@ set -x GOPATH   $HOME/Projects/golang
 # set -x GOROOT   $HOME/Projects/golang
 set -x PATH     "$PATH:$GOPATH/bin"
 
+# IntelliJ
+set -x _JAVA_AWT_WM_NONREPARENTING 1
+set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
+
 setenv SSH_ENV $HOME/.ssh_environment
 
 function start_agent                                                                                                                                                                    
