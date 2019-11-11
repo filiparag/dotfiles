@@ -62,7 +62,7 @@ CPU_SCALING_GOVERNOR_ON_BAT=powersave
 CPU_SCALING_MIN_FREQ_ON_AC=2000000
 CPU_SCALING_MAX_FREQ_ON_AC=3300000
 CPU_SCALING_MIN_FREQ_ON_BAT=1200000
-CPU_SCALING_MAX_FREQ_ON_BAT=2200000
+CPU_SCALING_MAX_FREQ_ON_BAT=2500000
 
 # Set energy performance hints (HWP) for Intel P-state governor:
 #   performance, balance_performance, default, balance_power, power
@@ -70,7 +70,7 @@ CPU_SCALING_MAX_FREQ_ON_BAT=2200000
 # Note: Intel Skylake or newer CPU and Kernel >= 4.10 required.
 # Default: <none>
 CPU_HWP_ON_AC=performance
-CPU_HWP_ON_BAT=power
+CPU_HWP_ON_BAT=balance_power
 
 # Set Intel P-state performance: 0..100 (%).
 # Limit the max/min P-state to control the power dissipation of the CPU.
@@ -80,7 +80,7 @@ CPU_HWP_ON_BAT=power
 CPU_MIN_PERF_ON_AC=0
 CPU_MAX_PERF_ON_AC=100
 CPU_MIN_PERF_ON_BAT=0
-CPU_MAX_PERF_ON_BAT=40
+CPU_MAX_PERF_ON_BAT=50
 
 # Set the CPU "turbo boost" feature: 0=disable, 1=allow
 # Requires an Intel Core i processor.
