@@ -44,7 +44,7 @@
 }
 
 #toolbar-menubar {
-  margin-top: 0px !important; /* This is usually 0, but under Win7 can be given an extra 1px when not maximized */
+  margin-top: 0px !important;
 }
 
 /* Undo add of 4px extra margin on top of the tabs toolbar on Windows 7. */
