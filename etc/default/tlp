@@ -352,8 +352,8 @@ RESTORE_DEVICE_STATE_ON_STARTUP=0
 # START_CHARGE_THRESH value and stops when exceeding the STOP_CHARGE_THRESH value.
 # Main / Internal battery (values in %)
 # Default: <none>
-START_CHARGE_THRESH_BAT0=100 #75
-STOP_CHARGE_THRESH_BAT0=100  #81
+START_CHARGE_THRESH_BAT0=75 #75
+STOP_CHARGE_THRESH_BAT0=81  #81
 # Ultrabay / Slice / Replaceable battery (values in %)
 # Default: <none>
 #START_CHARGE_THRESH_BAT1=75
