@@ -2,7 +2,7 @@
  * Auto-hide the URL-bar and bookmarks bar, show on hover or focus
  *
  * Contributor(s): Alex Vallat
- */
+ 
 
 :root[uidensity=compact] #navigator-toolbox {
   --nav-bar-height: 33px;
@@ -47,15 +47,12 @@
   margin-top: 0px !important;
 }
 
-/* Undo add of 4px extra margin on top of the tabs toolbar on Windows 7. */
-/* Note: @media -moz-os-version does not work in userChrome.css (https://bugzilla.mozilla.org/show_bug.cgi?id=1418963) */
 :root[sizemode="normal"][chromehidden~="menubar"] #TabsToolbar,
 :root[sizemode="normal"] #toolbar-menubar[autohide="true"][inactive] + #TabsToolbar {
   padding-top: var(--space-above-tabbar) !important;
 }
 
 #nav-bar, #PersonalToolbar {
-	/* Otherwise spacers will not count as hover-able areas */
     -moz-window-dragging: default;
 }
 
@@ -79,7 +76,6 @@
   max-height: calc(var(--tabbar-height) + var(--trigger-area-height));
   min-height: var(--tabbar-height);
   margin-bottom: calc(-1 * var(--trigger-area-height));
-  /*transition: opacity 0.15s ease-in, max-height 0.15s linear;*/
 }
 
 :root:not([customizing]) #navigator-toolbox:hover,
@@ -88,7 +84,6 @@
   margin-bottom: calc(0px - var(--nav-bar-height));
 }
 
-/* If the bookmarks bar is turned on, auto-hide that too */
 :root:not([customizing]) #PersonalToolbar {
   max-height: 0 !important;
   min-height: 0.1px !important;
@@ -99,10 +94,8 @@
 :root:not([customizing]) #navigator-toolbox:focus-within #PersonalToolbar {
   max-height: 4em !important;
   opacity: 1;
-  /*transition: opacity 0.15s ease-in !important;*/
 }
 
-/* Lightweight Theme Support */
 :root:-moz-lwtheme #nav-bar, 
 :root:-moz-lwtheme #PersonalToolbar {
   background-color: var(--lwt-accent-color) !important;
@@ -124,7 +117,7 @@
 #main-window[sizemode="maximized"]:-moz-lwtheme #PersonalToolbar {
     background-position-y: calc(-8px - var(--tabbar-height) - var(--nav-bar-height)) !important;
 }
-
+*/
 /*
  * Only show close buttons on background tabs when hovering with the mouse
  *
