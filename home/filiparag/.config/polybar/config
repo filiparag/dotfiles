@@ -109,7 +109,7 @@ modules-right = battery volume filesystem wifi lan cpu memory temperature fan ke
 [module/host]
 type = custom/script
 exec = echo `cat /etc/hostname` / `whoami`
-interval = 90
+interval = 180
 format =   <label>
 format-background = ${color.bg}
 format-foreground = ${color.fg}
@@ -171,7 +171,7 @@ type = internal/cpu
 
 ; Seconds to sleep between updates
 ; Default: 1
-interval = 5
+interval = 10
 
 format = <label>  
 ;<ramp-coreload>
@@ -198,7 +198,7 @@ ramp-coreload-7 = 
 
 [module/memory]
 type = internal/memory
-interval = 5
+interval = 10
 label = %gb_used%
 format =   <label>
 label-foreground = ${color.fg}
@@ -206,7 +206,7 @@ format-underline = ${color.lime}
 
 [module/temperature]
 type = internal/temperature
-interval = 5
+interval = 10
 thermal-zone = 0
 hwmon-path = /sys/devices/virtual/thermal/thermal_zone1/temp
 warn-temperature = 79
@@ -224,7 +224,7 @@ format-warn-underline = ${color.curgent}
 type = custom/script
 ;exec = awk '{print $0 " RPM"}' /sys/devices/platform/thinkpad_hwmon/hwmon/hwmon1/fan1_input
 exec = cat /proc/acpi/ibm/fan | grep -oP "speed:\s+\K(\d+)" | awk '{print "  " $0 " RPM"}'
-interval = 5
+interval = 10
 exec-if = "test -e /proc/acpi/ibm/fan"
 tail = true
 format-padding = 0
@@ -301,7 +301,7 @@ mount-0 = /
 mount-1 = /home
 # mount-2 = /data
 
-interval = 10
+interval = 15
 
 fixed-values = true
 
@@ -344,7 +344,7 @@ format-muted-underline = ${color.grey}
 [module/wifi]
 type = internal/network
 interface = ${env:WLP:}
-interval = 2
+interval = 10
 accumulate-stats = false
 unknown-as-up = true
 format-connected = <label-connected>
@@ -360,7 +360,7 @@ format-disconnected-underline = ${color.grey}
 [module/lan]
 type = internal/network
 interface = ${env:ENP:}
-interval = 2
+interval = 10
 accumulate-stats = false
 unknown-as-up = true
 format-connected = <label-connected>

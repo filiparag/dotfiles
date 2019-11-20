@@ -164,3 +164,14 @@
 #urlbar {
 	background-color: transparent !important;
 }
+
+/*Grayscale favicons*/
+.bookmark-item, #TabsToolbar .tabbrowser-tab {
+    filter: grayscale(50%);
+    transition: all 0.25s ease;
+}
+
+#PlacesToolbarItems:hover .bookmark-item, #TabsToolbar:hover .tabbrowser-tab {
+  filter: grayscale(0%);
+  transition: all 0.25s ease;
+}

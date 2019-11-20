@@ -50,9 +50,7 @@ numlockx on &
 unclutter -idle 1 &
 redshift-qt &
 flameshot &
-keepassxc &
 /usr/bin/signal-desktop --start-in-tray &
 if [ -z $(pidof syncthing) ]; then syncthing; fi
 
-$HOME/.screen/layout/set.sh "LVDS-1" &
 $HOME/.screen/wallpaper/set.sh &
