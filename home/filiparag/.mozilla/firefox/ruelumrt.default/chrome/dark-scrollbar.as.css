@@ -1,0 +1,35 @@
+scrollbar, scrollbar *, scrollcorner {
+	-moz-appearance: none !important;
+	--scrollbar-width: 6px;
+    --scrollbar-height: var(--scrollbar-width);
+}
+
+scrollbar, scrollcorner  {
+    background: #212121 !important;
+}
+scrollbar[orient="vertical"] {
+    width: var(--scrollbar-width) !important;
+    min-width: var(--scrollbar-width) !important;
+}
+scrollbar[orient="horizontal"] {
+    height: var(--scrollbar-height) !important;
+    min-height: var(--scrollbar-height) !important;
+}
+
+scrollbar thumb {
+	background: #424242 !important;
+}
+scrollbar thumb:hover,
+scrollbar thumb:active {
+	background: #AAAAAA !important;
+}
+
+scrollbar:hover scrollbarbutton {
+    background-color: #444444 !important;
+}
+scrollbar scrollbarbutton:hover {
+    background: #424242 !important;
+}
+scrollbar scrollbarbutton:active {
+    background: #AAAAAA !important;
+}
