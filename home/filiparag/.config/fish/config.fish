@@ -37,6 +37,8 @@ set -x NAME     "Filip Parag"
 set -x EMAIL    "filiparag@protonmail.com"
 set -x EDITOR   "vim"
 
+#set -x tmate-api-key        "tmk-ctvk0CVzza02ZvF7w6pGHvrOac"
+
 #  Go path
 set -x GOPATH   $HOME/Projects/golang
 # set -x GOROOT   $HOME/Projects/golang
