@@ -86,4 +86,6 @@ eval convert -size ${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT} 'xc:blue' $OUTPUT_IM
 eval convert $OUTPUT_IMG $PARAMS $OUTPUT_IMG
 
 #Lock the screen:
+setxkbmap -layout us
 $LOCK_CMD
+$HOME/.config/bspwm/scripts/keymap.sh

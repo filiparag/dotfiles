@@ -225,7 +225,9 @@ super + shift + ctrl + @Delete : Return
 
 # Lock the device
 XF86Launch1
-	physlock -m -d
+	setxkbmap -layout us; \
+	physlock -m -d; \
+	$HOME/.config/bspwm/scripts/keymap.sh
 
 # Lock screen and turn off screen
 super + l
