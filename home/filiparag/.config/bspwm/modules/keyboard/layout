@@ -1,0 +1,5 @@
+#! /bin/sh
+
+setxkbmap -layout "us,rs,rs" -variant ",latinunicode," -option grp:alt_shift_toggle
+
+numlockx on &

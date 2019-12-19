@@ -1,0 +1,3 @@
+#! /bin/sh
+
+DISPLAY=$DISPLAY feh --bg-tile $HOME/Pictures/wallpaper.png

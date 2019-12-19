@@ -1,0 +1,57 @@
+#! /bin/bash
+
+MODULES=$(realpath "$DIR/../")
+
+DIR=$(dirname "$0")
+ARANDR="$HOME/.screenlayout"
+
+MONITORS=`xrandr --query | grep " connected" | cut -d " " -f 1 | sort`
+CUSTOM=`find $ARANDR -type f -printf "%P\n" | sed "s/.sh//" | sort`
+LIST="$CUSTOM\n$MONITORS\n"
+
+if [ -z $1 ]; then
+
+	ROFI="rofi -dmenu -i -theme Arc-Dark -width 20 -lines `printf "$LIST" | wc -l`"
+	SELECTED=`printf "$CUSTOM\n$MONITORS" | $ROFI -p "Monitor layout"`
+	
+elif [[ $LIST == *"$1"* ]]; then
+
+	SELECTED="$1"
+
+else
+
+	echo "'$1' is not connected"
+	exit
+
+fi
+
+if [ -z $SELECTED ]; then
+
+	exit
+
+elif [[ $CUSTOM == *"$SELECTED"* ]]; then
+
+	$ARANDR/$SELECTED.sh
+
+else
+
+	OUTPUT="xrandr"
+
+	for M in $MONITORS; do
+
+		if [[ $SELECTED == $M ]]; then
+			RES=`xrandr --query | grep -A 1 $M | tail -n 1 | egrep -o "[0-9]+x[0-9]+"`
+			OUTPUT="$OUTPUT --output $M --primary --mode $RES --pos 0x0 --rotate normal"
+		else
+			OUTPUT="$OUTPUT --output $M --off"
+		fi
+
+	done
+
+	$OUTPUT
+
+fi
+
+"$MODULES/interface/workspaces"
+"$MODULES/interface/polybar_restart"
+"$MODULES/screen/wallpaper"
