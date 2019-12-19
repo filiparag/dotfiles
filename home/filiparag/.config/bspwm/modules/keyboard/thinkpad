@@ -2,6 +2,8 @@
 
 if [[ $(cat "/sys/devices/virtual/dmi/id/product_family") =~ "ThinkPad" ]]; then
 
+	echo "ThinkPad"
+
 	# Change key bindings
 	xmodmap -e "keycode 112 = Home"
 	xmodmap -e "keycode 117 = End"

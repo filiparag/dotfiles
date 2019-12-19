@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MODULES=$(realpath "$DIR/../")
+MODULES=$(realpath "$(dirname $0)/../")
 
 #Constants
 DISPLAY_RE="([0-9]+)x([0-9]+)\\+([0-9]+)\\+([0-9]+)" # Regex to find display dimensions
@@ -11,28 +11,28 @@ if ! [ -e $CACHE_FOLDER ]; then
 fi
 
 #Passed arguments
-while getopts ":i:a:" opt; do
-    case $opt in
-        i) arg_image="$OPTARG"
-        ;;
-        a) lock_args="$OPTARG"
-        ;;
-        \?) echo "Invalid option -$OPTARG" >&2 && exit 1
-        ;;
-    esac
-done
+# while getopts ":i:a:" opt; do
+#     case $opt in
+#         i) arg_image="$OPTARG"
+#         ;;
+#         a) lock_args="$OPTARG"
+#         ;;
+#         \?) echo "Invalid option -$OPTARG" >&2 && exit 1
+#         ;;
+#     esac
+# done
 
 #Image paths
-if [ "$arg_image" ]; then
-    BKG_IMG="$arg_image"  # Passed image
-else
-    BKG_IMG="$HOME/Pictures/lockscreen.png"  # Default
-fi
+# if [ "$arg_image" ]; then
+#     BKG_IMG="$arg_image"  # Passed image
+# else
+BKG_IMG="$HOME/Pictures/lockscreen.png"  # Default
+# fi
 
-if ! [ -e "$BKG_IMG" ]; then
-    echo "No background image! Exiting..."
-    exit 2
-fi
+# if ! [ -e "$BKG_IMG" ]; then
+#     echo "No background image! Exiting..."
+#     exit 2
+# fi
 
 MD5_BKG_IMG=$(md5sum $BKG_IMG | cut -c 1-10)
 MD5_SCREEN_CONFIG=$(xrandr | md5sum - | cut -c 1-32) # Hash of xrandr output
@@ -87,8 +87,10 @@ done <<<"`xrandr`"
 eval convert -size ${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT} 'xc:blue' $OUTPUT_IMG
 eval convert $OUTPUT_IMG $PARAMS $OUTPUT_IMG
 
+MODULES=$(realpath "$DIR/../")
 #Lock the screen:
 # setxkbmap -layout us
-$LOCK_CMD
+
+$LOCK_CMD $@
 # "$MODULES/keyboard/layout"
 # "$MODULES/keyboard/thinkpad"
