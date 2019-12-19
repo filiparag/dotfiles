@@ -32,3 +32,6 @@ bspc rule -a feh 						pseudo_tiled=on
 
 # Default cursor
 xsetroot -cursor_name 					left_ptr
+
+# Remove previous hardened mode
+rm /tmp/$USER.bspwm_hardened

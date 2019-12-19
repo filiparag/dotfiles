@@ -1,0 +1,38 @@
+#! /bin/sh
+
+MODULES=$(realpath "$(dirname $0)/../")
+
+if [ -e /tmp/$USER.bspwm_hardened ]; then
+
+	LOCK_CMD="$MODULES/screen/physlock"
+
+	pactl set-sink-mute 0 1
+
+	for MONITOR in $(bspc query -M); do
+    	bspc desktop -f 0 -m $MONITOR
+	done
+
+else
+
+	LOCK_CMD="$MODULES/screen/i3lock"
+
+fi
+
+"$MODULES/screen/backlight" = 100
+
+LANG=$(xkb-switch -p)
+xkb-switch -s us
+
+if [ "$1" == "systemd" ]; then
+
+	$LOCK_CMD
+
+else
+
+	sleep 0.2
+	xset dpms force off
+
+	WAIT=$("$LOCK_CMD" -n)
+	xkb-switch -s "$LANG"
+
+fi

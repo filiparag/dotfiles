@@ -3,7 +3,8 @@
 # Show application launcher
 super + d
 	rofi $ROFI_STYLE -modi drun,run,combi \
-		 -combi-modi drun,run -show combi -width 30
+		 -combi-modi drun,run -show combi -width 30;\
+	echo $ROFI_STYLE
 
 # Show all running windows
 super + grave
@@ -19,7 +20,7 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	# $MODULES/keyboard/sxhkd_restart; \
+	$MODULES/keyboard/sxhkd_restart; \
 	$MODULES/screen/wallpaper
 
 # Close application
@@ -56,12 +57,12 @@ super + @F1
 
 # Yank current node
 super + @F2
-	echo $(bspc query -N -n) > "/tmp/bspcyank"
+	echo $(bspc query -N -n) > "/tmp/$USER_bspcyank"
 
 # Paste yanked node
 super + @F3
-	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d);
-	rm "/tmp/bspcyank"
+	bspc node $(cat "/tmp/$USER_bspcyank") -d $(bspc query -D -d);
+	rm "/tmp/$USER_bspcyank"
 
 # Change window tiling mode
 super + shift + @space
@@ -201,28 +202,23 @@ super + XF86AudioMicMute
 
 # Sleep
 super + @Delete
-	$HOME/.screen/layout/set.sh "LVDS-1"; \
-	$MODULES/screen/i3lock; \
-	systemctl suspend; \
-	$MODULES/screen/backlight = 100
+	systemctl suspend
 
 # Shut down
 super + shift + @Delete : Return
 	systemctl poweroff
 
-# Rebootrofirofi
+# Reboot
 super + shift + ctrl + @Delete : Return
 	systemctl reboot
 
 # Lock the device
 XF86Launch1
-	physlock -m -d
+	$MODULES/screen/physlock
 
 # Lock screen and turn off screen
 super + l
-	$MODULES/screen/i3lock; \
-	sleep 0.2; \
-	xset dpms force off
+	$MODULES/system/lock
 
 # Hardened mode (hide polybar and notifications)
 super + h

@@ -6,8 +6,8 @@ Before=sleep.target
 User=%I
 Type=forking
 Environment=DISPLAY=:0
-ExecStart=/home/%I/.config/bspwm/modules/screen/i3lock
-ExecStartPost=/usr/bin/sleep 1
+ExecStart=/home/%I/.config/bspwm/modules/system/lock systemd
+ExecStartPost=/usr/bin/sleep 0
 
 [Install]
 WantedBy=sleep.target
