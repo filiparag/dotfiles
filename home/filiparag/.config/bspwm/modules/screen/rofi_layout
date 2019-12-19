@@ -1,9 +1,12 @@
 #! /bin/bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+MODULES=$(realpath "$DIR/../")
+
+DIR=$(dirname "$0")
+ARANDR="$HOME/.screenlayout"
 
 MONITORS=`xrandr --query | grep " connected" | cut -d " " -f 1 | sort`
-CUSTOM=`find $DIR/custom -type f -printf "%P\n" | sed "s/.sh//" | sort`
+CUSTOM=`find $ARANDR -type f -printf "%P\n" | sed "s/.sh//" | sort`
 LIST="$CUSTOM\n$MONITORS\n"
 
 if [ -z $1 ]; then
@@ -28,7 +31,7 @@ if [ -z $SELECTED ]; then
 
 elif [[ $CUSTOM == *"$SELECTED"* ]]; then
 
-	$DIR/custom/$SELECTED.sh
+	$ARANDR/$SELECTED.sh
 
 else
 
@@ -46,8 +49,9 @@ else
 	done
 
 	$OUTPUT
+
 fi
 
-$HOME/.config/bspwm/scripts/monitors.sh &
-$HOME/.config/bspwm/scripts/polybar.sh &
-$HOME/.screen/wallpaper/set.sh &
+"$MODULES/interface/workspaces"
+"$MODULES/interface/polybar_restart"
+"$MODULES/screen/wallpaper"

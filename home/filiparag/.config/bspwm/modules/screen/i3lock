@@ -1,9 +1,11 @@
 #!/bin/bash
 
+MODULES=$(realpath "$DIR/../")
+
 #Constants
 DISPLAY_RE="([0-9]+)x([0-9]+)\\+([0-9]+)\\+([0-9]+)" # Regex to find display dimensions
 FOLDER=`dirname "$BASH_SOURCE"` # Current folder
-CACHE_FOLDER="$FOLDER"/img/cache/ # Cache folder
+CACHE_FOLDER="$HOME/.cache/i3lock/" # Cache folder
 if ! [ -e $CACHE_FOLDER ]; then
     mkdir -p $CACHE_FOLDER
 fi
@@ -24,7 +26,7 @@ done
 if [ "$arg_image" ]; then
     BKG_IMG="$arg_image"  # Passed image
 else
-    BKG_IMG="$FOLDER/img/background.png"  # Default
+    BKG_IMG="$HOME/Pictures/lockscreen.png"  # Default
 fi
 
 if ! [ -e "$BKG_IMG" ]; then
@@ -86,6 +88,7 @@ eval convert -size ${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT} 'xc:blue' $OUTPUT_IM
 eval convert $OUTPUT_IMG $PARAMS $OUTPUT_IMG
 
 #Lock the screen:
-setxkbmap -layout us
+# setxkbmap -layout us
 $LOCK_CMD
-$HOME/.config/bspwm/scripts/keymap.sh
+# "$MODULES/keyboard/layout"
+# "$MODULES/keyboard/thinkpad"

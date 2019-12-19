@@ -1,56 +1,49 @@
-#!/bin/sh
+#! /bin/bash
 
-SCRIPTS=$HOME/.config/bspwm/scripts
+DIR="$(dirname "$0")/modules"
 
-$SCRIPTS/monitors.sh &
-$SCRIPTS/keymap.sh &
-$SCRIPTS/polybar.sh &
-$SCRIPTS/battery.sh &
+RUNCFG="$(cat "$DIR/rc.conf" | sed '/^#/ d')"
 
-sudo su -c "echo -n 140 > /sys/devices/platform/i8042/serio1/sensitivity"
-sudo su -c "echo -n 0 > /sys/devices/platform/i8042/serio1/press_to_select"
+RUNLIST=""
 
-bspc config top_padding 				0
+for ENTRY in $(printf "$RUNCFG"); do
 
-# Visual options
-bspc config border_width 				1
-bspc config window_gap          		0
-bspc config split_ratio         		0.5
-bspc config borderless_monocle  		true
-bspc config single_monocle 				true
-bspc config gapless_monocle     		true
-bspc config auto_alternate 				true
-bspc config auto_cancel 				true
-bspc config normal_border_color 		"#040404"
-bspc config active_border_color 		"#454545"
-bspc config focused_border_color 		"#606060"
-bspc config urgent_border_color 		"#fdd835"
-bspc config ignore_ewmh_fullscreen      none
-bspc config pointer_follows_monitor		true
-bspc config pointer_follows_focus		false
+	MDIR=$(echo $ENTRY | sed "s:\/.*::")
+	MLIST=$(echo $ENTRY | sed "s:.*\/::; s:,:\n:g")
 
-# Multihead behavior
-bspc config remove_disabled_monitors 	true
-bspc config remove_unplugged_monitors 	true
+	ENTRYLIST="$MLIST"
 
-# Focusing behavior
-bspc config focus_follows_pointer 		false
-bspc config history_aware_focus 		true
+	if [ "$MLIST" == "*" ]; then
+		ENTRYLIST=$(find "$DIR/$MDIR" -type f -printf "%P\n")
+	fi
 
-# Rules
-bspc rule -a File-roller 				pseudo_tiled=on
-bspc rule -a feh 						pseudo_tiled=on
+	ENTRYLIST=$(printf "$ENTRYLIST" | sed "s/^/$MDIR\//")
 
-# Default cursor
-xsetroot -cursor_name 					left_ptr
+	RUNLIST="$RUNLIST$ENTRYLIST\n"
 
-sxhkd &
-dunst &
-numlockx on &
-unclutter -idle 1 &
-redshift-qt &
-flameshot &
-/usr/bin/signal-desktop --start-in-tray &
-if [ -z $(pidof syncthing) ]; then syncthing; fi
+done
 
-$HOME/.screen/wallpaper/set.sh &
+RUNLIST=$(printf "$RUNLIST" | awk '!a[$0]++')
+
+if [ "$1" == "--dry-run" ]; then
+
+	printf "$RUNLIST\n"
+	exit
+
+fi
+
+for MOD in $(printf "$RUNLIST"); do
+
+	MPATH="$DIR/$MOD"
+
+	if [ -f "$MPATH" ]; then
+
+		if [ ! -x "$MPATH" ]; then		
+			chmod +x "$MPATH"
+		fi
+
+		nohup "$MPATH" &> /dev/null&
+
+	fi
+
+done

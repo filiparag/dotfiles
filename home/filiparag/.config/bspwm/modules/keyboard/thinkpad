@@ -1,0 +1,19 @@
+#! /bin/sh
+
+if [[ $(cat "/sys/devices/virtual/dmi/id/product_family") =~ "ThinkPad" ]]; then
+
+	# Change key bindings
+	xmodmap -e "keycode 112 = Home"
+	xmodmap -e "keycode 117 = End"
+	xmodmap -e "keycode 107 = Menu"
+	xmodmap -e "keycode 110 = Prior"
+	xmodmap -e "keycode 115 = Next"
+
+	# TrackPoint sensitivity
+	sudo su -c "echo -n 140 > /sys/devices/platform/i8042/serio1/sensitivity"
+	sudo su -c "echo -n 0 > /sys/devices/platform/i8042/serio1/press_to_select"
+
+	# Turn of Power LED
+	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
+
+fi

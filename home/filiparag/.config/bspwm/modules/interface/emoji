@@ -1,25 +1,4 @@
-#!/usr/bin/env bash
-#   Source: https://gist.github.com/Tadly/0741821d3694deaec1ee454a95c591fa
-#
-#   Use rofi to pick emoji because that's what this
-#   century is about apparently...
-#
-#   Requirements:
-#     rofi, xsel, xdotool, curl, xmllint
-#
-#   Usage:
-#     1. Download all emoji
-#        $ rofi-emoji --download
-#
-#     2. Run it!
-#        $ rofi-emoji
-#
-#   Notes:
-#     * You'll need a emoji font like "Noto Emoji" or "EmojiOne".
-#     * Confirming an item will automatically paste it WITHOUT
-#       writing it to your clipboard.
-#     * Ctrl+C will copy it to your clipboard WITHOUT pasting it.
-#
+#! /bin/bash
 
 # Where to save the emojis file.
 EMOJI_FILE="$HOME/.cache/emojis.txt"

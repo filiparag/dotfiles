@@ -1,0 +1,8 @@
+#! /bin/sh
+
+unclutter -idle 1 &
+redshift-qt &
+flameshot &
+signal-desktop --start-in-tray &
+gajim &
+wire-desktop --startup &

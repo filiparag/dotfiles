@@ -26,5 +26,3 @@ then
 fi
 
 sudo su -c "echo $NEWVAL > /sys/class/backlight/intel_backlight/brightness"
-
-

@@ -2,13 +2,12 @@
 
 # Show application launcher
 super + d
-	rofi -modi drun,run,combi -combi-modi drun,run -show combi -theme Arc-Dark \
-		 -width 25 -lines 8 -show-icons -icon-theme -font "Source Code Pro 12"
+	rofi $ROFI_STYLE -modi drun,run,combi \
+		 -combi-modi drun,run -show combi -width 30
 
 # Show all running windows
 super + grave
-	rofi -show window -theme Arc-Dark -width 40 -lines 8 -show-icons \
-		 -icon-theme -font "Source Code Pro 12"
+	rofi $ROFI_STYLE -show window -width 40
 
 # Switch to last node / desktop
 {alt, super} + @Tab
@@ -20,11 +19,8 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	pkill -USR1 -x sxhkd; \
-	$HOME/.config/bspwm/scripts/monitors.sh; \
-	$HOME/.config/bspwm/scripts/polybar.sh; \
-	$HOME/.screen/wallpaper/set.sh; \
-	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
+	# $MODULES/keyboard/sxhkd_restart; \
+	$MODULES/screen/wallpaper
 
 # Close application
 super + shift + q
@@ -185,19 +181,15 @@ XF86AudioMute
 
 # Change brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	$HOME/.config/bspwm/scripts/backlight.sh {-,+} 2
+	$MODULES/screen/backlight {-,+} 2
 
 # Set brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	$HOME/.config/bspwm/scripts/backlight.sh = {2,100}
+	$MODULES/screen/backlight = {2,100}
 
 # Select monitor layout
 XF86AudioMicMute
-	$HOME/.screen/layout/set.sh
-
-# Set monitor layout to LVDS-1
-control + XF86AudioMicMute
-	$HOME/.screen/layout/set.sh "LVDS-1"
+	$MODULES/screen/rofi_layout
 
 # Launch Pulseaudio control interface
 super + XF86AudioMute
@@ -210,28 +202,25 @@ super + XF86AudioMicMute
 # Sleep
 super + @Delete
 	$HOME/.screen/layout/set.sh "LVDS-1"; \
-	$HOME/.screen/lockscreen/lock.sh; \
+	$MODULES/screen/i3lock; \
 	systemctl suspend; \
-	$HOME/.config/bspwm/scripts/backlight.sh = 100; \
-	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
+	$MODULES/screen/backlight = 100
 
 # Shut down
 super + shift + @Delete : Return
 	systemctl poweroff
 
-# Reboot
+# Rebootrofirofi
 super + shift + ctrl + @Delete : Return
 	systemctl reboot
 
 # Lock the device
 XF86Launch1
-	setxkbmap -layout us; \
-	physlock -m -d; \
-	$HOME/.config/bspwm/scripts/keymap.sh
+	physlock -m -d
 
 # Lock screen and turn off screen
 super + l
-	$HOME/.screen/lockscreen/lock.sh; \
+	$MODULES/screen/i3lock; \
 	sleep 0.2; \
 	xset dpms force off
 
@@ -239,7 +228,7 @@ super + l
 super + h
 	if [ -e /tmp/$USER.bspwm_hardened ]; then \
 		rm /tmp/$USER.bspwm_hardened; \
-		$HOME/.config/bspwm/scripts/polybar.sh; \
+		$MODULES/interface/polybar_restart; \
 		bspc config bottom_padding 24; \
 		dunst; \
 	else \
@@ -291,14 +280,13 @@ super + s
 
 # Show emoji menu
 super + z
-	$HOME/.config/bspwm/scripts/emoji.sh
+	$MODULES/interface/emoji
 
 # Show calculator
 super + @less
-	rofi -show calc -modi calc -no-show-match -no-sort -theme Arc-Dark \
-		 -width 30 -lines 5 -show-icons -icon-theme -font "Source Code Pro 12"
+	rofi $ROFI_STYLE -show calc -modi calc -no-show-match -no-sort \
+		 -width 30 -lines 5
 
 # Print screen
 super + p
 	flameshot gui -p $HOME/Pictures/Screenshots/
-
