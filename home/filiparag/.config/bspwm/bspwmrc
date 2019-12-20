@@ -2,7 +2,7 @@
 
 export WM="bspwm"
 
-DIR="$(dirname "$0")/modules"
+MODULES="$(dirname "$0")/modules"
 
 MODE="start"
 
@@ -14,7 +14,7 @@ elif [ -n "$1" ]; then
 	MODE="$1"
 fi
 
-RUNCFG=$(cat "$DIR/rc.conf" | \
+RUNCFG=$(cat "$MODULES/rc.conf" | \
 		 sed '/^#/d; /^$/d; 0,/^\['"$MODE"'\]/d; /\[.*/,$d')
 
 RUNLIST=""
@@ -27,7 +27,7 @@ for ENTRY in $(printf "$RUNCFG"); do
 	ENTRYLIST="$MLIST"
 
 	if [ "$MLIST" == "*" ]; then
-		ENTRYLIST=$(find "$DIR/$MDIR" -type f -printf "%P\n")
+		ENTRYLIST=$(find "$MODULES/$MDIR" -type f -printf "%P\n")
 	fi
 
 	ENTRYLIST=$(printf "$ENTRYLIST" | sed "s/^/$MDIR\//")
@@ -47,7 +47,7 @@ fi
 
 for MOD in $(printf "$RUNLIST"); do
 
-	MPATH="$DIR/$MOD"
+	MPATH="$MODULES/$MOD"
 
 	if [ -f "$MPATH" ]; then
 
@@ -64,6 +64,10 @@ for MOD in $(printf "$RUNLIST"); do
 			nohup "$MPATH" &> /dev/null&
 		
 		fi
+
+	else
+
+		$MODULES/interface/notify error "Unable to execute bspwm module <i>'$MOD'</i>! File is missing."
 
 	fi
 

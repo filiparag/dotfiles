@@ -1,3 +1,9 @@
 #! /bin/sh
 
-DISPLAY=$DISPLAY feh --bg-scale $HOME/Pictures/wallpaper.png
+MODULES=$(realpath "$(dirname $0)/../")
+
+if [ ! -f $HOME/Pictures/wallpaper.png ]; then
+	$MODULES/interface/notify warning "Unable to set wallpaper:\n<i>'wallpaper.png'</i> is missing from <i>'Pictures'</i> directory!"
+else
+	DISPLAY=$DISPLAY feh --bg-scale $HOME/Pictures/wallpaper.png
+fi
