@@ -1,0 +1,12 @@
+#! /bin/sh
+# RC_ASYNC_LOCK
+
+SCRNLYTS="$HOME/.screenlayout"
+MODULES=$(realpath "$(dirname $0)/../")
+
+if [ -f "$SCRNLYTS/Default.sh" ]; then
+
+	"$SCRNLYTS/Default.sh"
+
+fi
+

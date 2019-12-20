@@ -21,6 +21,7 @@ super + shift + e : Return
 # Reload config
 super + alt + r
 	$MODULES/keyboard/sxhkd_restart; \
+	$MODULES/interface/polybar_restart; \
 	$MODULES/screen/wallpaper
 
 # Close application

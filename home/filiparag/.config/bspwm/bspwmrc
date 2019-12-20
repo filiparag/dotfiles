@@ -42,7 +42,15 @@ for MOD in $(printf "$RUNLIST"); do
 			chmod +x "$MPATH"
 		fi
 
-		nohup "$MPATH" &> /dev/null&
+		if grep -q "# RC_ASYNC_LOCK" "$MPATH"; then
+
+			WAIT=$("$MPATH" &> /dev/null&)
+
+		else
+		
+			nohup "$MPATH" &> /dev/null&
+		
+		fi
 
 	fi
 
