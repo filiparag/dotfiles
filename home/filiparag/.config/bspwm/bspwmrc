@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export WM="bspwm"
+
 DIR="$(dirname "$0")/modules"
 
 MODE="start"
