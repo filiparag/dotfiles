@@ -1,3 +1,10 @@
 #! /bin/sh
 
-pkill -USR1 -x sxhkd
+MODULES=$(realpath "$(dirname $0)/../")
+
+# if [[ "$@" =~ "-f" ]] || [[ "$@" =~ "--force" ]]; then
+WAIT=$(killall -9 sxhkd)
+$MODULES/keyboard/sxhkd
+# else
+# 	pkill -USR1 -x sxhkd
+# fi

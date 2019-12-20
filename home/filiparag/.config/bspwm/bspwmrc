@@ -2,7 +2,18 @@
 
 DIR="$(dirname "$0")/modules"
 
-RUNCFG="$(cat "$DIR/rc.conf" | sed '/^#/ d')"
+MODE="start"
+
+if [ "$1" == "--dry-run" ]; then
+	if [ -n "$2" ]; then
+		MODE="$2"
+	fi
+elif [ -n "$1" ]; then
+	MODE="$1"
+fi
+
+RUNCFG=$(cat "$DIR/rc.conf" | \
+		 sed '/^#/d; /^$/d; 0,/^\['"$MODE"'\]/d; /\[.*/,$d')
 
 RUNLIST=""
 
@@ -27,7 +38,7 @@ RUNLIST=$(printf "$RUNLIST" | awk '!a[$0]++')
 
 if [ "$1" == "--dry-run" ]; then
 
-	printf "$RUNLIST\n"
+	printf "[$MODE]\n$RUNLIST\n"
 	exit
 
 fi

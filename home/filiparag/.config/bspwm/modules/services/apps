@@ -2,6 +2,7 @@
 
 unclutter -idle 1 &
 redshift-qt &
+dunst &
 flameshot &
 synergy &
 signal-desktop --start-in-tray &

@@ -1,0 +1,15 @@
+#! /bin/sh
+
+MODULES=$(realpath "$(dirname $0)/../")
+
+if [ -e /tmp/$USER.bspwm_hardened ]; then
+	rm /tmp/$USER.bspwm_hardened
+	$MODULES/interface/polybar_restart
+	bspc config bottom_padding 24
+	dunst;
+else
+	touch /tmp/$USER.bspwm_hardened
+	pkill -15 polybar
+	bspc config bottom_padding 0
+	pkill -15 dunst
+fi
