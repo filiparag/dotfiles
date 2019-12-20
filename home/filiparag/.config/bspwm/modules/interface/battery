@@ -18,7 +18,8 @@ while true; do
 	   [ $CURR_STATUS == "Discharging" ]; then
 
 		NOTIFY_TPREV=$CURR_TIMEST
-		notify-send -u critical -t $(( $NOTIFY_TIME * 1000 )) "WARNING: Low battery level"
+		notify-send -u low -t $(( $NOTIFY_TIME * 1000 )) \
+			-i battery-empty-charging "Battery monitor" "Only $CURR_LEVEL% charge remaining!"
 		sleep $NOTIFY_DELAY
 
 	else
