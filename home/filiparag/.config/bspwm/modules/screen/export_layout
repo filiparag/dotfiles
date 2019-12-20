@@ -1,0 +1,59 @@
+#! /bin/bash
+
+DISPLAY_CONNECTED_RE="([A-Za-z0-9-]+) connected([a-z ]+)?([0-9]+)x([0-9]+)\+([0-9]+)\+([0-9]+) ([a-z]+)?"
+DISPLAY_DISCONNECTED_RE="([A-Za-z0-9-]+) disconnected.+"
+
+XRANDR_OUTPUT="xrandr"
+SIMPLE_OUTPUT=""
+
+while read LINE
+do
+
+	if [[ $LINE =~ $DISPLAY_CONNECTED_RE ]]; then
+
+		S_NAME=${BASH_REMATCH[1]}
+		S_PRIMARY=${BASH_REMATCH[2]}
+		S_WIDTH=${BASH_REMATCH[3]}
+		S_HEIGHT=${BASH_REMATCH[4]}
+		S_XPOS=${BASH_REMATCH[5]}
+		S_YPOS=${BASH_REMATCH[6]}
+		S_ORIENT=${BASH_REMATCH[7]}
+
+		S_ORIENT=$(echo $S_ORIENT | tr -d '[:space:]')
+		if [[ -z $S_ORIENT ]]; then
+			S_ORIENT="normal"
+		fi
+
+		if [[ $S_PRIMARY =~ "primary" ]]; then
+			S_PRIMARY=" --primary"
+			SM_PRIMARY="primary"
+		else
+			S_PRIMARY=""
+			SM_PRIMARY="secondary"
+		fi
+
+		XRANDR_OUTPUT="$XRANDR_OUTPUT --output $S_NAME$S_PRIMARY --mode "$S_WIDTH"x$S_HEIGHT --pos "$S_XPOS"x$S_YPOS --rotate $S_ORIENT"
+
+		SIMPLE_OUTPUT="$SIMPLE_OUTPUT$S_NAME $S_WIDTH $S_HEIGHT $S_XPOS $S_YPOS $S_ORIENT $SM_PRIMARY\n"
+
+
+
+	elif [[ $LINE =~ $DISPLAY_DISCONNECTED_RE ]]; then
+
+		S_NAME=${BASH_REMATCH[1]}
+		XRANDR_OUTPUT="$XRANDR_OUTPUT --output $S_NAME --off"
+
+	fi
+
+   
+done <<< "$(xrandr)"
+
+if [ -z "$1" ] || [ "$1" == "simple" ]; then
+
+	printf "$SIMPLE_OUTPUT" | column -t -s' '
+
+elif [ "$1" == "xrandr" ]; then
+
+	printf "$XRANDR_OUTPUT\n"
+
+fi
