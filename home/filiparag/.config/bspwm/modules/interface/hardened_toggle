@@ -6,10 +6,11 @@ if [ -e /tmp/$USER.bspwm_hardened ]; then
 	rm /tmp/$USER.bspwm_hardened
 	$MODULES/interface/polybar_restart
 	bspc config bottom_padding 24
-	dunst;
+	dunst &
+	$MODULES/interface/notify info "Hardened mode disabled"
 else
 	touch /tmp/$USER.bspwm_hardened
-	pkill -15 polybar
+	pkill -9 polybar
 	bspc config bottom_padding 0
-	pkill -15 dunst
+	pkill -9 dunst
 fi

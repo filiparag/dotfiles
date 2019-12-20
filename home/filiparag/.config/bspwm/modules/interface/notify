@@ -1,0 +1,5 @@
+#! /bin/sh
+
+MODULES=$(realpath "$(dirname $0)/../")
+
+notify-send -u low -i "dialog-$1" "$WM" "$2"
