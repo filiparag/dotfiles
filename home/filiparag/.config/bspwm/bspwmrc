@@ -21,12 +21,13 @@ RUNLIST=""
 
 for ENTRY in $(printf "$RUNCFG"); do
 
+
 	MDIR=$(echo $ENTRY | sed "s:\/.*::")
 	MLIST=$(echo $ENTRY | sed "s:.*\/::; s:,:\n:g")
 
 	ENTRYLIST="$MLIST"
 
-	if [ "$MLIST" == "*" ]; then
+	if [[ "$MLIST" =~ "*" ]]; then
 		ENTRYLIST=$(find "$MODULES/$MDIR" -type f -printf "%P\n")
 	fi
 
@@ -47,7 +48,16 @@ fi
 
 for MOD in $(printf "$RUNLIST"); do
 
-	MPATH="$MODULES/$MOD"
+	MOD_CMD="$MOD"
+	MOD_ARGS=""
+	if [[ "$MOD" =~ "(" ]]; then
+
+		MOD_CMD=$(printf "$MOD" | sed "s/(.*//")
+		MOD_ARGS=$(printf "$MOD" | sed "s/.*(//; s/)$//; s/\;/ /g")
+
+	fi
+
+	MPATH="$MODULES/$MOD_CMD"
 
 	if [ -f "$MPATH" ]; then
 
@@ -57,11 +67,11 @@ for MOD in $(printf "$RUNLIST"); do
 
 		if grep -q "# RC_ASYNC_LOCK" "$MPATH"; then
 
-			WAIT=$("$MPATH" &> /dev/null&)
+			WAIT=$("$MPATH" $MOD_ARGS &> /dev/null&)
 
 		else
 		
-			nohup "$MPATH" &> /dev/null&
+			nohup "$MPATH" $MOD_ARGS &> /dev/null&
 		
 		fi
 
