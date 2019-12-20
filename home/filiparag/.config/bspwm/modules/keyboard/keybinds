@@ -21,8 +21,8 @@ if [[ $(cat "/sys/devices/virtual/dmi/id/product_family") =~ "ThinkPad" ]]; then
 fi
 
 if [ $(hostname) == "lapwing" ]; then
-
-	# Media remote key bindings
+	
+    # Media remote key bindings
 	xmodmap -e "keycode 180 = space"
 
 fi

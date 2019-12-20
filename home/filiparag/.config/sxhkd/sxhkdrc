@@ -56,12 +56,12 @@ super + @F1
 
 # Yank current node
 super + @F2
-	echo $(bspc query -N -n) > "/tmp/$USER_bspcyank"
+	echo $(bspc query -N -n) > "/tmp/bspcyank"
 
 # Paste yanked node
 super + @F3
-	bspc node $(cat "/tmp/$USER_bspcyank") -d $(bspc query -D -d);
-	rm "/tmp/$USER_bspcyank"
+	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d);
+	rm "/tmp/bspcyank"
 
 # Change window tiling mode
 super + shift + @space
