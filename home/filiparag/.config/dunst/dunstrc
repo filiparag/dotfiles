@@ -12,9 +12,10 @@
     # If markup is not allowed, those tags will be stripped out of the message.
     allow_markup = yes
 
-    show_icons = left
-    max_icon_size = 16
-    icon_folders = /usr/share/icons/Paper/16x16/apps/:/usr/share/icons/Paper/16x16/status/:/usr/share/icons/Paper/16x16/devices/:/usr/share/icons/Paper/16x16/places/:/usr/share/icons/Paper/16x16/web/
+    icon_position = left
+    min_icon_size = 24
+    max_icon_size = 24
+    icon_folders = /usr/share/icons/Paper/24x24/apps/:/usr/share/icons/Paper/24x24/categories/:/usr/share/icons/Paper/24x24/web/:/usr/share/icons/Paper/24x24/actions/:/usr/share/icons/Paper/24x24/status/:/usr/share/icons/Paper/24x24/animations/:/usr/share/icons/Paper/24x24/panel/:/usr/share/icons/Paper/24x24/emblems/:/usr/share/icons/Paper/24x24/mimetypes/:/usr/share/icons/Paper/24x24/places/:/usr/share/icons/Paper/24x24/devices/:/usr/share/icons/Paper/24x24/emotes
 
     # The format of the message. Possible variables are:
     #   %a  appname
@@ -46,6 +47,9 @@
     # set to -1 to disable
     show_age_threshold = 90
 
+    stack_duplicates = yes
+    hide_duplicates_count = true
+
     # split notifications into multiple lines if they don't fit into geometry
     word_wrap = yes
 
@@ -64,7 +68,7 @@
     # right side of the screen.  Y is measured from the top and down respectevly.
     # The width can be negative. In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "250x5-20+35"
+    geometry = "280x10-20+35"
 
     # The transparency of the window. range: [0; 100]
     # This option will only work if a compositing windowmanager is present (e.g. xcompmgr, compiz, etc..)
@@ -90,6 +94,12 @@
     # ignored.
     follow = mouse
 
+    mouse_left_click = do_action
+    mouse_middle_click = close_current
+    mouse_right_click = close_all
+
+    show_indicators = true
+
     # should a notification popped up from history be sticky or
     # timeout as if it would normally do.
     sticky_history = yes
@@ -109,7 +119,7 @@
     # horizontal padding
     horizontal_padding = 10
 
-    # Define a color for the separator.
+    # Define a color for leftthe separator.
     # possible values are:
     #  * auto: dunst tries to find a color fitting to the background
     #  * foreground: use the same color as the foreground
@@ -123,7 +133,7 @@
     startup_notification = false
 
     # dmenu path
-    dmenu = /usr/bin/dmenu -p dunst:
+    dmenu = /usr/bin/rofi -dmenu -p dunst:
 
     # browser for opening urls in context menu
     browser = /usr/bin/firefox -new-tab
