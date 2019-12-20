@@ -5,5 +5,5 @@ redshift-qt &
 flameshot &
 synergy &
 signal-desktop --start-in-tray &
-# gajim &
+gajim &
 wire-desktop --startup &
