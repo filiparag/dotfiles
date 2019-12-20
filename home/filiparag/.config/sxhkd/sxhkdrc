@@ -3,8 +3,7 @@
 # Show application launcher
 super + d
 	rofi $ROFI_STYLE -modi drun,run,combi \
-		 -combi-modi drun,run -show combi -width 30;\
-	echo $ROFI_STYLE
+		 -combi-modi drun,run -show combi -width 30
 
 # Show all running windows
 super + grave
@@ -20,9 +19,7 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	$MODULES/keyboard/sxhkd_restart; \
-	$MODULES/interface/polybar_restart; \
-	$MODULES/screen/wallpaper
+	$BSPWMRC restart
 
 # Close application
 super + shift + q
@@ -223,17 +220,7 @@ super + l
 
 # Hardened mode (hide polybar and notifications)
 super + h
-	if [ -e /tmp/$USER.bspwm_hardened ]; then \
-		rm /tmp/$USER.bspwm_hardened; \
-		$MODULES/interface/polybar_restart; \
-		bspc config bottom_padding 24; \
-		dunst; \
-	else \
-		touch /tmp/$USER.bspwm_hardened; \
-		pkill -15 polybar; \
-		bspc config bottom_padding 0; \
-		pkill -15 dunst; \
-	fi
+	$MODULES/interface/hardened_toggle
 
 # Launch RXVT Unicode
 super + Return
@@ -286,4 +273,5 @@ super + @less
 
 # Print screen
 super + p
+	mkdir -p $HOME/Pictures/Screenshots/; \
 	flameshot gui -p $HOME/Pictures/Screenshots/

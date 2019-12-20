@@ -1,6 +1,7 @@
 #! /bin/sh
 
-ROFI_STYLE="-theme Arc-Dark -icon-theme -lines 8 -show-icons"
-MODULES=$(realpath "$(dirname $0)/../")
+export ROFI_STYLE="-theme Arc-Dark -icon-theme -lines 8 -show-icons"
+export MODULES=$(realpath "$(dirname $0)/../")
+export BSPWMRC=$(realpath "$(dirname $0)/../../")/bspwmrc
 
-MODULES=$MODULES ROFI_STYLE=$ROFI_STYLE sxhkd &
+sxhkd &
