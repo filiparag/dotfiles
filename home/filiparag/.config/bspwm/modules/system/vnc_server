@@ -2,6 +2,7 @@
 
 if [ $(hostname) == "lapwing" ]; then
 
-	x0vncserver -SecurityTypes=TLSVnc --PasswordFile=$HOME/.vnc/passwd &>/dev/null&
+	DISPLAY=:0 x0vncserver -SecurityTypes=TLSVnc \
+		--PasswordFile=$HOME/.vnc/passwd &>/dev/null&
 
 fi

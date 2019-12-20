@@ -3,10 +3,10 @@
 MODULES=$(realpath "$(dirname $0)/../")
 
 DIR=$(dirname "$0")
-ARANDR="$HOME/.screenlayout"
+SCRNLYTS="$HOME/.screenlayout"
 
 MONITORS=`xrandr --query | grep " connected" | cut -d " " -f 1 | sort`
-CUSTOM=`find $ARANDR -type f -printf "%P\n" | sed "s/.sh//" | sort`
+CUSTOM=`find $SCRNLYTS -type f -printf "%P\n" | sed "s/.sh//" | sort`
 LIST="$CUSTOM\n$MONITORS\n"
 
 if [ -z $1 ]; then
@@ -31,7 +31,7 @@ if [ -z $SELECTED ]; then
 
 elif [[ $CUSTOM == *"$SELECTED"* ]]; then
 
-	$ARANDR/$SELECTED.sh
+	$SCRNLYTS/$SELECTED.sh
 
 else
 

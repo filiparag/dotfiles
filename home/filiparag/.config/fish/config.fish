@@ -3,20 +3,20 @@ if status --is-interactive
 
     set -g fish_user_abbreviations
 
-    alias l 			"ls -lhoG --color=always --time-style='+' | sed -re 's/^[^ ]* //'"
-    alias ll 			"lsd --icon never -al"
-    alias subl 			"subl3"
+    alias l             "ls -lhoG --color=always --time-style='+' | sed -re 's/^[^ ]* //'"
+    alias ll            "lsd --icon never -al"
+    alias subl          "subl3"
 
-    abbr --add ys 		'yay -S'
-    abbr --add yss 		'yay -Ss'
-    abbr --add yr 		'yay -Rcs'
+    abbr --add ys       'yay -S'
+    abbr --add yss      'yay -Ss'
+    abbr --add yr       'yay -Rcs'
 
-    abbr --add badger 	'ssh -J serveo.net badger'
-    abbr --add lapwing 	'ssh -J serveo.net lapwing'
-    abbr --add tapir 	'ssh -J serveo.net tapir'
-    abbr --add akita 	'ssh -J serveo.net akita'
+    abbr --add badger   'ssh -J serveo.net badger'
+    abbr --add lapwing  'ssh -J serveo.net lapwing'
+    abbr --add tapir    'ssh -J serveo.net tapir'
+    abbr --add akita    'ssh -J serveo.net akita'
 
-    abbr --add led 		'sudo bash -c "echo \'0 off\' > /proc/acpi/ibm/led"'
+    abbr --add led      'sudo bash -c "echo \'0 off\' > /proc/acpi/ibm/led"'
 
 end
 
@@ -51,9 +51,7 @@ set -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 setenv SSH_ENV $HOME/.ssh_environment
 
 function start_agent                                                                                                                                                                    
-    echo "Initializing new SSH agent ..."
     ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
-    echo "succeeded"
     chmod 600 $SSH_ENV 
     . $SSH_ENV > /dev/null
     ssh-add
@@ -71,21 +69,23 @@ function test_identities
     end
 end
 
-if [ -n "$SSH_AGENT_PID" ] 
-    ps -ef | grep $SSH_AGENT_PID | grep ssh-agent > /dev/null
-    if [ $status -eq 0 ]
-        test_identities
-    end  
-else
-    if [ -f $SSH_ENV ]
-        . $SSH_ENV > /dev/null
-    end  
-    ps -ef | grep $SSH_AGENT_PID | grep -v grep | grep ssh-agent > /dev/null
-    if [ $status -eq 0 ]
-        test_identities
-    else 
-        start_agent
-    end  
+function prompt_agent
+    if [ -n "$SSH_AGENT_PID" ] 
+        ps -ef | grep $SSH_AGENT_PID | grep ssh-agent > /dev/null
+        if [ $status -eq 0 ]
+            test_identities
+        end  
+    else
+        if [ -f $SSH_ENV ]
+            . $SSH_ENV > /dev/null
+        end  
+        ps -ef | grep $SSH_AGENT_PID | grep -v grep | grep ssh-agent > /dev/null
+        if [ $status -eq 0 ]
+            test_identities
+        else 
+            start_agent
+        end  
+    end
 end
 
 # Start X at login
@@ -93,6 +93,8 @@ if status --is-login
   if test -z "$DISPLAY" -a $XDG_VTNR = 1
     exec startx -- -keeptty
   end
+else
+    prompt_agent
 end
 
 # Remote
