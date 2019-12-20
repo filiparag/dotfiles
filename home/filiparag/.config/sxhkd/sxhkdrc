@@ -19,7 +19,9 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	$BSPWMRC restart
+	$BSPWMRC restart; \
+	notify-send -u low -t 3000 -i dialog-info \
+				"$WM" "Desktop configuration reloaded"
 
 # Close application
 super + shift + q
@@ -257,6 +259,10 @@ super + shift + n
 # Launch Visual Studio Code
 super + v
 	code
+
+# Launch KeePassXC
+super + k
+	keepassxc
 
 # Launch Sublime Text 3
 super + s
