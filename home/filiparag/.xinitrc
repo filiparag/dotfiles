@@ -60,6 +60,6 @@ fi
 # 	echo "dbus-launch ${dbus_args[*]}"
 # }
 
-exec bspwm
+bspwm
 
 # exec $(get_session)
