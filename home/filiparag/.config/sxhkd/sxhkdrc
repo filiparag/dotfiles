@@ -175,11 +175,11 @@ super + {Prior, Next}
 	   pactl set-sink-volume $sink {+,-}2%; \
 	done
 
-#Toggle volume using standard keys for all sinks
+# Toggle volume using standard keys for all sinks
 super + Insert
 	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
 
-#Toggle volume using media keys for all sinks
+# Toggle volume using media keys for all sinks
 XF86AudioMute
 	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
 
@@ -192,16 +192,16 @@ ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
 	$MODULES/screen/backlight = {2,100}
 
 # Select monitor layout
-XF86AudioMicMute
+super + {o, XF86AudioMicMute}
 	$MODULES/screen/rofi_layout
 
 # Launch Pulseaudio control interface
 super + XF86AudioMute
 	pavucontrol
 
-# Launch ARandR
-super + XF86AudioMicMute
-	arandr
+# Toggle mute microphone
+XF86AudioMicMute
+	amixer set Capture toggle
 
 # Sleep
 super + @Delete
@@ -215,7 +215,7 @@ super + shift + @Delete : Return
 super + shift + ctrl + @Delete : Return
 	systemctl reboot
 
-# Lock the device
+# Lock the device using physlock
 XF86Launch1
 	$MODULES/screen/physlock
 
