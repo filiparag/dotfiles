@@ -4,4 +4,17 @@ export ROFI_STYLE="-theme Arc-Dark -icon-theme -lines 8 -show-icons"
 export MODULES=$(realpath "$(dirname $0)/../")
 export BSPWMRC=$(realpath "$(dirname $0)/../../")/bspwmrc
 
-sxhkd &
+if [ "$1" == "restart" ]; then
+
+	WAIT=$(killall -9 sxhkd)
+	sxhkd &
+
+elif [ "$1" == "reload" ]; then
+
+	pkill -USR1 -x sxhkd
+
+else
+
+	sxhkd &
+
+fi

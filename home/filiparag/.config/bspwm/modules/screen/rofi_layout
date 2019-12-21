@@ -4,9 +4,10 @@ MODULES=$(realpath "$(dirname $0)/../")
 
 DIR=$(dirname "$0")
 SCRNLYTS="$HOME/.screenlayout"
+mkdir -p "$SCRNLYTS"
 
 MONITORS=`xrandr --query | grep " connected" | cut -d " " -f 1 | sort`
-CUSTOM=`find $SCRNLYTS -type f -printf "%P\n" | sed "s/.sh//" | sort`
+CUSTOM=`find $SCRNLYTS -type f -not -name ".*" -printf "%P\n" | sed "s/.sh//" | sort`
 LIST="$CUSTOM\n$MONITORS\n"
 
 if [ -z $1 ]; then
