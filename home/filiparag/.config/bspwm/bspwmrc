@@ -4,6 +4,12 @@ export WM="bspwm"
 
 MODULES="$(dirname "$0")/modules"
 
+function error_message {
+	$MODULES/interface/notify error "$1"
+	printf "$1\n" | sed 's:<i>::g; s:</i>::g' >&2
+	exit 1
+}
+
 MODE="start"
 RC_CONF="$MODULES/rc.conf"
 
@@ -48,8 +54,7 @@ fi
 # Find target section
 RC_SECTION="$(printf "$RC_LIST" | grep -Pzo "\["$MODE"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
 if [ -z "$RC_SECTION" ]; then
-	$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
-	exit 1
+	error_message "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
 fi
 
 RC_SECTION="$RC_SECTION_BEFR\n$RC_SECTION\n$RC_SECTION_HOST\n$RC_SECTION_AFTR\n"
@@ -61,8 +66,7 @@ for ENTRY in $(printf "$RC_SECTION" | sed '/^$/d; /^\[.*\]$/d'); do
 	SYNTAX_RE="^([-_a-zA-Z1-9]+)\/(((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?),)*((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?)))$"
 	SYNTAX_ERRORS="$(printf "$ENTRY" | egrep -v "$SYNTAX_RE" | sed '/^$/d')"
 	if ! [ -z "$SYNTAX_ERRORS" ]; then
-		$MODULES/interface/notify error "Syntax error in <i>'rc.conf'</i> on line:\n$SYNTAX_ERRORS"
-		exit 1
+		error_message "Syntax error in <i>'rc.conf'</i> on line:\n$SYNTAX_ERRORS"
 	fi
 
 	# Separate section and modules
@@ -119,8 +123,7 @@ for MOD in $(printf "$RUNLIST"); do
 
 	else
 
-		$MODULES/interface/notify error "Unable to execute bspwm module <i>'$MOD'</i>! File is missing."
-		exit 1
+		error_message "Unable to execute bspwm module <i>'$MOD'</i>! File is missing."
 
 	fi
 
