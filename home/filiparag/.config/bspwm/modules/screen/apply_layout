@@ -4,9 +4,9 @@
 SCRNLYTS="$HOME/.screenlayout"
 MODULES=$(realpath "$(dirname $0)/../")
 
-if [ -f "$SCRNLYTS/Default.sh" ]; then
+if [ -f "$SCRNLYTS/$1.sh" ]; then
 
-	"$SCRNLYTS/Default.sh"
+	chmod +x "$SCRNLYTS/$1.sh"
+	WAIT=$("$SCRNLYTS/$1.sh")
 
 fi
-

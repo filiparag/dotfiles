@@ -1,0 +1,3 @@
+#! /bin/sh
+
+MODULES=$(realpath "$(dirname $0)/../")
