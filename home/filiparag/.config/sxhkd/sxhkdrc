@@ -19,7 +19,7 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	$BSPWMRC restart; \
+	$BSPWMRC reload; \
 	$MODULES/interface/notify info "Desktop configuration reloaded"
 
 # Close application
