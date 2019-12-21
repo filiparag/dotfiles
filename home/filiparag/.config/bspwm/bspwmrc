@@ -14,7 +14,7 @@ elif [ -n "$1" ]; then
 	MODE="$1"
 fi
 
-if [ -z $(grep "$MODE" "$MODULES/rc.conf") ]; then
+if [ -z $(grep "\[$MODE\]" "$MODULES/rc.conf") ]; then
 
 	$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
 	exit 1
@@ -31,19 +31,18 @@ for ENTRY in $(printf "$RUNCFG"); do
 	MDIR=$(echo $ENTRY | sed "s:\/.*::")
 	MLIST=$(echo $ENTRY | sed "s:.*\/::; s:,:\n:g")
 
-	ENTRYLIST="$(printf "$MLIST" | sed '/*/d')"
+	ENTRYLIST="$(printf "$MLIST\n" | sed '/*/d')"
+	ENTRYLIST=$(printf "$ENTRYLIST" | sed "s:^:$MDIR/:;")
 
 	if [[ "$MLIST" =~ "*" ]]; then
-		ENTRYLIST="$ENTRYLIST\n$(find "$MODULES/$MDIR" -type f -printf "%P\n")"
+		ENTRYLIST="$ENTRYLIST\n$(find "$MODULES/$MDIR" -type f -printf "$MDIR/%P\n")"
 	fi
-
-	ENTRYLIST=$(printf "$ENTRYLIST" | sed "s/^/$MDIR\//")
 
 	RUNLIST="$RUNLIST$ENTRYLIST\n"
 
 done
 
-RUNLIST=$(printf "$RUNLIST" | awk '!a[$0]++')
+RUNLIST=$(printf "$RUNLIST" | awk '!a[$0]++' | awk 'NF')
 
 if [ "$1" == "--dry-run" ]; then
 
@@ -57,10 +56,8 @@ for MOD in $(printf "$RUNLIST"); do
 	MOD_CMD="$MOD"
 	MOD_ARGS=""
 	if [[ "$MOD" =~ "(" ]]; then
-
-		MOD_CMD=$(printf "$MOD" | sed "s/(.*//")
-		MOD_ARGS=$(printf "$MOD" | sed "s/.*(//; s/)$//; s/\;/ /g")
-
+		MOD_CMD="$(printf "$MOD" | sed "s/(.*//")"
+		MOD_ARGS="$(printf "$MOD" | sed 's/.*(//; s/)$//; s/\;/ /g')"
 	fi
 
 	MPATH="$MODULES/$MOD_CMD"
