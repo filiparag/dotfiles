@@ -14,6 +14,13 @@ elif [ -n "$1" ]; then
 	MODE="$1"
 fi
 
+if [ -z $(grep "$MODE" "$MODULES/rc.conf") ]; then
+
+	$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
+	exit 1
+
+fi
+
 RUNCFG=$(cat "$MODULES/rc.conf" | \
 		 sed '/^#/d; /^$/d; 0,/^\['"$MODE"'\]/d; /\[.*/,$d')
 
@@ -21,14 +28,13 @@ RUNLIST=""
 
 for ENTRY in $(printf "$RUNCFG"); do
 
-
 	MDIR=$(echo $ENTRY | sed "s:\/.*::")
 	MLIST=$(echo $ENTRY | sed "s:.*\/::; s:,:\n:g")
 
-	ENTRYLIST="$MLIST"
+	ENTRYLIST="$(printf "$MLIST" | sed '/*/d')"
 
 	if [[ "$MLIST" =~ "*" ]]; then
-		ENTRYLIST=$(find "$MODULES/$MDIR" -type f -printf "%P\n")
+		ENTRYLIST="$ENTRYLIST\n$(find "$MODULES/$MDIR" -type f -printf "%P\n")"
 	fi
 
 	ENTRYLIST=$(printf "$ENTRYLIST" | sed "s/^/$MDIR\//")

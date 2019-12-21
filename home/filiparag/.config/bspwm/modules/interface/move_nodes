@@ -1,3 +1,12 @@
 #! /bin/sh
 
 MODULES=$(realpath "$(dirname $0)/../")
+
+# $MODULES/interface/notify warning "$@" ab
+
+MONITOR_CUR=$(bspc query -M -m --names)
+DESKTOP_CUR=$(bspc query -D -d --names)
+
+echo $MONITOR_CUR $DESKTOP_CUR
+
+$MODULES/screen/export_layout | awk "{print $1}"
