@@ -61,7 +61,10 @@ super + @F2
 # Paste yanked node
 super + @F3
 	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d);
-	rm "/tmp/bspcyank"
+
+# Move yanked node
+super + @F4
+	$MODULES/interface/move_nodes
 
 # Change window tiling mode
 super + shift + @space

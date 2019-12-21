@@ -1,38 +1,65 @@
 #! /bin/bash
+# RC_ASYNC_LOCK
 
 MODULES=$(realpath "$(dirname $0)/../")
+BSPWMRC=$(realpath "$(dirname $0)/../../")/bspwmrc
 
 DIR=$(dirname "$0")
 SCRNLYTS="$HOME/.screenlayout"
 mkdir -p "$SCRNLYTS"
 
 MONITORS=`xrandr --query | grep " connected" | cut -d " " -f 1 | sort`
-CUSTOM=`find $SCRNLYTS -type f -not -name ".*" -printf "%P\n" | sed "s/.sh//" | sort`
-LIST="$CUSTOM\n$MONITORS\n"
+CUSTOM=`find $SCRNLYTS -type f -not -name ".restore.sh" -printf "%P\n" | sed "s/.sh//" | sort`
+if [ -f "$SCRNLYTS/.restore.sh" ]; then
+	CUSTOM="$CUSTOM"
+fi
+LIST="Configure new layout using arandr\nApply last used layout\n$CUSTOM\n$MONITORS\n"
 
 if [ -z $1 ]; then
 
 	ROFI="rofi -dmenu -i -theme Arc-Dark -width 20 -lines `printf "$LIST" | wc -l`"
-	SELECTED=`printf "$CUSTOM\n$MONITORS" | $ROFI -p "Monitor layout"`
-	
+	SELECTED=`printf "$LIST" | $ROFI -p "Monitor layout"`
+
+	if [ "$SELECTED" == "Apply last used layout" ]; then
+
+		SELECTED=".restore"
+		CUSTOM=".restore\n$CUSTOM"
+
+	elif [ "$SELECTED" == "Configure new layout using arandr" ]; then
+
+		MD5_BEFORE=$(xrandr | md5sum - | cut -c 1-16)
+		WAIT=$(arandr)
+		MD5_AFTER=$(xrandr | md5sum - | cut -c 1-16)
+
+		if [ "$MD5_BEFORE" != "$MD5_AFTER" ]; then
+			$MODULES/interface/notify info "Custom monitor layout applied successfully!"
+			$BSPWMRC reload
+		fi
+
+		exit
+
+	fi
+
 elif [[ $LIST == *"$1"* ]]; then
 
 	SELECTED="$1"
 
 else
 
-	echo "'$1' is not connected"
-	exit
+	$MODULES/interface/notify error "Layout '<i>$1</i>' does not exist"
+	exit 1
 
 fi
+
+MD5_BEFORE=$(xrandr | md5sum - | cut -c 1-16)
 
 if [ -z $SELECTED ]; then
 
 	exit
 
-elif [[ $CUSTOM == *"$SELECTED"* ]]; then
+elif [[ "$CUSTOM\n$MONITORS" == *"$SELECTED"* ]]; then
 
-	$SCRNLYTS/$SELECTED.sh
+	WAIT=$(sh $SCRNLYTS/$SELECTED.sh)
 
 else
 
@@ -49,10 +76,14 @@ else
 
 	done
 
-	$OUTPUT
+	WAIT=$($OUTPUT)
 
 fi
 
-"$MODULES/interface/workspaces"
-"$MODULES/interface/polybar_restart"
-"$MODULES/screen/wallpaper"
+MD5_AFTER=$(xrandr | md5sum - | cut -c 1-16)
+
+if  [ $MD5_BEFORE != $MD5_AFTER ]; then
+	$MODULES/interface/notify info "Monitor layout changed to '<i>$SELECTED</i>' successfully!";
+	$MODULES/screen/export_layout xrandr > "$SCRNLYTS/.restore.sh"
+	$BSPWMRC reload
+fi
