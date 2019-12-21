@@ -1,8 +1,19 @@
 #! /bin/sh
 
-if [ $(hostname) == "lapwing" ]; then
-
+function start() {
 	DISPLAY=:0 x0vncserver -SecurityTypes=TLSVnc \
 		--PasswordFile=$HOME/.vnc/passwd &>/dev/null&
+}
 
-fi
+function stop() {
+	killall -9 x0vncserver &> /dev/null
+}
+
+function restart() {
+	if ! [ -z "$(pgrep -u $USER x0vncserver)" ]; then
+		stop
+		start
+	fi
+}
+
+$1

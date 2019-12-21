@@ -18,6 +18,33 @@ fi
 # Remove comments and empty lines
 RC_LIST="$(cat "$RC_CONF" | sed '/^#/d; /^$/d; s:#.*$::g')"
 
+# Check if target section has host specific section
+HOSTNAME="$(hostname)"
+RC_SECTION_HOST=""
+RC_SECTION_BEFR=""
+RC_SECTION_AFTR=""
+if ! [[ -z $(printf "$RC_LIST" | grep "\[$MODE@") ]]; then
+	
+	RC_SEC_HOST="$(printf "$RC_LIST" | grep -Pzo "\[$MODE@$HOSTNAME(:(before|after))?\]" | tr '\0' '\n')"
+
+	if [[ "$RC_SEC_HOST" =~ "[$MODE@$HOSTNAME]" ]]; then
+		RC_SECTION_HOST="$(printf "$RC_LIST" | grep -Pzo "\["$MODE@$HOSTNAME"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+	fi
+
+	if [[ "$RC_SEC_HOST" =~ "[$MODE@$HOSTNAME:before]" ]]; then
+		RC_SECTION_BEFR="$(printf "$RC_LIST" | grep -Pzo "\["$MODE@$HOSTNAME:before"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+	fi
+
+	if [[ "$RC_SEC_HOST" =~ "[$MODE@$HOSTNAME:after]" ]]; then
+		RC_SECTION_AFTR="$(printf "$RC_LIST" | grep -Pzo "\["$MODE@$HOSTNAME:after"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+	fi
+
+	if ! [ -z "$RC_SECTION_AFTR" ] && ! [ -z "$RC_SECTION_HOST" ]; then
+		$MODULES/interface/notify warning "Using both <i>'$MODE@$HOSTNAME:after'</i> and '$MODE@$HOSTNAME' bspwm sections is redundant."
+	fi
+
+fi
+
 # Find target section
 RC_SECTION="$(printf "$RC_LIST" | grep -Pzo "\["$MODE"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
 if [ -z "$RC_SECTION" ]; then
@@ -25,8 +52,10 @@ if [ -z "$RC_SECTION" ]; then
 	exit 1
 fi
 
+RC_SECTION="$RC_SECTION_BEFR\n$RC_SECTION\n$RC_SECTION_HOST\n$RC_SECTION_AFTR\n"
+
 ENTRYLIST=""
-for ENTRY in $(printf "$RC_SECTION" | sed '1d'); do
+for ENTRY in $(printf "$RC_SECTION" | sed '/^$/d; /^\[.*\]$/d'); do
 
 	# Verify entry format
 	SYNTAX_RE="^([-_a-zA-Z1-9]+)\/(((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?),)*((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?)))$"
@@ -58,7 +87,7 @@ RUNLIST=$(printf "$ENTRYLIST" | awk '!a[$0]++' | awk 'NF')
 
 if [ "$1" == "--dry-run" ]; then
 
-	printf "[$MODE]\n$RUNLIST\n"
+	printf "$RUNLIST\n"
 	exit
 
 fi
@@ -91,6 +120,7 @@ for MOD in $(printf "$RUNLIST"); do
 	else
 
 		$MODULES/interface/notify error "Unable to execute bspwm module <i>'$MOD'</i>! File is missing."
+		exit 1
 
 	fi
 

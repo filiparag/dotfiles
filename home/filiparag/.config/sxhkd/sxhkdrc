@@ -19,8 +19,11 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	$BSPWMRC reload; \
-	$MODULES/interface/notify info "Desktop configuration reloaded"
+	if $BSPWMRC reload; then \
+		$MODULES/interface/notify info "Desktop configuration reloaded successfully."; \
+	else \
+		$MODULES/interface/notify warning "An error occurred while reloading desktop configuration."; \
+	fi
 
 # Close application
 super + shift + q
@@ -61,11 +64,6 @@ super + @F2
 # Paste yanked node
 super + @F3
 	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d)
-
-# Move yanked node
-super + @F4
-	bspc node $(cat "/tmp/bspcyank") -d \
-		$($MODULES/interface/move_nodes "/tmp/bspcyank")
 
 # Change window tiling mode
 super + shift + @space
