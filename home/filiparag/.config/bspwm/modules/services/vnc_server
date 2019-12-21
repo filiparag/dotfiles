@@ -1,8 +1,9 @@
 #! /bin/sh
 
 function start() {
-	DISPLAY=:0 x0vncserver -SecurityTypes=TLSVnc \
+	x0vncserver -SecurityTypes=TLSVnc \
 		--PasswordFile=$HOME/.vnc/passwd &>/dev/null&
+	echo a
 }
 
 function stop() {
@@ -16,4 +17,8 @@ function restart() {
 	fi
 }
 
-$1
+if [ -z "$1" ]; then
+	start
+else
+	$1
+fi
