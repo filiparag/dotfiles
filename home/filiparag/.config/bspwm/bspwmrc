@@ -81,11 +81,11 @@ for MOD in $(printf "$RUNLIST"); do
 		fi
 
 		if grep -q "# RC_ASYNC_LOCK" "$MPATH"; then
-			# WAIT=$("$MPATH" $MOD_ARGS &> /dev/null&)
-			printf "S $MPATH $MOD_ARGS\n"
+			WAIT=$("$MPATH" $MOD_ARGS &> /dev/null&)
+			# printf "S $MPATH $MOD_ARGS\n"
 		else
-			# nohup "$MPATH" $MOD_ARGS &> /dev/null&
-			printf "A  $MPATH $MOD_ARGS\n"					
+			nohup "$MPATH" $MOD_ARGS &> /dev/null&
+			# printf "A  $MPATH $MOD_ARGS\n"					
 		fi
 
 	else
