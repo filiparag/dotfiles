@@ -4,3 +4,9 @@
 [submodule "home/filiparag/.vim_runtime"]
 	path = home/filiparag/.vim_runtime
 	url = https://github.com/amix/vimrc.git
+[submodule "home/filiparag/.config/fisher/github.com/jethrokuan/z"]
+	path = home/filiparag/.config/fisher/github.com/jethrokuan/z
+	url = https://github.com/jethrokuan/z.git
+[submodule "home/filiparag/.config/fisher/github.com/jethrokuan/fzf"]
+	path = home/filiparag/.config/fisher/github.com/jethrokuan/fzf
+	url = https://github.com/jethrokuan/z.git
