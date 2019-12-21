@@ -36,6 +36,7 @@ set -x FZF_LEGACY_KEYBINDINGS 0
 set -x NAME     "Filip Parag"
 set -x EMAIL    "filiparag@protonmail.com"
 set -x EDITOR   "vim"
+set -x BROWSER   "firefox"
 
 #set -x tmate-api-key        "tmk-ctvk0CVzza02ZvF7w6pGHvrOac"
 
