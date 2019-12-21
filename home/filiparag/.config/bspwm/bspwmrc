@@ -5,6 +5,7 @@ export WM="bspwm"
 MODULES="$(dirname "$0")/modules"
 
 MODE="start"
+RC_CONF="$MODULES/rc.conf"
 
 if [ "$1" == "--dry-run" ]; then
 	if [ -n "$2" ]; then
@@ -13,6 +14,53 @@ if [ "$1" == "--dry-run" ]; then
 elif [ -n "$1" ]; then
 	MODE="$1"
 fi
+
+# Remove comments and empty lines
+RC_LIST="$(cat "$RC_CONF" | sed '/^#/d; /^$/d; s:#.*$::g')"
+
+# Find target section
+RC_SECTION="$(printf "$RC_LIST" | grep -Pzo "\["$MODE"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+if [ -z "$RC_SECTION" ]; then
+	$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
+	exit 1
+fi
+
+ENTRYLIST=""
+for ENTRY in $(printf "$RC_SECTION" | sed '1d'); do
+
+	# Verify entry format
+	VERIFY_ENTRY="$(printf "$ENTRY" | grep -Pzo "([^\[]+\n?)*" | tr '\0' '\n')"
+	printf "$VERIFY_ENTRY"
+	exit
+	if [ -z "$RC_SECTION" ]; then
+		$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
+		exit 1
+	fi
+
+	# Separate section and modules
+	ENTRY_SEC="$(printf "$ENTRY" | sed 's:/.*$::')"
+	ENTRY_CMDS="$(printf "$ENTRY" | sed 's:^.*/::')"
+
+	# Replace asterisk with all modules in directory
+	if [[ "$ENTRY_CMDS" =~ "*" ]]; then
+		SEC_ALL_ENTRIES="$(find "$MODULES/$ENTRY_SEC" -type f -printf '%P,' | sed 's/,$//')"
+		ENTRY_CMDS=$(printf "$ENTRY_CMDS" | awk "{gsub(\"*\",\"$SEC_ALL_ENTRIES\"); print}")
+	fi
+
+	ENTRY_CMDS="$(printf "$ENTRY_CMDS" | sed 's/,/\n/g')"
+
+	for ENTRY_CMD in $ENTRY_CMDS; do
+		ENTRYLIST="$ENTRYLIST$ENTRY_SEC/$ENTRY_CMD\n"
+	done
+
+done
+
+RUNLIST=$(printf "$ENTRYLIST" | awk '!a[$0]++' | awk 'NF')
+
+printf "$RUNLIST\n"
+
+################################################################################
+exit
 
 if [ -z $(grep "\[$MODE\]" "$MODULES/rc.conf") ]; then
 
