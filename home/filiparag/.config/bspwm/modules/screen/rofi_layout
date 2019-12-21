@@ -15,7 +15,7 @@ if [ -f "$SCRNLYTS/.restore.sh" ]; then
 fi
 LIST="Configure new layout using arandr\nApply last used layout\n$CUSTOM\n$MONITORS\n"
 
-if [ -z $1 ]; then
+if [ -z "$1" ]; then
 
 	ROFI="rofi -dmenu -i -theme Arc-Dark -width 20 -lines `printf "$LIST" | wc -l`"
 	SELECTED=`printf "$LIST" | $ROFI -p "Monitor layout"`
@@ -53,13 +53,13 @@ fi
 
 MD5_BEFORE=$(xrandr | md5sum - | cut -c 1-16)
 
-if [ -z $SELECTED ]; then
+if [ -z "$SELECTED" ]; then
 
 	exit
 
 elif [[ "$CUSTOM\n$MONITORS" == *"$SELECTED"* ]]; then
 
-	WAIT=$(sh $SCRNLYTS/$SELECTED.sh)
+	WAIT=$(sh "$SCRNLYTS/$SELECTED.sh")
 
 else
 
@@ -67,7 +67,7 @@ else
 
 	for M in $MONITORS; do
 
-		if [[ $SELECTED == $M ]]; then
+		if [[ "$SELECTED" == "$M" ]]; then
 			RES=`xrandr --query | grep -A 1 $M | tail -n 1 | egrep -o "[0-9]+x[0-9]+"`
 			OUTPUT="$OUTPUT --output $M --primary --mode $RES --pos 0x0 --rotate normal"
 		else
@@ -76,14 +76,20 @@ else
 
 	done
 
-	WAIT=$($OUTPUT)
+	WAIT=$("$OUTPUT")
 
 fi
 
 MD5_AFTER=$(xrandr | md5sum - | cut -c 1-16)
 
-if  [ $MD5_BEFORE != $MD5_AFTER ]; then
-	$MODULES/interface/notify info "Monitor layout changed to '<i>$SELECTED</i>' successfully!";
+if  [ "$MD5_BEFORE" != "$MD5_AFTER" ]; then
+
+	if [ "$SELECTED" == ".restore" ]; then
+		$MODULES/interface/notify info "Monitor layout restored successfully!";
+	else
+		$MODULES/interface/notify info "Monitor layout changed to '<i>$SELECTED</i>' successfully!";
+	fi
+
 	$MODULES/screen/export_layout xrandr > "$SCRNLYTS/.restore.sh"
 	$BSPWMRC reload
 fi
