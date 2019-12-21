@@ -29,11 +29,10 @@ ENTRYLIST=""
 for ENTRY in $(printf "$RC_SECTION" | sed '1d'); do
 
 	# Verify entry format
-	VERIFY_ENTRY="$(printf "$ENTRY" | grep -Pzo "([^\[]+\n?)*" | tr '\0' '\n')"
-	printf "$VERIFY_ENTRY"
-	exit
-	if [ -z "$RC_SECTION" ]; then
-		$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
+	SYNTAX_RE="^([-_a-zA-Z1-9]+)\/(((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?),)*((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?)))$"
+	SYNTAX_ERRORS="$(printf "$ENTRY" | egrep -v "$SYNTAX_RE" | sed '/^$/d')"
+	if ! [ -z "$SYNTAX_ERRORS" ]; then
+		$MODULES/interface/notify error "Syntax error in <i>'rc.conf'</i> on line:\n$SYNTAX_ERRORS"
 		exit 1
 	fi
 
@@ -56,41 +55,6 @@ for ENTRY in $(printf "$RC_SECTION" | sed '1d'); do
 done
 
 RUNLIST=$(printf "$ENTRYLIST" | awk '!a[$0]++' | awk 'NF')
-
-printf "$RUNLIST\n"
-
-################################################################################
-exit
-
-if [ -z $(grep "\[$MODE\]" "$MODULES/rc.conf") ]; then
-
-	$MODULES/interface/notify error "Unable to execute bspwm section <i>'$MODE'</i>! Section not found."
-	exit 1
-
-fi
-
-RUNCFG=$(cat "$MODULES/rc.conf" | \
-		 sed '/^#/d; /^$/d; 0,/^\['"$MODE"'\]/d; /\[.*/,$d')
-
-RUNLIST=""
-
-for ENTRY in $(printf "$RUNCFG"); do
-
-	MDIR=$(echo $ENTRY | sed "s:\/.*::")
-	MLIST=$(echo $ENTRY | sed "s:.*\/::; s:,:\n:g")
-
-	ENTRYLIST="$(printf "$MLIST\n" | sed '/*/d')"
-	ENTRYLIST=$(printf "$ENTRYLIST" | sed "s:^:$MDIR/:;")
-
-	if [[ "$MLIST" =~ "*" ]]; then
-		ENTRYLIST="$ENTRYLIST\n$(find "$MODULES/$MDIR" -type f -printf "$MDIR/%P\n")"
-	fi
-
-	RUNLIST="$RUNLIST$ENTRYLIST\n"
-
-done
-
-RUNLIST=$(printf "$RUNLIST" | awk '!a[$0]++' | awk 'NF')
 
 if [ "$1" == "--dry-run" ]; then
 
@@ -117,13 +81,11 @@ for MOD in $(printf "$RUNLIST"); do
 		fi
 
 		if grep -q "# RC_ASYNC_LOCK" "$MPATH"; then
-
-			WAIT=$("$MPATH" $MOD_ARGS &> /dev/null&)
-
+			# WAIT=$("$MPATH" $MOD_ARGS &> /dev/null&)
+			printf "S $MPATH $MOD_ARGS\n"
 		else
-		
-			nohup "$MPATH" $MOD_ARGS &> /dev/null&
-		
+			# nohup "$MPATH" $MOD_ARGS &> /dev/null&
+			printf "A  $MPATH $MOD_ARGS\n"					
 		fi
 
 	else
