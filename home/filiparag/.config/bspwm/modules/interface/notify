@@ -3,3 +3,4 @@
 MODULES=$(realpath "$(dirname $0)/../")
 
 notify-send -u low -i "dialog-$1" "$WM" "$2"
+printf "[$1] $2\n" | sed 's:<i>::g; s:</i>::g' >&2

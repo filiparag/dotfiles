@@ -35,3 +35,6 @@ xsetroot -cursor_name 					left_ptr
 
 # Remove previous hardened mode
 rm /tmp/$USER.bspwm_hardened
+
+# Export current X11 display number
+echo "$DISPLAY" > "/tmp/x11_$USER"

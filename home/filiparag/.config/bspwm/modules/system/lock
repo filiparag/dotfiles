@@ -18,6 +18,15 @@ else
 
 fi
 
+if [ -z $DISPLAY ]; then
+	if [ -e "/tmp/x11_$USER" ]; then
+	    export DISPLAY=$(cat "/tmp/x11_$USER")
+	else
+		$MODULES/interface/notify error "Error occured while locking the screen! \$DISPLAY is not set."	
+	fi
+    
+fi
+
 "$MODULES/screen/backlight" = 100
 
 LANG=$(xkb-switch -p)

@@ -4,7 +4,7 @@ MODULES=$(realpath "$(dirname $0)/../")
 
 if [ -e /tmp/$USER.bspwm_hardened ]; then
 	rm /tmp/$USER.bspwm_hardened
-	$MODULES/interface/polybar_restart
+	$MODULES/interface/polybard restart
 	bspc config bottom_padding 24
 	dunst &
 	$MODULES/interface/notify info "Hardened mode disabled"
