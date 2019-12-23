@@ -41,9 +41,12 @@ set -x BROWSER   "firefox"
 #set -x tmate-api-key        "tmk-ctvk0CVzza02ZvF7w6pGHvrOac"
 
 #  Go path
-set -x GOPATH   $HOME/Projects/golang
+set -x GOPATH   $HOME/Projects/go
 # set -x GOROOT   $HOME/Projects/golang
 set -x PATH     "$PATH:$GOPATH/bin"
+
+# sydf
+set -x SYDF "$HOME/.sydf_devel"
 
 # IntelliJ
 set -x _JAVA_AWT_WM_NONREPARENTING 1
