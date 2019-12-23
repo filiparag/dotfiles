@@ -622,8 +622,9 @@ make
 man-db
 man-pages
 masterpdfeditor-free
-matcha-gtk-theme
+matcha-gtk-theme-git
 mbedtls
+md4c
 mdadm
 menu-cache
 mesa
@@ -770,7 +771,6 @@ pulseaudio-equalizer
 pulseaudio-modules-bt-git
 pyalpm
 pygobject-devel
-pyqt5-common
 python
 python-appdirs
 python-asn1crypto

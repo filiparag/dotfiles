@@ -28,7 +28,7 @@ if [ "$TERM" = "linux" ]
     clear
 end
 
-set -x QT_QPA_PLATFORMTHEME "gtk2"
+set -x QT_QPA_PLATFORMTHEME "qt5ct"
 set -x QT_AUTO_SCREEN_SCALE_FACTOR 0
 
 set -x FZF_LEGACY_KEYBINDINGS 0
