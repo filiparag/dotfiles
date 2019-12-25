@@ -30,7 +30,12 @@ fi
 "$MODULES/screen/backlight" = 100
 
 LANG=$(xkb-switch -p)
+CAPS=$(xset -q | grep -Pzo "Caps Lock: +(on|off)" | sed "s/^.*: *//")
+
 xkb-switch -s us
+if [ "$CAPS" == "on" ]; then
+	xdotool key Caps_Lock
+fi
 
 if [ "$1" == "systemd" ]; then
 
@@ -42,6 +47,10 @@ else
 	xset dpms force off
 
 	WAIT=$("$LOCK_CMD" -n)
+
 	xkb-switch -s "$LANG"
+	if [ "$CAPS" == "on" ]; then
+		xdotool key Caps_Lock
+	fi
 
 fi
