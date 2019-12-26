@@ -219,7 +219,7 @@ XF86Launch1
 
 # Lock screen and turn off screen
 super + l
-	$MODULES/system/lock
+	$BSPWMRC lock
 
 # Hardened mode (hide polybar and notifications)
 super + h

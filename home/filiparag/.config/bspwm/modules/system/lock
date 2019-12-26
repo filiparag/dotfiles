@@ -27,21 +27,19 @@ if [ -z $DISPLAY ]; then
     
 fi
 
-"$MODULES/screen/backlight" = 100
-
 LANG=$(xkb-switch -p)
-CAPS=$(xset -q | grep -Pzo "Caps Lock: +(on|off)" | sed "s/^.*: *//")
+CAPS=$(xset -q | grep -Pzo "Caps Lock: +(on|off)" | sed "s/^.*: *//" | tr '\0' '\n')
 
 xkb-switch -s us
 if [ "$CAPS" == "on" ]; then
 	xdotool key Caps_Lock
 fi
 
-if [ "$1" == "systemd" ]; then
+if [[ "$1" == "screen=on" ]]; then
 
 	$LOCK_CMD
 
-else
+elif [[ "$1" == "screen=off" ]] || [ "true" ]; then
 
 	sleep 0.2
 	xset dpms force off

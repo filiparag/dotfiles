@@ -5,8 +5,9 @@ Before=sleep.target
 [Service]
 User=%I
 Type=forking
-#Environment=DISPLAY=0
-ExecStart=/home/%I/.config/bspwm/modules/system/lock systemd
+#Environment=DISPLAY=:0
+ExecStartPre=/home/%I/.config/bspwm/bspwmrc suspend
+ExecStart=/home/%I/.config/bspwm/modules/system/lock screen=on
 ExecStartPost=/usr/bin/sleep 0
 
 [Install]
