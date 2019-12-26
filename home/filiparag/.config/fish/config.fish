@@ -11,10 +11,10 @@ if status --is-interactive
     abbr --add yss      'yay -Ss'
     abbr --add yr       'yay -Rcs'
 
-    abbr --add badger   'ssh -J serveo.net badger'
-    abbr --add lapwing  'ssh -J serveo.net lapwing'
-    abbr --add tapir    'ssh -J serveo.net tapir'
-    abbr --add akita    'ssh -J serveo.net akita'
+    # abbr --add badger   'ssh -J serveo.net badger'
+    # abbr --add lapwing  'ssh -J serveo.net lapwing'
+    # abbr --add tapir    'ssh -J serveo.net tapir'
+    # abbr --add akita    'ssh -J serveo.net akita'
 
     abbr --add led      'sudo bash -c "echo \'0 off\' > /proc/acpi/ibm/led"'
 
@@ -36,14 +36,16 @@ set -x FZF_LEGACY_KEYBINDINGS 0
 set -x NAME     "Filip Parag"
 set -x EMAIL    "filiparag@protonmail.com"
 set -x EDITOR   "vim"
-set -x BROWSER   "firefox"
+set -x BROWSER  "firefox"
+
+set -x HOSTNAME (hostname)
 
 #set -x tmate-api-key        "tmk-ctvk0CVzza02ZvF7w6pGHvrOac"
 
 #  Go path
 set -x GOPATH   $HOME/Projects/go
-# set -x GOROOT   $HOME/Projects/golang
 set -x PATH     "$PATH:$GOPATH/bin"
+# set -x GOROOT   $HOME/Projects/golang
 
 # sydf
 set -x SYDF "$HOME/.sydf_devel"
@@ -59,14 +61,16 @@ function start_agent
     chmod 600 $SSH_ENV 
     . $SSH_ENV > /dev/null
     ssh-add
-    ssh-add $HOME/.ssh/mulberry/mulberry.private
+    ssh-add "$HOME/.ssh/$HOSTNAME/$HOSTNAME.private"
+    ssh-add "$HOME/.ssh/mulberry/mulberry.private"
 end
 
 function test_identities                                                                                                                                                                
     ssh-add -l | grep "The agent has no identities" > /dev/null
     if [ $status -eq 0 ]
         ssh-add
-        ssh-add $HOME/.ssh/mulberry/mulberry.private
+        ssh-add "$HOME/.ssh/$HOSTNAME/$HOSTNAME.private"
+	    ssh-add "$HOME/.ssh/mulberry/mulberry.private"
         if [ $status -eq 2 ]
             start_agent
         end
