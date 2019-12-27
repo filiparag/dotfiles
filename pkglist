@@ -182,6 +182,7 @@ sed
 shadow
 shellcheck
 signal-desktop-bin
+speedtest-cli
 sshfs
 steam
 steam-fonts
