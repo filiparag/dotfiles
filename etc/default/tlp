@@ -62,7 +62,7 @@ CPU_SCALING_GOVERNOR_ON_BAT=powersave
 CPU_SCALING_MIN_FREQ_ON_AC=2000000
 CPU_SCALING_MAX_FREQ_ON_AC=3300000
 CPU_SCALING_MIN_FREQ_ON_BAT=1200000
-CPU_SCALING_MAX_FREQ_ON_BAT=2500000
+CPU_SCALING_MAX_FREQ_ON_BAT=2200000
 
 # Set energy performance hints (HWP) for Intel P-state governor:
 #   performance, balance_performance, default, balance_power, power
@@ -70,7 +70,7 @@ CPU_SCALING_MAX_FREQ_ON_BAT=2500000
 # Note: Intel Skylake or newer CPU and Kernel >= 4.10 required.
 # Default: <none>
 CPU_HWP_ON_AC=performance
-CPU_HWP_ON_BAT=balance_power
+CPU_HWP_ON_BAT=power
 
 # Set Intel P-state performance: 0..100 (%).
 # Limit the max/min P-state to control the power dissipation of the CPU.
@@ -80,7 +80,7 @@ CPU_HWP_ON_BAT=balance_power
 CPU_MIN_PERF_ON_AC=0
 CPU_MAX_PERF_ON_AC=100
 CPU_MIN_PERF_ON_BAT=0
-CPU_MAX_PERF_ON_BAT=50
+CPU_MAX_PERF_ON_BAT=40
 
 # Set the CPU "turbo boost" feature: 0=disable, 1=allow
 # Requires an Intel Core i processor.
@@ -89,7 +89,7 @@ CPU_MAX_PERF_ON_BAT=50
 # - A value of 1 does *not* activate boosting, it just allows it
 # Default: <none>
 CPU_BOOST_ON_AC=1
-CPU_BOOST_ON_BAT=1
+CPU_BOOST_ON_BAT=0
 
 # Minimize number of used CPU cores/hyper-threads under light load conditions:
 #   0=disable, 1=enable.
@@ -197,9 +197,9 @@ AHCI_RUNTIME_PM_TIMEOUT=15
 INTEL_GPU_MIN_FREQ_ON_AC=500
 INTEL_GPU_MIN_FREQ_ON_BAT=350
 INTEL_GPU_MAX_FREQ_ON_AC=1200
-INTEL_GPU_MAX_FREQ_ON_BAT=800
+INTEL_GPU_MAX_FREQ_ON_BAT=700
 INTEL_GPU_BOOST_FREQ_ON_AC=1200
-INTEL_GPU_BOOST_FREQ_ON_BAT=1000
+INTEL_GPU_BOOST_FREQ_ON_BAT=800
 
 # Radeon graphics clock speed (profile method): low, mid, high, auto, default;
 # auto = mid on BAT, high on AC.
