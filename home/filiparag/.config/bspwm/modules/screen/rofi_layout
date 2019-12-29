@@ -57,7 +57,7 @@ if [ -z "$SELECTED" ]; then
 
 	exit
 
-elif [[ "$CUSTOM\n$MONITORS" == *"$SELECTED"* ]]; then
+elif [[ "$CUSTOM" == *"$SELECTED"* ]]; then
 
 	WAIT=$(sh "$SCRNLYTS/$SELECTED.sh")
 
@@ -76,7 +76,7 @@ else
 
 	done
 
-	WAIT=$("$OUTPUT")
+	WAIT=$($OUTPUT)
 
 fi
 
