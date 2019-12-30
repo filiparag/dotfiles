@@ -3,7 +3,7 @@ URxvt.italicFont: 			xft:Source Code Pro-11:italic;hinting=True;antialias:True
 URxvt.boldFont: 			xft:Source Code Pro-11:bold;hinting=True;antialias:True
 
 ! Scaling DPI: 85 default
-Xft.dpi:        			85
+Xft.dpi:        			96
 Xft.antialias:  			true
 Xft.rgba:       			rgb
 Xft.hinting:    			true
