@@ -6,7 +6,9 @@ export BSPWMRC=$(realpath "$(dirname $0)/../../")/bspwmrc
 
 if [ "$1" == "restart" ]; then
 
-	WAIT=$(killall -9 sxhkd)
+	USER=$(whoami)
+
+	WAIT=$(killall -u "$USER" -9 sxhkd)
 	sxhkd &
 
 elif [ "$1" == "reload" ]; then

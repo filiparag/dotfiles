@@ -240,6 +240,7 @@ xclip
 xdotool
 xf86-input-keyboard
 xfsprogs
+xidlehook
 xkb-switch
 xorg-server
 xorg-xev

@@ -1,0 +1,37 @@
+#! /bin/bash
+
+MODULES=$(realpath "$(dirname $0)/../")
+
+# Time in seconds
+BLANK_TIMEOUT=600
+LOCK_TIMEOUT=605
+
+function start() {
+	# export PRIMARY_DISPLAY="$(xrandr | awk '/ primary/{print $1}')"
+
+	nohup xidlehook \
+		--not-when-fullscreen \
+		--not-when-audio \
+		--timer $BLANK_TIMEOUT \
+			'xset dpms force off' '' \
+		--timer $LOCK_TIMEOUT \
+			'$MODULES/system/lock' '' \
+		&>/dev/null&
+}
+
+function stop() {
+	killall -u $(whoami) -9 xidlehook &> /dev/null
+}
+
+function restart() {
+	if ! [ -z "$(pgrep -u $USER xidlehook)" ]; then
+		stop
+		start
+	fi
+}
+
+if [ -z "$1" ]; then
+	start
+else
+	$1
+fi
