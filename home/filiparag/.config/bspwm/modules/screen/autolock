@@ -7,7 +7,8 @@ BLANK_TIMEOUT=600
 LOCK_TIMEOUT=605
 
 function start() {
-	# export PRIMARY_DISPLAY="$(xrandr | awk '/ primary/{print $1}')"
+	
+	xset s off -dpms
 
 	nohup xidlehook \
 		--not-when-fullscreen \
@@ -17,6 +18,7 @@ function start() {
 		--timer $LOCK_TIMEOUT \
 			'$MODULES/system/lock' '' \
 		&>/dev/null&
+		
 }
 
 function stop() {
