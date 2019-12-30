@@ -11,6 +11,8 @@ catch
 endtry
 
 set mouse=a
+syntax enable
+colorscheme monokai
 
 noremap <F3> :NERDTreeToggle <CR>
 let g:NERDTreeWinPos = "left"

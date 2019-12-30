@@ -10,3 +10,6 @@
 [submodule "home/filiparag/.config/fisher/github.com/jethrokuan/fzf"]
 	path = home/filiparag/.config/fisher/github.com/jethrokuan/fzf
 	url = https://github.com/jethrokuan/z.git
+[submodule "home/filiparag/.vim/vim-monokai"]
+	path = home/filiparag/.vim/vim-monokai
+	url = https://github.com/sickill/vim-monokai
