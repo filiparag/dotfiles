@@ -161,6 +161,7 @@ psmisc
 pulseaudio
 pulseaudio-equalizer
 pulseaudio-modules-bt-git
+pulseaudio-zeroconf
 python-pip
 qbittorrent
 qpdfview
@@ -231,6 +232,7 @@ viper4linux-git
 viper4linux-gui-git
 visual-studio-code-bin
 vlc
+w3m
 wget
 which
 wire-desktop
