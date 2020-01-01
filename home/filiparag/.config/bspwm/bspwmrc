@@ -59,11 +59,12 @@ if [ "$1" == "--dry-run" ]; then
 		MODE="$2"
 	fi
 elif [ "$1" == "--unmet-deps" ]; then
+	CONFIG_DISP_ERR="false"
 	for MOD in $(find "$MODULES" -type f -not -path "$MODULES/rc.conf" -printf "%P\n"); do
 		check_dependencies $MOD
 	done
 	UNMET_DEPS=$(printf "$UNMET_DEPS" | awk '!a[$0]++' | awk 'NF')
-	printf "$UNMET_DEPS"
+	printf "Unmet dependencies:\n$UNMET_DEPS\n"
 	exit 0
 elif [ -n "$1" ]; then
 	MODE="$1"
