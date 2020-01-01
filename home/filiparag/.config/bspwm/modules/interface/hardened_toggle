@@ -6,7 +6,7 @@ if [ -e /tmp/$USER.bspwm_hardened ]; then
 	rm /tmp/$USER.bspwm_hardened
 	$MODULES/interface/polybard restart
 	bspc config bottom_padding 24
-	dunst &
+	$MODULES/services/apps dunst
 	$MODULES/interface/notify info "Hardened mode disabled"
 else
 	touch /tmp/$USER.bspwm_hardened

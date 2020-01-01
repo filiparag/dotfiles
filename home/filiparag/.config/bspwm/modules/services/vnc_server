@@ -1,4 +1,5 @@
 #! /bin/sh
+# DEPENDENCIES: x0vncserver
 
 function start() {
 	x0vncserver -SecurityTypes=TLSVnc \

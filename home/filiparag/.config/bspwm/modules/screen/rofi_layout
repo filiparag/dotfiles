@@ -1,4 +1,5 @@
 #! /bin/bash
+# DEPENDENCIES: rofi, xrandr
 # RC_ASYNC_LOCK
 
 MODULES=$(realpath "$(dirname $0)/../")

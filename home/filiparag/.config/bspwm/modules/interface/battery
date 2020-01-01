@@ -1,4 +1,5 @@
 #! /bin/bash
+# DEPENDENCIES: notify-send
 
 WARN_LEVEL=20
 CHECK_FREQ=30

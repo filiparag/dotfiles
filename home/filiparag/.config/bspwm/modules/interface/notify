@@ -1,4 +1,5 @@
 #! /bin/sh
+# DEPENDENCIES: notify-send
 
 MODULES=$(realpath "$(dirname $0)/../")
 

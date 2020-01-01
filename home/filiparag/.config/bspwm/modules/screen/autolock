@@ -1,4 +1,5 @@
 #! /bin/bash
+# DEPENDENCIES: xset, xidlehook
 
 MODULES=$(realpath "$(dirname $0)/../")
 

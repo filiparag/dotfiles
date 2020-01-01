@@ -1,4 +1,5 @@
 #! /bin/sh
+# DEPENDENCIES: xrandr, polybar
 
 MODULES=$(realpath "$(dirname $0)/../")
 

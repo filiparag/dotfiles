@@ -1,4 +1,5 @@
 #! /bin/sh
+# DEPENDENCIES: xrandr
 # RC_ASYNC_LOCK
 
 for monitor in $(xrandr --listmonitors | egrep -Eo "+: (\*|\+)+[a-zA-Z0-9-]+" | egrep -o "[a-zA-Z0-9-]+"); do

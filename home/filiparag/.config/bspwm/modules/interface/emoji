@@ -1,4 +1,5 @@
 #! /bin/bash
+# DEPENDENCIES: curl, xmllint, rofi, xclip, xdotool
 
 # Where to save the emojis file.
 EMOJI_FILE="$HOME/.cache/emojis.txt"
