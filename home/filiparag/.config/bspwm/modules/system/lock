@@ -36,20 +36,14 @@ if [ "$CAPS" == "on" ]; then
 	xdotool key Caps_Lock
 fi
 
-if [[ "$1" == "screen=on" ]]; then
-
-	$LOCK_CMD
-
-elif [[ "$1" == "screen=off" ]] || [ "true" ]; then
-
+if [[ "$1" != "screen=on" ]]; then
 	sleep 0.2
 	xset dpms force off
+fi
 
-	WAIT=$("$LOCK_CMD" -n)
+WAIT=$("$LOCK_CMD" -n)
 
-	xkb-switch -s "$LANG"
-	if [ "$CAPS" == "on" ]; then
-		xdotool key Caps_Lock
-	fi
-
+xkb-switch -s "$LANG"
+if [ "$CAPS" == "on" ]; then
+	xdotool key Caps_Lock
 fi
