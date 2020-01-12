@@ -117,6 +117,7 @@ man-pages
 masterpdfeditor-free
 matcha-gtk-theme-git
 mdadm
+micro-bin
 minecraft
 mps-youtube
 mpv
@@ -132,6 +133,7 @@ network-manager-applet
 networkmanager
 networkmanager-openvpn
 networkmanager-pptp
+nfs-utils
 nnn
 noto-fonts-emoji
 ntfs-3g
@@ -183,7 +185,7 @@ scrot
 sed
 shadow
 shellcheck
-signal-desktop-bin
+signal-desktop
 speedtest-cli
 sshfs
 steam
