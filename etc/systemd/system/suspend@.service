@@ -7,11 +7,7 @@ User=%I
 Type=forking
 Environment=DISPLAY=:0
 ExecStartPre=/home/%I/.config/bspwm/bspwmrc suspend
-<<<<<<< HEAD
 ExecStart=/usr/bin/sleep 0.5
-=======
-ExecStart=/usr/bin/sleep 0.3
->>>>>>> 1d73e8d1c7275e7b974b2bb39553040f3630f148
 
 [Install]
 WantedBy=sleep.target suspend.target
