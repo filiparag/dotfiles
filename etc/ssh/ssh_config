@@ -20,7 +20,7 @@
 # Host *
 #   ForwardAgent no
    ForwardX11 yes
-   PasswordAuthentication no
+   PasswordAuthentication yes
    HostbasedAuthentication yes
 #   GSSAPIAuthentication no
 #   GSSAPIDelegateCredentials no
