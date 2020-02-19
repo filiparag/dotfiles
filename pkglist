@@ -110,6 +110,7 @@ lsd
 lshw
 lvm2
 lxappearance
+lxc
 lynis
 m4
 make
@@ -191,6 +192,7 @@ speedtest-cli
 sshfs
 steam
 steam-fonts
+steghide
 sublime-text-dev
 sudo
 sxhkd
@@ -233,6 +235,7 @@ vi
 vim
 viper4linux-git
 viper4linux-gui-git
+virt-manager
 visual-studio-code-bin
 vlc
 w3m
