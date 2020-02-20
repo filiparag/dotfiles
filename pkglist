@@ -1,4 +1,5 @@
 acpi
+alacritty
 alsa-utils
 android-tools
 arandr
@@ -225,6 +226,7 @@ ttf-unifont
 tty-clock
 typora
 ufetch-git
+ufw
 unclutter
 unp
 urxvt-font-size-git
@@ -257,5 +259,6 @@ xorg-xprop
 xorg-xsetroot
 xrdp
 xsel
+xtitle
 yay-bin
 youtube-dl-gui-git

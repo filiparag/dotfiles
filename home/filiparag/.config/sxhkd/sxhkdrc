@@ -225,24 +225,24 @@ super + l
 super + h
 	$MODULES/interface/hardened_toggle
 
-# Launch RXVT Unicode
+# Launch Alacritty
 super + Return
-	urxvt
+	alacritty
 
-# Launch RXVT Unicode as root
+# Launch Alacritty as root
 super + shift + Return
-	sudo urxvt
+	sudo alacritty
 
 # Launch scratchpad terminal
 super + BackSpace
-	urxvt -e tmux new-session -A -s scratchpad
+	alacritty -e tmux new-session -A -s scratchpad
 
 # Launch Firefox
 super + b
 	firefox
 
-# Steal shortcut from Firefox
-ctrl + q
+# Firefox fix
+super + q
 	true
 
 # Launch Firefox in private mode
