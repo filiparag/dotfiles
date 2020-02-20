@@ -109,7 +109,7 @@ font:
     family: Source Code Pro
 
     # The `style` can be specified to pick a specific face.
-    #style: Regular
+    style: Regular
 
   # Bold font face
   #bold:
@@ -183,24 +183,24 @@ font:
 colors:
   # Default colors
   primary:
-    background: '0x000000'
-    foreground: '0xffffff'
+    background: '0x131313'
+    foreground: '0xdadada'
 
     # Bright and dim foreground colors
     #
     # The dimmed foreground color is calculated automatically if it is not present.
     # If the bright foreground color is not set, or `draw_bold_text_with_bright_colors`
     # is `false`, the normal foreground color will be used.
-    #dim_foreground: '0x9a9a9a'
+    dim_foreground: '0x9a9a9a'
     #bright_foreground: '0xffffff'
 
   # Cursor colors
   #
   # Colors which should be used to draw the terminal cursor. If these are unset,
   # the cursor color will be the inverse of the cell color.
-  #cursor:
-  #  text: '0x000000'
-  #  cursor: '0xffffff'
+  cursor:
+    # text: '0x000000'
+    cursor: '0xffffff'
 
   # Selection colors
   #
@@ -210,6 +210,26 @@ colors:
   #selection:
   #  text: '0xeaeaea'
   #  background: '0x404040'
+
+  normal:
+   black:   '0x1c1c1c'
+   red:     '0xff005b'
+   green:   '0xcee318'
+   yellow:  '0xffe755'
+   blue:    '0x048ac7'
+   magenta: '0x833c9f'
+   cyan:    '0x0ac1cd'
+   white:   '0xe5e5e5'
+
+  bright:
+   black:   '0x666666'
+   red:     '0xff00a0'
+   green:   '0xccff00'
+   yellow:  '0xff9f00'
+   blue:    '0x48c6ff'
+   magenta: '0xbe67e1'
+   cyan:    '0x63e7f0'
+   white:   '0xf3f3f3'
 
   # Normal colors
   #normal:
@@ -403,7 +423,7 @@ mouse:
     #
     # These are the modifiers that need to be held down for opening URLs when clicking
     # on them. The available modifiers are documented in the key binding section.
-    #modifiers: None
+    modifiers: Control
 
 # Mouse bindings
 #
