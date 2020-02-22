@@ -1,12 +1,7 @@
+&a5f836653bba6f20b9863bd27987565fe61c767d#
 !.git#
 !.gitignore#
 !.gitmodules#
-!.stfolder#
-!.stignore#
-!.stversions#
-!pkglist#
-%/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag/.mozilla/firefox/ruelumrt.default;/chrome#
-&84a4120ee66a214e3d88a1f666dce46724d26450#
 >/home/filiparag/.config/bspwm#
 >/home/filiparag/.config/fish#
 >/home/filiparag/.config/fisher#
@@ -16,6 +11,12 @@
 >/home/filiparag/.config/ranger#
 >/home/filiparag/.config/viper4linux#
 >/home/filiparag/.local/share/omf#
+%/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag/.mozilla/firefox/ruelumrt.default;/chrome#
 >/home/filiparag/.screen#
 >/home/filiparag/.vim#
 >/home/filiparag/.vim_runtime#
+!pkglist#
+!.stfolder#
+!.stignore#
+!.stversions#
+%/home/filiparag/.config/alacritty:/home/filiparag/.config;/alacritty#
