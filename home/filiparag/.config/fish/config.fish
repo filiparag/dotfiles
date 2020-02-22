@@ -8,8 +8,7 @@ if status --is-interactive
     alias subl          "subl3"
 
     abbr --add ys       'yay -S'
-    abbr --add yss      'yay -Ss'
-    abbr --add yr       'yay -Rcs'
+    abbr --add yss      'yay -Ss'    abbr --add yr       'yay -Rcs'
 
     # abbr --add badger   'ssh -J serveo.net badger'
     # abbr --add lapwing  'ssh -J serveo.net lapwing'
@@ -46,6 +45,8 @@ set -x HOSTNAME (hostname)
 set -x GOPATH   $HOME/Projects/go
 set -x PATH     "$PATH:$GOPATH/bin"
 # set -x GOROOT   $HOME/Projects/golang
+
+set -x PATH     "$PATH:$HOME/.local/bin"
 
 # sydf
 set -x SYDF "$HOME/.sydf_devel"

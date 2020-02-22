@@ -83,6 +83,7 @@ gtk-theme-shades-of-gray
 gtk-vnc
 gtk-youtube-viewer-git
 gzip
+hdf5
 hplip
 htop
 i3lock
@@ -144,6 +145,7 @@ ntp
 numlockx
 obs-studio
 openboardview
+opencv
 pacman
 paper-icon-theme-git
 paprefs

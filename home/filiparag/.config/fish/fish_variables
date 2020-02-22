@@ -20,7 +20,7 @@ SETUVAR _fish_abbr_led:sudo\x20bash\x20\x2dc\x20\x22echo\x20\x270\x20off\x27\x20
 SETUVAR _fish_abbr_tapir:ssh\x20\x2dJ\x20serveo\x2enet\x20tapir
 SETUVAR _fish_abbr_yr:yay\x20\x2dRcs
 SETUVAR _fish_abbr_ys:yay\x20\x2dS
-SETUVAR _fish_abbr_yss:yay\x20\x2dSs
+SETUVAR _fish_abbr_yss:yay\x20\x2dSs\x20abbr\x20\x2d\x2dadd\x20yr\x20yay\x20\x2dRcs
 SETUVAR fish_color_autosuggestion:555\x1ebrblack
 SETUVAR fish_color_cancel:\x2dr
 SETUVAR fish_color_command:005fd7
