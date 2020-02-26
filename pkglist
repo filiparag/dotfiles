@@ -125,6 +125,7 @@ micro-bin
 minecraft
 mps-youtube
 mpv
+musl
 namcap
 nano
 nasm
@@ -234,6 +235,7 @@ ufetch-git
 ufw
 unclutter
 unp
+upx
 urxvt-font-size-git
 urxvt-resize-font-git
 usbutils
