@@ -7,7 +7,7 @@ APPS=(
 	"redshift-qt"
 	"dunst"
 	"flameshot"
-	"synergy"
+	# "synergy"
 	"signal-desktop --start-in-tray"
 	"gajim"
 	"wire-desktop --startup"

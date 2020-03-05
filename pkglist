@@ -17,6 +17,7 @@ beep
 bind-tools
 binutils
 bison
+blender
 blueman
 bspwm
 bzip2
@@ -26,12 +27,15 @@ cronie
 cryptsetup
 cups
 cups-pdf
+cython
 dash
 datagrip
 device-mapper
 dhcpcd
 diffutils
 dkms
+docker
+docker-compose
 dunst
 e2fsprogs
 electron
@@ -62,6 +66,7 @@ gawk
 gcc
 gcc-libs
 gcr
+geogebra-5
 gettext
 git
 gitkraken
@@ -98,6 +103,7 @@ keepassxc
 less
 libao
 libgssglue
+librealsense
 libreoffice-fresh
 libtool
 liburcu
@@ -139,6 +145,7 @@ networkmanager
 networkmanager-openvpn
 networkmanager-pptp
 nfs-utils
+nmap
 nnn
 noto-fonts-emoji
 ntfs-3g
@@ -157,6 +164,7 @@ pcmanfm
 pcsclite
 perl
 pfetch-git
+phc-intel
 physlock
 pidgin
 pkgconf
@@ -172,7 +180,9 @@ pulseaudio-equalizer
 pulseaudio-modules-bt-git
 pulseaudio-zeroconf
 pycharm-professional
+python-matplotlib
 python-pip
+python-pyrealsense2-git
 qbittorrent
 qpdfview
 qt5-styleplugins
