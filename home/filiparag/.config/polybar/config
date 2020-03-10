@@ -298,7 +298,6 @@ format-underline = ${color.teal}
 type = internal/fs
 
 mount-0 = /
-mount-1 = /home
 # mount-2 = /data
 
 interval = 15

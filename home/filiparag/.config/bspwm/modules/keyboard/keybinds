@@ -4,8 +4,8 @@
 if [[ $(cat "/sys/devices/virtual/dmi/id/product_family") =~ "ThinkPad" ]]; then
 
 	# TrackPoint sensitivity
-	sudo su -c "echo -n 140 > /sys/devices/platform/i8042/serio1/sensitivity"
-	sudo su -c "echo -n 0 > /sys/devices/platform/i8042/serio1/press_to_select"
+	sudo su -c "echo -n 150 > /sys/devices/platform/i8042/serio1/serio2/sensitivity"
+	sudo su -c "echo -n 0 > /sys/devices/platform/i8042/serio1/serio2/press_to_select"
 
 	# Turn of Power LED
 	sudo bash -c "echo '0 off' > /proc/acpi/ibm/led"
