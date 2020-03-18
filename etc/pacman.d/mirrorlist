@@ -1,22 +1,69 @@
-##
-## Arch Linux repository mirrorlist
-## Filtered by mirror score from mirror status page
-## Generated on 2019-10-28
-##
-
-# Germany
-Server = https://mirror.netcologne.de/archlinux/$repo/os/$arch
-Server = https://mirror.pkgbuild.com/$repo/os/$arch
+## Germany
 Server = https://ftp.halifax.rwth-aachen.de/archlinux/$repo/os/$arch
-Server = https://arch.unixpeople.org/$repo/os/$arch
-Server = https://mirror.selfnet.de/archlinux/$repo/os/$arch
-
-# Austria
+## Germany
+Server = https://mirror.wtnet.de/arch/$repo/os/$arch
+## Hungary
+Server = https://nova.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+## Germany
+Server = https://ftp.spline.inf.fu-berlin.de/mirrors/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.ubrco.de/archlinux/$repo/os/$arch
+## Germany
+Server = https://ger.mirror.pkgbuild.com/$repo/os/$arch
+## Germany
+Server = https://mirrors.n-ix.net/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.bethselamin.de/$repo/os/$arch
+## Hungary
+Server = https://super.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.checkdomain.de/archlinux/$repo/os/$arch
+## Germany
+Server = https://dist-mirror.fem.tu-ilmenau.de/archlinux/$repo/os/$arch
+## Germany
+Server = https://arch.jensgutermuth.de/$repo/os/$arch
+## Germany
+Server = https://arch.eckner.net/archlinux/$repo/os/$arch
+## Germany
+Server = https://www.ratenzahlung.de/mirror/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.orbit-os.com/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.gnomus.de/$repo/os/$arch
+## Germany
+Server = https://ftp.wrz.de/pub/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.chaoticum.net/arch/$repo/os/$arch
+## Germany
+Server = https://appuals.com/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.mikrogravitation.org/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirrors.niyawe.de/archlinux/$repo/os/$arch
+## Austria
 Server = https://mirror.reisenbauer.ee/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.metalgamer.eu/archlinux/$repo/os/$arch
+## Germany
+Server = https://arch.unixpeople.org/$repo/os/$arch
+## Germany
+Server = https://mirror.f4st.host/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.selfnet.de/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.fra10.de.leaseweb.net/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.23media.com/archlinux/$repo/os/$arch
+## Germany
+Server = https://mirror.pkgbuild.com/$repo/os/$arch
+## Germany
+Server = https://mirror.netcologne.de/archlinux/$repo/os/$arch
+## Hungary
+Server = https://quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
+## Germany
+Server = https://archlinux.thaller.ws/$repo/os/$arch
+## Germany
+Server = https://packages.oth-regensburg.de/archlinux/$repo/os/$arch
+## Germany
+Server = https://ftp.fau.de/archlinux/$repo/os/$arch
 
-# Netherlands
-Server = https://archlinux.mirror.liteserver.nl/$repo/os/$arch
-Server = https://archlinux.mirror.pcextreme.nl/$repo/os/$arch
-Server = https://archlinux.mirror.wearetriple.com/$repo/os/$arch
-Server = https://mirror-archlinux.webruimtehosting.nl/$repo/os/$arch
-Server = https://mirrors.xtom.nl/archlinux/$repo/os/$arch

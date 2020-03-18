@@ -4,8 +4,8 @@
 MODULES=$(realpath "$(dirname $0)/../")
 
 # Time in seconds
-BLANK_TIMEOUT=600
-LOCK_TIMEOUT=605
+BLANK_TIMEOUT=300
+LOCK_TIMEOUT=305
 
 function start() {
 	
@@ -15,9 +15,9 @@ function start() {
 		--not-when-fullscreen \
 		--not-when-audio \
 		--timer $BLANK_TIMEOUT \
-			'xset dpms force off' '' \
+			"xset dpms force off" '' \
 		--timer $LOCK_TIMEOUT \
-			'$MODULES/system/lock' '' \
+			"$MODULES/system/lock" '' \
 		&>/dev/null&
 		
 }

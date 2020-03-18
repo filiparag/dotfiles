@@ -231,7 +231,7 @@ super + Return
 
 # Launch Alacritty as root
 super + shift + Return
-	sudo alacritty
+	alacritty -e sudo /usr/bin/fish
 
 # Launch scratchpad terminal
 super + BackSpace
