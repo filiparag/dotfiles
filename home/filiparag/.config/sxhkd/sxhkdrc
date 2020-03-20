@@ -53,6 +53,9 @@ super + shift + {@Home,@End}
 super + f 
 	bspc desktop -l next
 
+super + shift + f 
+	bspc node -t ~fullscreen
+
 # Select parent node
 super + @F1
 	bspc node -f @parent
