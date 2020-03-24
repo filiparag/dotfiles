@@ -1,4 +1,4 @@
-&9885d144538066cfb79df61327061fad8d2e62d3#
+&f079e30b6a6d7d422578754441068d94ee165d7a#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -16,6 +16,7 @@
 %/home/filiparag/.config/polybar:/home/filiparag/.config;/polybar#
 >/home/filiparag/.config/qt5ct#
 >/home/filiparag/.config/ranger#
+>/home/filiparag/.config/rofi#
 %/home/filiparag/.config/sxhkd:/home/filiparag/.config;/sxhkd#
 >/home/filiparag/.config/viper4linux#
 >/home/filiparag/.local/share/omf#

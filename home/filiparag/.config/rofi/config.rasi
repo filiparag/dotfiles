@@ -1,0 +1,10 @@
+/** Configured For Applets **/
+
+configuration {
+  show-icons:         true;
+  icon-theme:         "Paper";
+  location:           0;
+  yoffset:            0;
+  xoffset:            0;
+  theme:              "style/style_normal_grid.rasi";
+}

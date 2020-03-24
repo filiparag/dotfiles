@@ -1,13 +1,12 @@
-#! /bin/dash
+#! /usr/bin/dash
 
 # Show application launcher
 super + d
-	rofi $ROFI_STYLE -modi drun,run,combi \
-		 -combi-modi drun,run -show combi -width 30
+	$MODULES/ui/rofi
 
 # Show all running windows
 super + grave
-	rofi $ROFI_STYLE -show window -width 40
+	$MODULES/ui/rofi files
 
 # Switch to last node / desktop
 {alt, super} + @Tab
@@ -19,10 +18,10 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	if $BSPWMRC reload; then \
-		$MODULES/interface/notify info "Desktop configuration reloaded successfully."; \
+	if $WMRC reload; then \
+		$MODULES/ui/notify info "wmrc" "Desktop configuration reloaded successfully."; \
 	else \
-		$MODULES/interface/notify warning "An error occurred while reloading desktop configuration."; \
+		$MODULES/ui/notify warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
 	fi
 
 # Close application
@@ -53,6 +52,7 @@ super + shift + {@Home,@End}
 super + f 
 	bspc desktop -l next
 
+# Toggle fullscreen mode for focused window
 super + shift + f 
 	bspc node -t ~fullscreen
 
@@ -60,13 +60,17 @@ super + shift + f
 super + @F1
 	bspc node -f @parent
 
-# Yank current node
+# Move selected nodes
 super + @F2
-	echo $(bspc query -N -n) > "/tmp/bspcyank"
-
-# Paste yanked node
+	$MODULES/ui/bspwm move_node
+	
+# Swap desktops
 super + @F3
-	bspc node $(cat "/tmp/bspcyank") -d $(bspc query -D -d)
+	$MODULES/ui/bspwm swap_desktop
+	
+# Swap monitors
+super + @F4
+	$MODULES/ui/bspwm swap_monitor
 
 # Change window tiling mode
 super + shift + @space
@@ -186,15 +190,15 @@ XF86AudioMute
 
 # Change brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	$MODULES/screen/backlight {-,+} 2
+	$MODULES/screen/backlight {dec,inc} 20
 
 # Set brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	$MODULES/screen/backlight = {2,100}
+	$MODULES/screen/backlight equ {0,100}
 
 # Select monitor layout
 super + {o, XF86AudioMicMute}
-	$MODULES/screen/rofi_layout
+	$MODULES/screen/layout
 
 # Launch Pulseaudio control interface
 super + XF86AudioMute
@@ -209,36 +213,44 @@ super + @Delete
 	systemctl suspend
 
 # Shut down
+super + shift + @Delete
+	$MODULES/ui/notify warn 'Shut down' \
+		'Press <i>[Return]</i> to shut down or any other key to cancel.'
+
 super + shift + @Delete : Return
 	systemctl poweroff
 
 # Reboot
+super + shift + ctrl + @Delete
+	$MODULES/ui/notify warn 'Reboot' \
+		'Press <i>[Return]</i> to reboot or any other key to cancel.'
+
 super + shift + ctrl + @Delete : Return
 	systemctl reboot
 
 # Lock the device using physlock
 XF86Launch1
-	$MODULES/screen/physlock
+	physlock -m -d
 
 # Lock screen and turn off screen
 super + l
-	$BSPWMRC lock
+	$WMRC lock
 
 # Hardened mode (hide polybar and notifications)
-super + h
-	$MODULES/interface/hardened_toggle
+# super + h
+# 	$MODULES/interface/hardened_toggle
 
-# Launch Alacritty
+# Launch terminal
 super + Return
-	alacritty
+	$TERMINAL
 
-# Launch Alacritty as root
+# Launch terminal as root
 super + shift + Return
-	alacritty -e sudo /usr/bin/fish
+	$TERMINAL -e sudo /usr/bin/fish
 
 # Launch scratchpad terminal
 super + BackSpace
-	alacritty -e tmux new-session -A -s scratchpad
+	$TERMINAL -e tmux new-session -A -s scratchpad
 
 # Launch Firefox
 super + b
@@ -254,11 +266,11 @@ super + shift + b
 
 # Launch PCManFM file manager
 super + n
-	pcmanfm
+	$FILEMGR
 
 # Launch PCManFM file manager as root
 super + shift + n
-	sudo pcmanfm
+	sudo $FILEMGR
 
 # Launch Visual Studio Code
 super + v
@@ -272,14 +284,13 @@ super + k
 super + s
 	subl3
 
-# Show emoji menu
+# Show character menu
 super + z
-	$MODULES/interface/emoji
+	$MODULES/ui/rofi character
 
 # Show calculator
 super + @less
-	rofi $ROFI_STYLE -show calc -modi calc -no-show-match -no-sort \
-		 -width 30 -lines 5
+	$MODULES/ui/rofi calc
 
 # Print screen
 super + p

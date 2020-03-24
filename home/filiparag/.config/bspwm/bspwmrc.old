@@ -1,0 +1,192 @@
+#! /bin/bash
+
+export WM="bspwm"
+
+MODULES="$(dirname "$0")/modules"
+RC_CONF="$MODULES/rc.conf"
+
+CONFIG_DISP_ERR="$(grep -Pzo '\%display_errors += +\K(true|false)' "$RC_CONF"  | tr '\0' '\n')"
+CONFIG_DP_CHECK="$(grep -Pzo '\%dependency_check += +\K(true|false)' "$RC_CONF"  | tr '\0' '\n')"
+
+CRITICAL_ERROR=0
+function error_message {
+	if [[ "$CONFIG_DISP_ERR" != "false" ]]; then
+		$MODULES/interface/notify error "$1"
+	fi
+	if [[ "$2" == "abort" ]]; then
+		exit 1
+	elif [[ "$2" == "critical" ]]; then
+		CRITICAL_ERROR=1
+	fi
+}
+
+UNMET_DEPS=""
+function check_dependencies {
+
+	DEPENDENCY_ERROR=0
+
+	# Check if all dependencies are in PATH
+	for DEPENDENCY in $(grep -Po '(?<=DEPENDENCIES:)(( *[-\/_a-zA-Z0-9]+, *)*( *[-\/_a-zA-Z0-9]+)+)' "$MODULES/$1"); do
+		DEP=$(printf "$DEPENDENCY" | sed 's/,//g; s/ //g')
+		if ! which "$DEP" &> /dev/null; then
+			error_message "Command '<i>$DEP</i>' required by module '<i>$1</i>' was not found in '\$PATH!'" "critical"
+			DEPENDENCY_ERROR=1
+			UNMET_DEPS="$UNMET_DEPS$DEPENDENCY\n"
+		fi
+	done
+
+	# Recursively check submodule dependencies
+	for SUBMODULE in $(cat "$MODULES/$1" | sed 's/#.*//g' | grep -Po '(?<=\$MODULES\/)([-_a-zA-Z0-9]+\/[-._a-zA-Z0-9\*]+)'); do
+		if [ ! -f "$MODULES/$SUBMODULE" ]; then
+			error_message "Submodule '<i>$SUBMODULE</i>' required by '<i>$1</i>' was not found!" "critical"
+			DEPENDENCY_ERROR=1
+		else
+			if [ ! -x "$MODULES/$SUBMODULE" ]; then
+				chmod +x "$MODULES/$SUBMODULE"
+			fi
+			check_dependencies "$SUBMODULE"
+		fi
+	done
+
+	return $DEPENDENCY_ERROR
+
+}
+
+MODE="start"
+
+if [ "$1" == "--dry-run" ]; then
+	if [ -n "$2" ]; then
+		MODE="$2"
+	fi
+elif [ "$1" == "--unmet-deps" ]; then
+	CONFIG_DISP_ERR="false"
+	for MOD in $(find "$MODULES" -type f -not -path "$MODULES/rc.conf" -printf "%P\n"); do
+		check_dependencies $MOD
+	done
+	UNMET_DEPS=$(printf "$UNMET_DEPS" | awk '!a[$0]++' | awk 'NF')
+	printf "Unmet dependencies:\n$UNMET_DEPS\n"
+	exit 0
+elif [ -n "$1" ]; then
+	MODE="$1"
+fi
+
+# Remove comments and empty lines
+RC_LIST="$(cat "$RC_CONF" | sed '/^#/d; /^$/d; s:#.*$::g')"
+
+# Check if target section has host specific section
+HOSTNAME="$(hostname)"
+RC_SECTION_HOST=""
+RC_SECTION_BEFR=""
+RC_SECTION_AFTR=""
+if ! [[ -z $(printf "$RC_LIST" | grep "\[$MODE@") ]]; then
+	
+	RC_SEC_HOST="$(printf "$RC_LIST" | grep -Pzo "\[$MODE@$HOSTNAME(:(before|after))?\]" | tr '\0' '\n')"
+
+	if [[ "$RC_SEC_HOST" =~ "[$MODE@$HOSTNAME]" ]]; then
+		RC_SECTION_HOST="$(printf "$RC_LIST" | grep -Pzo "\["$MODE@$HOSTNAME"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+	fi
+
+	if [[ "$RC_SEC_HOST" =~ "[$MODE@$HOSTNAME:before]" ]]; then
+		RC_SECTION_BEFR="$(printf "$RC_LIST" | grep -Pzo "\["$MODE@$HOSTNAME:before"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+	fi
+
+	if [[ "$RC_SEC_HOST" =~ "[$MODE@$HOSTNAME:after]" ]]; then
+		RC_SECTION_AFTR="$(printf "$RC_LIST" | grep -Pzo "\["$MODE@$HOSTNAME:after"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+	fi
+
+	if ! [ -z "$RC_SECTION_AFTR" ] && ! [ -z "$RC_SECTION_HOST" ]; then
+		$MODULES/interface/notify warning "Using both <i>'$MODE@$HOSTNAME:after'</i> and '$MODE@$HOSTNAME' bspwm sections is redundant."
+	fi
+
+fi
+
+# Find target section
+RC_SECTION="$(printf "$RC_LIST" | grep -Pzo "\["$MODE"\]\n?([^\[]+\n?)*" | tr '\0' '\n')"
+if [ -z "$RC_SECTION" ]; then
+	error_message "Unable to execute bspwm section <i>'$MODE'</i>! Section not found." "abort"
+fi
+
+RC_SECTION="$RC_SECTION_BEFR\n$RC_SECTION\n$RC_SECTION_HOST\n$RC_SECTION_AFTR\n"
+
+ENTRYLIST=""
+for ENTRY in $(printf "$RC_SECTION" | sed '/^$/d; /^\[.*\]$/d'); do
+
+	# Verify entry format
+	SYNTAX_RE="^([-_a-zA-Z0-9]+)\/(((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?),)*((([-._a-zA-Z0-9\*]+)(\([^,\(\)\"\'\`\*]+[^;]\))?)))$"
+	SYNTAX_ERRORS="$(printf "$ENTRY" | egrep -v "$SYNTAX_RE" | sed '/^$/d')"
+	if ! [ -z "$SYNTAX_ERRORS" ]; then
+		error_message "Syntax error in <i>'rc.conf'</i> on line:\n$SYNTAX_ERRORS" "critical"
+	fi
+
+	# Separate section and modules
+	ENTRY_SEC="$(printf "$ENTRY" | sed 's:/.*$::')"
+	ENTRY_CMDS="$(printf "$ENTRY" | sed 's:^.*/::')"
+
+	# Replace asterisk with all modules in directory
+	if [[ "$ENTRY_CMDS" =~ "*" ]]; then
+		SEC_ALL_ENTRIES="$(find "$MODULES/$ENTRY_SEC" -type f -printf '%P,' | sed 's/,$//')"
+		ENTRY_CMDS=$(printf "$ENTRY_CMDS" | awk "{gsub(\"*\",\"$SEC_ALL_ENTRIES\"); print}")
+	fi
+
+	ENTRY_CMDS="$(printf "$ENTRY_CMDS" | sed 's/,/\n/g')"
+
+	for ENTRY_CMD in $ENTRY_CMDS; do
+		ENTRYLIST="$ENTRYLIST$ENTRY_SEC/$ENTRY_CMD\n"
+	done
+
+done
+
+RUNLIST=$(printf "$ENTRYLIST" | awk '!a[$0]++' | awk 'NF')
+
+if [ $CRITICAL_ERROR == 1 ]; then
+	exit 2
+fi
+
+for MOD in $(printf "$RUNLIST"); do
+
+	MOD_CMD="$MOD"
+	MOD_ARGS=""
+	if [[ "$MOD" =~ "(" ]]; then
+		MOD_CMD="$(printf "$MOD" | sed "s/(.*//")"
+		MOD_ARGS="$(printf "$MOD" | sed 's/.*(//; s/)$//; s/\;/ /g')"
+	fi
+
+	MPATH="$MODULES/$MOD_CMD"
+
+	if [ -f "$MPATH" ]; then
+
+		if [ ! -x "$MPATH" ]; then
+			chmod +x "$MPATH"
+		fi
+
+		# Check dependencies
+		if [[ "$CONFIG_DP_CHECK" != "false" ]]; then
+			check_dependencies "$MOD_CMD"
+		fi
+
+		if grep -q "# RC_ASYNC_LOCK" "$MPATH"; then
+			if [[ "$1" == "--dry-run" ]]; then
+				printf "S $MPATH $MOD_ARGS\n"
+			elif [[ "$CRITICAL_ERROR" != 1 ]]; then
+				WAIT=$("$MPATH" $MOD_ARGS &> /dev/null&)
+			fi
+		else
+			if [[ "$1" == "--dry-run" ]]; then
+				printf "A $MPATH $MOD_ARGS\n"
+			elif [[ "$CRITICAL_ERROR" != 1 ]]; then
+				nohup "$MPATH" $MOD_ARGS &> /dev/null&
+			fi
+		fi
+
+	else
+
+		error_message "Module <i>'$MOD'</i> is missing." "critical"
+
+	fi
+
+done
+
+if [ $CRITICAL_ERROR == 1 ]; then
+	$MODULES/interface/notify warning "Section <i>'$MODE'</i> will not run until all errors are resolved!"
+	exit 2
+fi

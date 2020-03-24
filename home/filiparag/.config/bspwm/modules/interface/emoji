@@ -77,6 +77,8 @@ function display() {
 	local emoji line exit_code quantifier
 
 	emoji=$(cat "$EMOJI_FILE" | grep -v '#' | grep -v '^[[:space:]]*$')
+	echo "$emoji"
+
 	line="$(echo "$emoji" | rofi_menu)"
 	exit_code=$?
 

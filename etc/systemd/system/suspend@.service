@@ -6,8 +6,8 @@ Before=sleep.target suspend.target
 User=%I
 Type=forking
 Environment=DISPLAY=:0
-ExecStartPre=/home/%I/.config/bspwm/bspwmrc suspend
-ExecStart=/usr/bin/sleep 0.5
+ExecStartPre=/home/%I/.config/bspwm/bspwmrc suspend &
+ExecStart=/usr/bin/sleep 0.2
 
 [Install]
 WantedBy=sleep.target suspend.target
