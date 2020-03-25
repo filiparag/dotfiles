@@ -1,6 +1,4 @@
 ## Germany
-Server = https://ftp.halifax.rwth-aachen.de/archlinux/$repo/os/$arch
-## Germany
 Server = https://mirror.wtnet.de/arch/$repo/os/$arch
 ## Hungary
 Server = https://nova.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch

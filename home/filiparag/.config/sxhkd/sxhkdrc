@@ -213,18 +213,10 @@ super + @Delete
 	systemctl suspend
 
 # Shut down
-super + shift + @Delete
-	$MODULES/ui/notify warn 'Shut down' \
-		'Press <i>[Return]</i> to shut down or any other key to cancel.'
-
 super + shift + @Delete : Return
 	systemctl poweroff
 
 # Reboot
-super + shift + ctrl + @Delete
-	$MODULES/ui/notify warn 'Reboot' \
-		'Press <i>[Return]</i> to reboot or any other key to cancel.'
-
 super + shift + ctrl + @Delete : Return
 	systemctl reboot
 
