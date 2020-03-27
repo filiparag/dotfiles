@@ -8,14 +8,8 @@ if status --is-interactive
     alias subl          "subl3"
 
     abbr --add ys       'yay -S'
-    abbr --add yss      'yay -Ss'    abbr --add yr       'yay -Rcs'
-
-    # abbr --add badger   'ssh -J serveo.net badger'
-    # abbr --add lapwing  'ssh -J serveo.net lapwing'
-    # abbr --add tapir    'ssh -J serveo.net tapir'
-    # abbr --add akita    'ssh -J serveo.net akita'
-
-    abbr --add led      'sudo bash -c "echo \'0 off\' > /proc/acpi/ibm/led"'
+    abbr --add yss      'yay -Ss'
+    abbr --add yr       'yay -Rcs'
 
 end
 
@@ -39,17 +33,12 @@ set -x BROWSER  "firefox"
 
 set -x HOSTNAME (hostname)
 
-#set -x tmate-api-key        "tmk-ctvk0CVzza02ZvF7w6pGHvrOac"
-
 #  Go path
 set -x GOPATH   $HOME/Projects/go
 set -x PATH     "$PATH:$GOPATH/bin"
 # set -x GOROOT   $HOME/Projects/golang
 
 set -x PATH     "$PATH:$HOME/.local/bin"
-
-# sydf
-set -x SYDF "$HOME/.sydf_devel"
 
 # IntelliJ
 set -x _JAVA_AWT_WM_NONREPARENTING 1
@@ -105,7 +94,3 @@ if status --is-login
 else
     prompt_agent
 end
-
-# Remote
-# autossh -M 10000 serveo.net -R $HOSTNAME.filiparag.com:80:localhost:80 -C -f
-# autossh -M 20000 serveo.net -R $HOSTNAME:22:localhost:22 -C -f

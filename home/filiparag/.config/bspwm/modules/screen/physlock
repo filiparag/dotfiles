@@ -1,4 +1,0 @@
-#! /bin/sh
-# DEPENDENCIES: physlock
-
-physlock -m -d

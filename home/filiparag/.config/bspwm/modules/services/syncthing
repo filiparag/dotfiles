@@ -1,6 +1,0 @@
-#! /bin/sh
-# DEPENDENCIES: syncthing
-
-if [ -z $(pidof syncthing) ]; then
-	syncthing &
-fi

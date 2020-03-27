@@ -1,1 +1,3 @@
-/home/filiparag/.syncthing/projects/wmrc/wmrc
+#! /usr/bin/env dash
+
+wmrc &

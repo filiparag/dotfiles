@@ -1,4 +1,4 @@
-#!/bin/dash
+#! /usr/bin/env dash
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
@@ -6,8 +6,6 @@ sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap
 
 export SXHKD_SHELL='/bin/dash'
-
-# DEFAULT_SESSION=bspwm
 
 if [ -f $sysresources ]; then
     xrdb -merge $sysresources
@@ -25,41 +23,14 @@ if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
 
-# start some nice programs
+! command -v wmrc >/dev/null && \
+    >&2 echo "wmrc not found in PATH!" && exit 1
 
-# if [ -d /etc/X11/xinit/xinitrc.d ] ; then
-#     for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
-#         [ -x "$f" ] && . "$f"
-#     done
-#     unset f
-# fi
+DEPS="$(wmrc -m | tr '\n' ' ')"
 
-# get_session(){
-# 	local dbus_args=(--sh-syntax --exit-with-session)
-# 	case $1 in
-# 		awesome) dbus_args+=(awesome) ;;
-# 		bspwm) dbus_args+=(bspwm-session) ;;
-# 		budgie) dbus_args+=(budgie-desktop) ;;
-# 		cinnamon) dbus_args+=(cinnamon-session) ;;
-# 		deepin) dbus_args+=(startdde) ;;
-# 		enlightenment) dbus_args+=(enlightenment_start) ;;
-# 		fluxbox) dbus_args+=(startfluxbox) ;;
-# 		gnome) dbus_args+=(gnome-session) ;;
-# 		# i3|i3wm) dbus_args+=(i3 --shmlog-size 0) ;;
-# 		i3|i3wm) dbus_args+=(i3) ;;
-# 		jwm) dbus_args+=(jwm) ;;
-# 		kde) dbus_args+=(startkde) ;;
-# 		lxde) dbus_args+=(startlxde) ;;
-# 		lxqt) dbus_args+=(lxqt-session) ;;
-# 		mate) dbus_args+=(mate-session) ;;
-# 		xfce) dbus_args+=(xfce4-session) ;;
-# 		openbox) dbus_args+=(openbox-session) ;;
-# 		*) dbus_args+=($DEFAULT_SESSION) ;;
-# 	esac
+[ -n "$DEPS" ] && \
+    >&2 echo "wmrc has missing dependencies:\n$DEPS" && exit 1
 
-# 	echo "dbus-launch ${dbus_args[*]}"
-# }
+WM="$(wmrc -v | perl -n -e'/^WM=(.+)/ && print $1')"
 
-exec bspwm
-
-# exec $(get_session)
+exec "$WM"
