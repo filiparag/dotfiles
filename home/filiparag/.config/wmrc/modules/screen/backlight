@@ -1,0 +1,88 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: sudo
+# WMRC_FLAGS: 
+
+MAX_FILE="/sys/class/backlight/intel_backlight/max_brightness"
+CUR_FILE="/sys/class/backlight/intel_backlight/brightness"
+
+read() {
+
+  [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ] || \
+    error "Brightness control is unavailable!" fatal 2
+
+  sudo -v >/dev/null || \
+    error "User '$(whoami)' is not allowed to run sudo!" fatal 3
+
+  MAX="$(cat "$MAX_FILE")"
+  CUR="$(cat "$CUR_FILE")"
+
+}
+
+step() {
+
+  STEP=$(( CUR * CUR / MAX / 33))
+  [ "$STEP" = "0" ] && \
+    STEP="1"
+
+  echo "$STEP"
+
+}
+
+write() {
+
+  read
+
+  NEW="$1"
+
+  [ "$NEW" -gt "$MAX" ] && \
+    NEW="$MAX"
+  
+  [ "$NEW" -lt "0" ] && \
+    NEW="0"
+
+  echo "$NEW" | sudo tee "$CUR_FILE"
+
+}
+
+inc() {
+  
+  read
+  step
+  
+  [ -z "$2" ] && \
+    MUL=1 || MUL="$2"
+
+  CUR=$(( CUR + STEP * MUL ))
+  
+  write "$CUR"
+
+}
+
+dec() {
+
+  read
+  step
+  
+  [ -z "$2" ] && \
+    MUL=1 || MUL="$2"
+
+  CUR=$(( CUR - STEP * MUL ))
+  
+  write "$CUR"
+
+}
+
+equ() {
+  
+  read
+
+  [ -z "$2" ] && \
+    MUL=1 || MUL="$2"
+
+  CUR=$(( MAX / 100 * MUL ))
+  
+  write "$CUR"
+
+}
+
+. "$MODULES/init"

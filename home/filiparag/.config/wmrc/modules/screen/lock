@@ -1,0 +1,159 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: i3lock, xrandr, convert, perl, xidlehook, xkb-switch, xset, xdotool
+# WMRC_FLAGS:
+
+CACHE_DIR="$HOME/.cache/lockscreen"
+
+generate_individual() {
+
+  local BCK_IMG
+  local MD5_BKG_IMG
+  local MD5_SCREEN_CONFIG
+
+  BCK_IMG="$HOME/Pictures/lockscreen.png"
+  [ -f "$BCK_IMG" ] || \
+    error "Lockscreen image '$BCK_IMG' is missing!" fatal 3
+
+  mkdir -p "$CACHE_DIR" || \
+    error "Unable create lockscreen chache directory!" fatal 4
+
+  MONITORS="$(xrandr --listmonitors | 
+            perl -n -e'/\d+: \+[^ ]+ (\d+)\/(\d+)x(\d+)\/(\d+)\+(\d+)\+(\d+)/
+            && print "$1:$3:$5:$6 "')"
+
+  MD5_BKG_IMG="$(md5sum "$BCK_IMG" | cut -c 1-16)"
+  MD5_SCREEN_CONFIG="$(echo "$MONITORS" | md5sum - | cut -c 1-16)"
+
+  OUTPUT_IMG="$CACHE_DIR/$MD5_SCREEN_CONFIG.$MD5_BKG_IMG.png"
+  OUTPUT_IMG_WIDTH=0
+  OUTPUT_IMG_HEIGHT=0
+
+  PARAMS=""
+  
+  local CACHE_IMG
+  local IFS
+  local W
+  local H
+  local X
+  local Y
+
+  for M in $MONITORS; do
+
+    IFS=:
+    set -- $M
+    W=$1
+    H=$2
+    X=$3
+    Y=$4
+    
+    CACHE_IMG="$CACHE_DIR/$W.$H.$MD5_BKG_IMG.png"
+
+    [ -f "$CACHE_IMG" ] || \
+      convert "$BCK_IMG" '-resize' "${W}X${H}^" \
+              '-gravity' 'Center' '-crop' "${W}X${H}+0+0" \
+              '+repage' "$CACHE_IMG"
+
+    [ "$OUTPUT_IMG_WIDTH" -lt $((W+X)) ] && \
+      OUTPUT_IMG_WIDTH=$((W+X))
+
+    [ "$OUTPUT_IMG_HEIGHT" -lt $((H+Y)) ] && \
+      OUTPUT_IMG_HEIGHT=$((H+Y))
+
+    PARAMS="$PARAMS $CACHE_IMG -geometry +$X+$Y -composite"
+
+  done
+
+
+}
+
+generate_composite() {
+
+  generate_individual
+  
+  if ! [ -f "$OUTPUT_IMG" ]; then
+
+    convert -size ${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT} \
+      "xc:#101010" "$OUTPUT_IMG"
+    convert "$OUTPUT_IMG" $PARAMS "$OUTPUT_IMG"
+    
+  fi
+
+}
+
+lock() {
+
+  [ -z "$(pgrep -u "$(whoami)" i3lock)" ] || \
+    error "Lockscreen is already running!" fatal 2
+
+  generate_composite
+
+  [ "$2" = "wait" ] && WAIT="-n"
+
+  i3lock -u -i "$OUTPUT_IMG" -t -e "$WAIT"
+
+}
+
+smart_lock() {
+
+  LANG="$(xkb-switch -p)"
+  CAPS="$(xset -q | 
+        grep -Pzo "Caps Lock: +(on|off)" |
+        sed "s/^.*: *//" | 
+        tr '\0' '\n')"
+
+  xkb-switch -s us
+  if [ "$CAPS" = "on" ]; then
+    xdotool key Caps_Lock
+  fi
+
+  if [ "$2" != "screen_on" ]; then
+    sleep 0.2
+    xset dpms force off
+  fi
+
+  lock 'lock' 'wait'
+
+  xkb-switch -s "$LANG"
+  if [ "$CAPS" = "on" ]; then
+    xdotool key Caps_Lock
+  fi
+
+}
+
+start() {
+
+  [ -z "$(pgrep -u "$(whoami)" xidlehook)" ] || \
+    error "Lockscreen daemon is already running!" fatal 2
+
+  generate_composite
+
+  local BLANK_TIMEOUT
+  local LOCK_TIMEOUT
+
+  # Time in seconds
+  BLANK_TIMEOUT=300
+  LOCK_TIMEOUT=305
+
+  xset s off -dpms &
+
+	xidlehook \
+		--not-when-fullscreen \
+		--not-when-audio \
+		--timer $BLANK_TIMEOUT \
+			"xset dpms force off" '' \
+		--timer $LOCK_TIMEOUT \
+			"$MODULES/screen/lock smart_lock" '' \
+		>/dev/null &
+
+}
+
+stop() {
+
+  [ -z "$(pgrep -u "$(whoami)" xidlehook)" ] && \
+    error "Lockscreen daemon is not running!" fatal 3
+
+  killall -u "$(whoami)" -9 xidlehook > /dev/null
+
+}
+
+. "$MODULES/init"

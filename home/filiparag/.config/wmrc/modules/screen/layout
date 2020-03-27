@@ -1,0 +1,155 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: arandr, xrandr, perl, rofi
+# WMRC_FLAGS:
+
+SCREENLAYOUT="$HOME/.screenlayout"
+
+manual() {
+
+  local LAYOUT_OLD
+  local LAYOUT_NEW
+  local WAIT
+
+  LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
+  
+  WAIT=$(arandr)
+  
+  LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
+
+  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+    reload_ui
+
+}
+
+restore() {
+
+  local LAYOUT_OLD
+  local LAYOUT_NEW
+
+  LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
+  
+  [ -x "$SCREENLAYOUT/.restore.sh" ] && \
+    "$SCREENLAYOUT/.restore.sh" || \
+    error "Unable to restore previous monitor layout!" fatal 3
+
+  LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
+
+  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+    reload_ui
+
+}
+
+defined() {
+
+  local LAYOUT_OLD
+  local LAYOUT_NEW
+  local SCRIPT
+
+  LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
+
+  SCRIPT="$(echo "$2" | sed 's/ \[.*//').sh"
+
+  [ -x "$SCREENLAYOUT/$SCRIPT" ] ||
+    error "Unable to set monitor layout to '$2'!" fatal 2
+
+  cat "$SCREENLAYOUT/$SCRIPT" > "$SCREENLAYOUT/.restore.sh"
+  chmod +x "$SCREENLAYOUT/.restore.sh"
+
+  "$SCREENLAYOUT/$SCRIPT"
+  
+  LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
+
+  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+    reload_ui
+
+}
+
+monitor() {
+
+  local LAYOUT_OLD
+  local LAYOUT_NEW
+  local NEW_LAYOUT
+  local OFF
+  local ON
+
+  LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
+
+  OFF="$(xrandr |
+            perl -n -e '/^([-_a-zA-Z0-9]+) (connected|disconnected)/ &&
+            print "--output $1 --off\n"' |
+            grep -Fv "$(echo "$SEL" | sed 's/ (.*//')" |
+            sed -z 's/\n/ /g')"
+  ON="$(echo "$SEL" | 
+          perl -n -e'/^([_-a-zA-Z0-9]+).* (\d+x\d+)/ && 
+          print "--output $1 --primary --mode $2 --pos 0x0 --rotate normal"')"
+
+  NEW_LAYOUT="xrandr $OFF $ON"
+  echo "#! /usr/bin/env dash\n$NEW_LAYOUT" > "$SCREENLAYOUT/.restore.sh"
+  chmod +x "$SCREENLAYOUT/.restore.sh"
+
+  $NEW_LAYOUT
+
+  LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
+
+  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+    reload_ui
+
+}
+
+reload_ui() {
+
+  "$MODULES/ui/$WM"
+  "$MODULES/ui/polybar" restart &
+  "$MODULES/screen/wallpaper" &
+  "$MODULES/screen/lock" generate_composite &
+
+}
+
+start() {
+
+  local DEFINED
+  local MONITORS
+  local MANUAL
+  local LAYOUT
+  local SEL
+
+  DEFINED="$(find "$SCREENLAYOUT" -type f \
+          -name "*.sh" -printf "%P\n" | \
+          cut -d'.' -f1)"
+  MONITORS="$(xrandr |
+            perl -0777 -nle 'print "$1 ( $2x$3 )\n" while
+            m/^([-_a-zA-Z0-9]+) connected.*\n *(\d+)x(\d+)/gm')"
+
+  for D in $DEFINED; do
+    L="$D [ $(sed 's/--output/\n/g' "$SCREENLAYOUT/$D.sh" | \
+            perl -n -e'/^ *([-_a-zA-Z0-9]+) (--primary )?--mode (\d+)x(\d+) --pos (\d+)x(\d+)/ && \
+            print "$1 $3x$4 $5:$6 $2 | "') ]"
+    LAYOUT="$LAYOUT$(echo "$L" | sed 's/  / /g; s/--//g; s/| \]/\]/')\n"
+  done
+
+  MANUAL="Manual temporary layout configuration\n"
+  [ -x "$SCREENLAYOUT/.restore.sh" ] && \
+    RESTORE="Restore last used layout\n"
+
+  LAYOUT="$MANUAL$RESTORE$LAYOUT$MONITORS"
+
+  SEL="$(echo -n "$LAYOUT" |
+    rofi -dmenu -p 'monitor layout' -i \
+    -columns 1 \
+    -theme style/style_normal_grid.rasi)"
+
+  [ -z "$SEL" ] && return
+
+  if [ "$SEL\n" = "$MANUAL" ]; then
+    manual
+  elif [ "$SEL\n" = "$RESTORE" ]; then
+    restore
+  elif echo "$SEL" | grep -Fq "["; then
+    defined defined "$SEL"
+  elif echo "$SEL" | grep -Fq "("; then
+    monitor monitor "$SEL"
+  fi
+
+}
+
+. "$MODULES/init"

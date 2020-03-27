@@ -1,0 +1,27 @@
+#! /usr/bin/env dash
+
+restart() {
+  type start >/dev/null && type stop >/dev/null || \
+    error "This module can not be restarted!" fatal 1
+  stop "$@"
+  start "$@"
+}
+
+error() {
+  >&2 echo "$1"
+  [ -z "$3" ] && EXIT_CODE=1 || EXIT_CODE=2
+  [ "$2" = "fatal" ] && exit "$EXIT_CODE"
+}
+
+[ -z "$WMRC_DIR" ] && error "Environment variable 'WMRC_DIR' is not set!" fatal 1
+[ -z "$WMRC" ] && error "Environment variable 'WMRC' is not set!" fatal 1
+[ -z "$MODULES" ] && error "Environment variable 'MODULES' is not set!" fatal 1
+
+EXEC="$1"
+[ -z "$EXEC" ] && EXEC="start"
+
+if type "$EXEC" >/dev/null; then
+  "$EXEC" "$@"
+else
+  error "Action '$EXEC' is not defined!" fatal 1
+fi

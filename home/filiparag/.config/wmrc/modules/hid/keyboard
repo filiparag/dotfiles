@@ -1,0 +1,70 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: setxkbmap, numlockx, xmodmap, sudo
+# WMRC_FLAGS:
+
+layout() {
+
+  local LANGUAGES
+  local VARIANT
+
+  LANGUAGES="us,rs,rs"
+  VARIANT=",latinunicode,"
+
+  setxkbmap -layout "$LANGUAGES" -variant "$VARIANT" -option grp:alt_shift_toggle
+  numlockx on &
+
+}
+
+keybinds() {
+
+  if grep -q "ThinkPad" "/sys/devices/virtual/dmi/id/product_family"; then
+
+    if sudo -v >/dev/null; then
+
+      # TrackPoint sensitivity
+      local FILE_SENSITIVITY
+      local FILE_SELECT
+      local FILE
+
+      FILE_SENSITIVITY="$(find /sys/devices/platform/i8042/ -name 'sensitivity')"
+      FILE_SELECT="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
+
+      for FILE in $FILE_SENSITIVITY; do
+        sudo su -c "echo -n 150 > $FILE"
+      done
+
+      for FILE in $FILE_SELECT; do
+        sudo su -c "echo -n 0 > $FILE"
+      done
+
+      # Turn of power LED
+      [ -e "/proc/acpi/ibm/led" ] &&
+        sudo su -c "echo '0 off' > /proc/acpi/ibm/led"
+
+    else
+
+      error "User '$(whoami)' is not allowed to run sudo!"
+
+    fi
+    
+    WAIT=$(sleep 2)
+
+    # Change key bindings
+    xmodmap -e "keycode 112 = Home"
+    xmodmap -e "keycode 117 = End"
+    xmodmap -e "keycode 107 = Menu"
+    xmodmap -e "keycode 110 = Prior"
+    xmodmap -e "keycode 115 = Next"
+
+  fi
+
+}
+
+start() {
+
+  layout
+  keybinds
+
+}
+
+. "$MODULES/init"

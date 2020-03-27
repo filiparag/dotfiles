@@ -1,0 +1,70 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: notify-send
+# WMRC_FLAGS:
+
+PID_FILE="/tmp/low_battery_daemon@$(whoami)"
+
+daemon() {
+
+  WARN_LEVEL=20
+  CHECK_FREQ=30
+  NOTIFY_DELAY=55
+  NOTIFY_TIME=5
+  NOTIFY_TPREV=0
+
+  while true; do
+
+    CURR_LEVEL=$(cat /sys/class/power_supply/BAT0/capacity)
+    CURR_STATUS=$(cat /sys/class/power_supply/BAT0/status)
+    CURR_TIMEST=$(date +%s)
+
+    if [ $CURR_LEVEL -le $WARN_LEVEL ] && \
+       [ $CURR_TIMEST -ge $(( NOTIFY_TPREV + NOTIFY_DELAY )) ] && \
+       [ "$CURR_STATUS" = "Discharging" ]; then
+
+      NOTIFY_TPREV="$CURR_TIMEST"
+      
+      notify-send -u low -t $(( NOTIFY_TIME * 1000 )) \
+        -i battery-empty-charging "Low battery" "Only $CURR_LEVEL% charge remaining!"
+      
+      sleep "$NOTIFY_DELAY"
+
+    else
+      
+      sleep "$CHECK_FREQ"
+
+    fi
+
+  done
+
+}
+
+start() {
+
+  [ -d "/sys/class/power_supply/BAT0" ] ||
+    error "System has no battery!" fatal 2
+
+  [ -f "$PID_FILE" ] && ps "$(cat "$PID_FILE")" >/dev/null &&
+    error "Low battery daemon is already running!" fatal 3
+
+  daemon &
+
+  echo $! > "$PID_FILE"
+
+}
+
+stop() {
+
+  [ -f "$PID_FILE" ] ||
+    exit
+
+  PID="$(cat "$PID_FILE")"
+
+  ps "$PID" >/dev/null ||
+    error "Low battery daemon is not running!" fatal 4
+
+  kill -9 "$PID"
+
+}
+
+. "$MODULES/init"

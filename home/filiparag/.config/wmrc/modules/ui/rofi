@@ -1,0 +1,88 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: rofi, xdotool, xclip, perl, xdg-open
+# WMRC_FLAGS:
+
+start() {
+
+  rofi -no-lazy-grab -modi drun,run,window,ssh,combi \
+    -combi-modi drun,window,run,ssh \
+    -columns 2 \
+    -show combi \
+    -show-icons true \
+    -terminal "$TERMINAL"
+
+}
+
+calc() {
+
+  rofi -no-lazy-grab -modi calc -show calc
+
+}
+
+files() {
+
+  CURRENT="$HOME"
+
+  while [ -n "$CURRENT" ]; do
+    
+    LL="$(find "$CURRENT" -maxdepth 1 \
+        -not -path "$CURRENT" \
+        -not -name '.*' \
+        -printf '%P\n' | \
+        sort)"
+    [ "$CURRENT" != "/" ] && LL=".\n..\n$LL"
+
+    CUR="$CURRENT"
+    [ "$(echo "$CUR" | wc -m)" -gt 32 ] && \
+      CUR="$(echo "$CUR" | awk -F/ '{for (i=1;i<NF;i++) \
+          $i=substr($i,1,1+($i~/^[.]/))} 1' OFS=/)"
+
+    SEL="$(echo "$LL" |
+      rofi -dmenu -p "$CUR" -i \
+      -columns 1)"
+
+    [ -z "$SEL" ] && return
+
+    CURRENT="$(realpath "$CURRENT/$SEL")"
+
+    if [ "$SEL" = "." ]; then
+      "$FILEMGR" "$CURRENT" &
+      return
+    elif [ "$SEL" != ".." ] && ! [ -d "$CURRENT" ]; then
+      xdg-open "$CURRENT" &
+      return
+    fi
+
+  done
+
+}
+
+character() {
+
+  CHARACTER_FILE="$HOME/.cache/characters.txt"
+
+  [ -f "$CHARACTER_FILE" ] && \
+    TXT="$(cat "$CHARACTER_FILE")" || \
+    error "Character list file '$CHARACTER_FILE' is missing!" fatal 2
+
+  RG="\[(.+)\]"
+  LIST="$(echo "$TXT" | perl -n -e"/^$RG$RG$RG/ && print \"\$1  \$3 (\$2)\n\"")"
+
+  SEL="$(echo "$LIST" |
+    rofi -dmenu -p 'character' -i \
+    -columns 3 \
+		-icon-theme -font "Twitter Color Emoji 11")"
+
+  if [ -n "$SEL" ]; then
+
+    LINE="$(echo "$LIST" | grep -n "$SEL" | cut -f1 -d:)p"
+    CHAR="$(echo "$TXT" | sed -n "$LINE" | sed "s/\[//; s/\]\[.*//")"
+
+    echo "$CHAR" | xclip -in -selection clipboard
+    xdotool type "$CHAR"
+
+  fi
+
+}
+
+. "$MODULES/init"

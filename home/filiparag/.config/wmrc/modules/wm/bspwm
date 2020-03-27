@@ -1,0 +1,119 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: bspwm, bspc, xrandr
+# WMRC_FLAGS:
+
+preferences() {
+
+  # Visual options
+  bspc config top_padding 				      0
+  bspc config border_width 				      1
+  bspc config window_gap          		  0
+  bspc config split_ratio         		  0.5
+  bspc config borderless_monocle  		  true
+  bspc config single_monocle 				    true
+  bspc config gapless_monocle     		  true
+  bspc config normal_border_color 		  "#040404"
+  bspc config active_border_color 		  "#454545"
+  bspc config focused_border_color 		  "#606060"
+  bspc config ignore_ewmh_fullscreen    none
+  bspc config pointer_follows_monitor	  true
+  bspc config pointer_follows_focus		  false
+
+  # Multihead behavior
+  bspc config remove_disabled_monitors 	true
+  bspc config remove_unplugged_monitors true
+
+  # Focusing behavior
+  bspc config focus_follows_pointer 		false
+
+  # Rules
+  bspc rule -a File-roller 				      pseudo_tiled=on
+  bspc rule -a feh 						          pseudo_tiled=on
+  bspc rule -a sxiv 						        pseudo_tiled=on
+
+  # Default cursor
+  xsetroot -cursor_name 					      left_ptr
+
+}
+
+workspaces() {
+
+  local MONITORS
+  local W
+  local M
+
+  MONITORS="$(xrandr --query | grep " connected" | cut -d" " -f1)"
+  W=9
+
+  for M in $MONITORS; do
+    bspc monitor "$M" -d $(seq -s ' ' "$W") 0
+  done
+
+}
+
+move_node() {
+
+  WIN="$(bspc query -T -n | perl -0777 -nle 'print "$1, " while m/\"className\":\"([^\\"]+)\"/gm' | sed -e 's/\, $//')"
+	WINID="$(bspc query -N -n)"
+  MON="$(bspc query -M --names)"
+  DCUR="$(bspc query -D -d)"
+	DSK=""
+	for M in $MON; do
+		for DID in $(bspc query -D -m "$M"); do
+			[ "$DID" = "$DCUR" ] && continue
+      D="$(bspc query -D -m "$M" -d "$DID" --names)"
+			N="$(bspc query -T -d "$DID" | perl -0777 -nle 'print "$1, " while m/\"className\":\"([^\\"]+)\"/gm' | sed -e 's/\, $//')"
+			DSK="$DSK\n$D :: $M"
+      [ -z "$N" ] || DSK="$DSK :: $N"
+		done
+	done
+	SEL="$(echo "$DSK" | awk 'NF' | rofi -dmenu -i -columns 1 -p "Move $WIN to desktop")"
+  [ -z "$SEL" ] && return
+  TAR="$(bspc query -D -m "$(echo "$SEL" | cut -d' ' -f3)" -d "$(echo "$SEL" | cut -d' ' -f1)")"
+  bspc node "$WINID" -d "$TAR" --follow
+
+}
+
+swap_desktop() {
+
+  MON="$(bspc query -M --names)"
+  DCUR="$(bspc query -D -d)"
+	DSK=""
+	for M in $MON; do
+		for DID in $(bspc query -D -m "$M"); do
+			[ "$DID" = "$DCUR" ] && continue
+      D="$(bspc query -D -m "$M" -d "$DID" --names)"
+			N="$(bspc query -T -d "$DID" | perl -0777 -nle 'print "$1, " while m/\"className\":\"([^\\"]+)\"/gm' | sed -e 's/\, $//')"
+			DSK="$DSK\n$D :: $M"
+      [ -z "$N" ] || DSK="$DSK :: $N"
+		done
+	done
+	SEL="$(echo "$DSK" | awk 'NF' | rofi -dmenu -i -columns 1 -p 'Swap current desktop with')"
+  [ -z "$SEL" ] && return
+  SRC="$(bspc query -D -d)"
+  TAR="$(bspc query -D -m "$(echo "$SEL" | cut -d' ' -f3)" -d "$(echo "$SEL" | cut -d' ' -f1)")"
+  bspc desktop "$TAR" --rename "$(bspc query -D -d --names)"
+  bspc desktop "$SRC" --rename "$(echo "$SEL" | cut -d' ' -f1)"
+  bspc desktop --swap "$TAR" --follow
+
+}
+
+swap_monitor() {
+
+  MON="$(bspc query -M --names | sed "/$(bspc query -M -m --names)/d")"
+	SEL="$(echo "$MON" | rofi -dmenu -i -columns 1 -p 'Swap current monitor with')"
+  [ -z "$SEL" ] && return
+  bspc monitor -s "$(bspc query -M -m "$SEL")"
+
+}
+
+start() {
+
+  preferences
+  workspaces
+
+  echo "$DISPLAY" > "/tmp/x11_$USER"
+
+}
+
+. "$MODULES/init"

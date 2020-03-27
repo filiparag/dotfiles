@@ -1,0 +1,58 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: dunstify
+# WMRC_FLAGS: async_lock
+
+NO_TITLE="Notification has no title provided!"
+
+ask() {
+
+  [ -z "$2" ] && error "$NO_TITLE" fatal 2
+  echo "[Prompt] $2: $3" | sed 's:<i>::g; s:</i>::g' >&1
+
+  INDEX=1
+  CHOICES=""
+  for P in "$@"; do
+    [ $INDEX -gt 3 ] && \
+      CHOICES="$CHOICES -A $INDEX,$(echo "$P" | sed "s/ /_/g")"
+    INDEX=$((INDEX + 1))
+  done
+
+  [ -z "$CHOICES" ] && error "Prompt '$2' has no answer options provided!" fatal 3
+
+  ANS="$(dunstify -u low -i "dialog-question" "$2" "$3" -a ask $CHOICES)"
+
+  [ "$ANS" -lt 4 ] && error "Prompt '$2' not answered!" fatal 4
+
+  INDEX=1
+  for P in "$@"; do
+    [ "$INDEX" = "$ANS" ] && echo "$P" && exit
+    INDEX=$((INDEX + 1))
+  done
+  
+}
+
+info() {
+
+  [ -z "$2" ] && error "$NO_TITLE" fatal 2
+  echo "[Info] $2: $3" | sed 's:<i>::g; s:</i>::g' >&1
+  dunstify -u low -i "dialog-info" "$2" "$3"
+
+}
+
+warn() {
+
+  [ -z "$2" ] && error "$NO_TITLE" fatal 2
+  echo "[Warning] $2: $3" | sed 's:<i>::g; s:</i>::g' >&1
+  dunstify -u low -i "dialog-warning" "$2" "$3"
+
+}
+
+err() {
+
+  [ -z "$2" ] && error "$NO_TITLE" fatal 2
+  echo "[Error] $2: $3" | sed 's:<i>::g; s:</i>::g' >&2
+  dunstify -u low -i "dialog-error" "$2" "$3"
+
+}
+
+. "$MODULES/init"

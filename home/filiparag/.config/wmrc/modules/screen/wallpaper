@@ -1,0 +1,15 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: feh
+# WMRC_FLAGS:
+
+start() {
+
+  BCK_IMG="$HOME/Pictures/wallpaper.png"
+  [ -f "$BCK_IMG" ] || \
+    error "Wallpaper image '$BCK_IMG' is missing!" fatal 2
+
+  DISPLAY=$DISPLAY feh --bg-fill "$BCK_IMG"
+
+}
+
+. "$MODULES/init"

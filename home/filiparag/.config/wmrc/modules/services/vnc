@@ -1,0 +1,30 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: x0vncserver, pgrep
+# WMRC_FLAGS:
+
+start() {
+
+  [ -f "$HOME/.vnc/passwd" ] ||
+    error "Password for VNC server is not set!" fatal 2
+
+  pgrep -u "$(whoami)" x0vncserver >/dev/null &&
+    error "VNC server is already running!" fatal 3
+
+  x0vncserver -SecurityTypes=TLSVnc \
+		--PasswordFile="$HOME/.vnc/passwd" >/dev/null &
+
+  [ -z $? ] ||
+    error "Error starting VNC server!" fatal 4
+
+}
+
+stop() {
+
+  pgrep -u "$(whoami)" x0vncserver >/dev/null ||
+    error "VNC server is not running!" fatal 5
+  
+  killall -9 x0vncserver >/dev/null &
+
+}
+
+. "$MODULES/init"

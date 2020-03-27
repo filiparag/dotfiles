@@ -1,0 +1,85 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: pgrep
+# WMRC_FLAGS:
+
+APPS='unclutter -idle 1
+      redshift-qt
+      dunst
+      flameshot
+      keepassxc
+      synergy
+      signal-desktop --start-in-tray
+      gajim
+      wire-desktop --startup'
+
+app_list() {
+
+  APPLIST=""
+
+  if [ -n "$2" ]; then
+    
+    for A in $(echo "$*" | sed "s/$1//g"); do
+    
+      APPLIST="$APPLIST\n$(echo "$APPS" |
+              grep -P "^ *$A( |$)" ||
+              error "Application '$A' is not listed!")"
+    
+    done
+
+  else
+
+    APPLIST="$APPS"
+
+  fi
+
+}
+
+start() {
+
+  local CMD
+  local EXE
+
+  app_list "$@"
+
+  for A in $(echo "$APPLIST" | sed 's/^ *//g; s/ /\&nbsp/g'); do
+    
+    CMD="$(echo "$A" | sed 's/\&nbsp/ /g')"
+    EXE="$(echo "$CMD" | cut -d' ' -f1)"
+
+    if [ -n "$(command -v "$EXE")" ]; then
+      if pgrep -u "$(whoami)" "$EXE" >/dev/null; then
+        error "Application '$EXE' is already running!"
+        continue
+      else
+        $CMD >/dev/null 2>&1 &
+      fi
+    else
+      error "Application '$EXE' is not installed!"
+    fi
+
+  done
+
+}
+
+stop() {
+
+  local EXE
+
+  app_list "$@"
+
+  for A in $(echo "$APPLIST" | sed 's/^ *//g; s/ /\&nbsp/g'); do
+    
+    EXE="$(echo "$A" | sed 's/\&nbsp/ /g' | cut -d' ' -f1)"
+
+    if pgrep -u "$(whoami)" "$EXE" >/dev/null; then
+      killall -u "$(whoami)" -9 "$EXE" &
+    else
+      error "Application '$EXE' is not running!"
+      continue
+    fi
+
+  done
+
+}
+
+. "$MODULES/init"
