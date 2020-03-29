@@ -10,7 +10,8 @@ APPS='unclutter -idle 1
       synergy
       signal-desktop --start-in-tray
       gajim
-      wire-desktop --startup'
+      wire-desktop --startup
+      geary --gapplication-service'
 
 app_list() {
 

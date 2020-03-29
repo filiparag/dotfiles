@@ -23,6 +23,10 @@ if [ -f "$usermodmap" ]; then
     xmodmap "$usermodmap"
 fi
 
+#dbus-update-activation-environment --systemd DISPLAY
+#eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+#export SSH_AUTH_SOCK
+
 ! command -v wmrc >/dev/null && \
     >&2 echo "wmrc not found in PATH!" && exit 1
 

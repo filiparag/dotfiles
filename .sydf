@@ -1,4 +1,4 @@
-&f079e30b6a6d7d422578754441068d94ee165d7a#
+&1f0e8cd0932561cbfbffa337da25275867833df5#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -19,6 +19,7 @@
 >/home/filiparag/.config/rofi#
 %/home/filiparag/.config/sxhkd:/home/filiparag/.config;/sxhkd#
 >/home/filiparag/.config/viper4linux#
+>/home/filiparag/.config/wmrc#
 >/home/filiparag/.local/share/omf#
 %/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag/.mozilla/firefox/ruelumrt.default;/chrome#
 %/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag/.mozilla/firefox;/ruelumrt.default/chrome#
@@ -30,4 +31,3 @@
 !.stfolder#
 !.stignore#
 !.stversions#
->/home/filiparag/.config/wmrc#

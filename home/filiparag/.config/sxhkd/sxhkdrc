@@ -62,15 +62,15 @@ super + @F1
 
 # Move selected nodes
 super + @F2
-	$MODULES/ui/bspwm move_node
+	$MODULES/wm/bspwm move_node
 	
 # Swap desktops
 super + @F3
-	$MODULES/ui/bspwm swap_desktop
+	$MODULES/wm/bspwm swap_desktop
 	
 # Swap monitors
 super + @F4
-	$MODULES/ui/bspwm swap_monitor
+	$MODULES/wm/bspwm swap_monitor
 
 # Change window tiling mode
 super + shift + @space
@@ -246,23 +246,27 @@ super + BackSpace
 
 # Launch Firefox
 super + b
-	firefox
+	$BROWSER
 
 # Firefox fix
-super + q
+ctrl + q
 	true
 
 # Launch Firefox in private mode
 super + shift + b
 	firefox -private-window
 
-# Launch PCManFM file manager
+# Launch file manager
 super + n
 	$FILEMGR
 
-# Launch PCManFM file manager as root
+# Launch file manager as root
 super + shift + n
 	sudo $FILEMGR
+
+# Launch mail client
+super + m
+	$MAILCLIENT
 
 # Launch Visual Studio Code
 super + v
