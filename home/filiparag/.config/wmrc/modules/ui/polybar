@@ -36,7 +36,10 @@ start() {
   esac
 
   for M in $MONITORS; do
-    MONITOR=$M WLP=$WLP ENP=$ENP MNT=$MNT polybar --reload main &
+    [ "$M" = "$M_PRIMARY" ] && \
+      TYPE="primary" || \
+      TYPE="secondary"
+    MONITOR="$M" WLP="$WLP" ENP="$ENP" MNT="$MNT" polybar --reload "$TYPE" &
   done
 
 }
