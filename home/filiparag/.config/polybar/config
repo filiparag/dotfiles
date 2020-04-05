@@ -30,7 +30,7 @@ blue-gray 	= #546e7a
 
 [size]
 
-width 		= 100%
+width 		= 100%:-5
 height 		= 25
 offset 		= 0
 

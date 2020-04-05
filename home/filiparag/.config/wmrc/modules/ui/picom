@@ -1,0 +1,23 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: picom
+# WMRC_FLAGS:
+
+start() {
+
+  [ -z "$(pgrep -u "$(whoami)" picom)" ] || \
+    error "Picom is already running!" fatal 2
+
+  picom &
+
+}
+
+stop() {
+
+  [ -z "$(pgrep -u "$(whoami)" picom)" ] && \
+    error "Picom is not running!" fatal 3
+
+  killall -u "$(whoami)" -9 picom > /dev/null
+
+}
+
+. "$MODULES/init"
