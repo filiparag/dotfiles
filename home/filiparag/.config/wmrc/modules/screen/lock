@@ -111,7 +111,11 @@ smart_lock() {
     xset dpms force off
   fi
 
+  "$MODULES/ui/notify" pause
+
   lock 'lock' 'wait'
+
+  "$MODULES/ui/notify" resume
 
   xkb-switch -s "$LANG"
   if [ "$CAPS" = "on" ]; then

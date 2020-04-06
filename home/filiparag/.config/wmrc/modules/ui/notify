@@ -55,4 +55,16 @@ err() {
 
 }
 
+pause() {
+
+  pkill -u $USER -USR1 dunst
+
+}
+
+resume() {
+
+  pkill -u $USER -USR2 dunst
+
+}
+
 . "$MODULES/init"

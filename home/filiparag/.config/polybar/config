@@ -115,7 +115,7 @@ font-1 = "Material Design Icons:style=Regular:size=10;0"
 
 modules-left = bspwm
 modules-center =
-modules-right = date host
+modules-right = updates monitor host
 
 separator = %{F#66FFFFFF}|%{F-}
 
@@ -401,3 +401,40 @@ interval = 180
 format = 󰪫 <label>
 format-background = ${color.bg}
 format-foreground = ${color.fg}
+
+[module/updates]
+
+type = custom/script
+
+exec = yay -Qu | wc -l
+exec-if = yay -Syy && yay -Qu | wc -l | xargs -I{} test {} -gt 0
+tail = false
+interval = 3600
+
+label = %output%
+format = 󰣇 <label>
+format-background = ${color.bg}
+format-foreground = ${color.fg}
+
+click-left = $TERMINAL -e yay
+
+[module/monitor]
+
+type = custom/script
+
+exec = echo $MONITOR
+tail = false
+interval = 3900
+
+label = %output%
+format = 󰍹 <label>
+format-background = ${color.bg}
+format-foreground = ${color.fg}
+
+[module/window]
+
+type = internal/xwindow
+
+format = <label>
+label = 󰖯 %title%
+label-maxlen = 80

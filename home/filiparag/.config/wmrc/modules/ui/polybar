@@ -15,9 +15,9 @@ start() {
   local M_ALL
   local M
 
-  WLP=$(ip -o link show | awk -F': ' '{print $2}' | grep wlp)
-	ENP=$(ip -o link show | awk -F': ' '{print $2}' | grep enp)
-	MNT=$(lsblk | awk '/\//{printf "mount-"NR-2" = "$7"\n"}')
+  WLP="$(ip -o link show | awk -F': ' '{print $2}' | grep wlp)"
+	ENP="$(ip -o link show | awk -F': ' '{print $2}' | grep enp)"
+	MNT="$(lsblk | awk '/\//{printf "mount-"NR-2" = "$7"\n"}')"
 
   M_PRIMARY="$(xrandr --query | grep " primary" | cut -d" " -f1)"
   M_ALL="$(xrandr --query | grep " connected" | cut -d" " -f1)"

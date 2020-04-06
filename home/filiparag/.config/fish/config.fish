@@ -33,6 +33,9 @@ set -x BROWSER  "firefox"
 
 set -x HOSTNAME (hostname)
 
+# scripts
+set -x PATH     "$PATH:$HOME/.scripts"
+
 #  Go path
 set -x GOPATH   $HOME/Projects/go
 set -x PATH     "$PATH:$GOPATH/bin"
