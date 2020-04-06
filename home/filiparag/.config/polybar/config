@@ -6,7 +6,7 @@ black 		= #000000
 
 bg 			= #00000000
 fg 			= #BBFFFFFF
-mg 			= #44FFFFFF
+mg 			= #40FFFFFF
 
 red 		= #e53935
 pink 		= #d81b60
@@ -60,9 +60,9 @@ module-margin = 1
 font-0 = "Iosevka:size=10;0"
 font-1 = "Material Design Icons:style=Regular:size=10;0"
 
-modules-left = bspwm launcher
+modules-left = bspwm
 modules-center =
-modules-right = battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date host
+modules-right = battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date
 
 separator = %{F#66FFFFFF}|%{F-}
 
@@ -162,7 +162,7 @@ enable-scroll = true
 reverse-scroll = false
 fuzzy-match = true
 
-format = <label-state><label-monitor>
+format = <label-state>
 
 label-monitor = 󰍹 %name%
 label-focused = %name%
@@ -238,13 +238,13 @@ accumulate-stats = false
 unknown-as-up = false
 
 format-connected = 󱊪 <label-connected>
-format-disconnected = 󰌙 <label-disconnected>
+format-disconnected = 󰌙
 format-packetloss = 󰌚 <label-connected>
 
 format-disconnected-foreground = ${color.mg}
 
-label-connected = %local_ip% %linkspeed%
-label-disconnected = %ifname%
+label-connected = %local_ip%
+label-disconnected = 
 
 [module/wireless]
 
@@ -258,13 +258,13 @@ accumulate-stats = false
 unknown-as-up = false
 
 format-connected = <ramp-signal> <label-connected>
-format-disconnected = 󰤮 <label-disconnected>
+format-disconnected = 󰤮
 format-packetloss = 󰌚 <label-connected>
 
 format-disconnected-foreground = ${color.mg}
 
 label-connected = %essid% %local_ip%
-label-disconnected = %ifname%
+label-disconnected = 
 
 ramp-signal-0 = 󰤯
 ramp-signal-1 = 󰤟
@@ -283,7 +283,7 @@ blacklist-1 = scroll lock
 format = 󰌓 <label-layout><label-indicator>
 format-spacing = 0
 
-label-layout = %name%
+label-layout = %layout% %number%
 label-layout-padding = 0
 
 label-indicator-on = +%name%

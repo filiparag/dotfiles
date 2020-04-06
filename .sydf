@@ -1,4 +1,4 @@
-&89c143d5bfb30e88e609074f29859f9aba308836#
+&022107152fce11be3f44f5c8f2a4b8bfefcc5590#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -31,3 +31,4 @@
 !.stfolder#
 !.stignore#
 !.stversions#
+%/home/filiparag/.config/picom:/home/filiparag/.config;/picom#

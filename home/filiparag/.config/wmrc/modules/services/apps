@@ -11,7 +11,8 @@ APPS='unclutter -idle 1
       signal-desktop --start-in-tray
       gajim
       wire-desktop --startup
-      geary --gapplication-service'
+      mailspring --background
+      '
 
 app_list() {
 

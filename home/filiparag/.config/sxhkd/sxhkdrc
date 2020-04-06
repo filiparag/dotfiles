@@ -33,16 +33,16 @@ super + ctrl + shift + q
 	bspc node -k
 
 # Change desktop on current monitor
-super + {1-9}
-	bspc desktop -f {1-9}.local
+super + {0-9}
+	bspc desktop -f {0-9}.local
 
 # Move through neighbouring desktops on current monitor
 super + {@Home,@End}
 	bspc desktop -f {prev,next}.local
 
 # Move focused window to desktop on current monitor
-super + shift + {1-9}
-	bspc node -d {1-9}.local -f
+super + shift + {0-9}
+	bspc node -d {0-9}.local -f
 
 # Move focused window to neighbouring desktop on current monitor
 super + shift + {@Home,@End}
