@@ -1,10 +1,18 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
+SETUVAR BROWSER:firefox
+SETUVAR EDITOR:vim
+SETUVAR EMAIL:filip\x40parag\x2ers
 SETUVAR FZF_DEFAULT_OPTS:\x2d\x2dheight\x2040\x25
 SETUVAR --export FZF_LEGACY_KEYBINDINGS:0
 SETUVAR FZF_PREVIEW_DIR_CMD:ls
 SETUVAR FZF_PREVIEW_FILE_CMD:head\x20\x2dn\x2010
 SETUVAR FZF_TMUX_HEIGHT:40\x25
+SETUVAR --path GOPATH:/home/filiparag/Projects/go
+SETUVAR NAME:Filip\x20Parag
+SETUVAR --path PATH:/usr/local/sbin\x1e/usr/local/bin\x1e/usr/bin\x1e/usr/bin/site_perl\x1e/usr/bin/vendor_perl\x1e/usr/bin/core_perl\x1e/home/filiparag/\x2escripts\x1e/home/filiparag/Projects/go/bin\x1e/home/filiparag/\x2elocal/bin\x1e/home/filiparag/\x2escripts
+SETUVAR QT_AUTO_SCREEN_SCALE_FACTOR:0
+SETUVAR QT_QPA_PLATFORMTHEME:qt5ct
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
 SETUVAR Z_DATA:/home/filiparag/\x2elocal/share/z/data
@@ -14,14 +22,11 @@ SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
 SETUVAR __fish_initialized:3100
-SETUVAR _fish_abbr_akita:ssh\x20\x2dJ\x20serveo\x2enet\x20akita
-SETUVAR _fish_abbr_badger:ssh\x20\x2dJ\x20serveo\x2enet\x20badger
-SETUVAR _fish_abbr_lapwing:ssh\x20\x2dJ\x20serveo\x2enet\x20lapwing
 SETUVAR _fish_abbr_led:sudo\x20bash\x20\x2dc\x20\x22echo\x20\x270\x20off\x27\x20\x3e\x20/proc/acpi/ibm/led\x22
-SETUVAR _fish_abbr_tapir:ssh\x20\x2dJ\x20serveo\x2enet\x20tapir
-SETUVAR _fish_abbr_yr:yay\x20\x2dRcs
+SETUVAR _fish_abbr_yr:yay\x20\x2dRcsn
 SETUVAR _fish_abbr_ys:yay\x20\x2dS
 SETUVAR _fish_abbr_yss:yay\x20\x2dSs
+SETUVAR abc:x
 SETUVAR fish_color_autosuggestion:555\x1ebrblack
 SETUVAR fish_color_cancel:\x2dr
 SETUVAR fish_color_command:005fd7

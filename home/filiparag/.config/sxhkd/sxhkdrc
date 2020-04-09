@@ -52,6 +52,10 @@ super + shift + {@Home,@End}
 super + f 
 	bspc desktop -l next
 
+# Sift through windows in monocle mode
+super + {comma,period}
+  bspc node -f {next,prev}.local
+
 # Toggle fullscreen mode for focused window
 super + shift + f 
 	bspc node -t ~fullscreen

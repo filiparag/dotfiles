@@ -115,7 +115,7 @@ font-1 = "Material Design Icons:style=Regular:size=10;0"
 
 modules-left = bspwm
 modules-center =
-modules-right = updates monitor host
+modules-right = updates monitor host date
 
 separator = %{F#66FFFFFF}|%{F-}
 
