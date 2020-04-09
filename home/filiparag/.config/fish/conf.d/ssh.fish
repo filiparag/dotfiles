@@ -1,8 +1,8 @@
-set -x SSH_ENV $HOME/.ssh_environment
+set -U SSH_ENV $HOME/.ssh_environment
 
 function start_agent                                                                                                                                                                    
     ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV
-    chmod 500 $SSH_ENV 
+    chmod 600 $SSH_ENV 
     . $SSH_ENV > /dev/null
     ssh-add
 end

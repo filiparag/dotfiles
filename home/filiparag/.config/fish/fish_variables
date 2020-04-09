@@ -13,6 +13,7 @@ SETUVAR NAME:Filip\x20Parag
 SETUVAR --path PATH:/usr/local/sbin\x1e/usr/local/bin\x1e/usr/bin\x1e/usr/bin/site_perl\x1e/usr/bin/vendor_perl\x1e/usr/bin/core_perl\x1e/home/filiparag/\x2escripts\x1e/home/filiparag/Projects/go/bin\x1e/home/filiparag/\x2elocal/bin\x1e/home/filiparag/\x2escripts
 SETUVAR QT_AUTO_SCREEN_SCALE_FACTOR:0
 SETUVAR QT_QPA_PLATFORMTHEME:qt5ct
+SETUVAR SSH_ENV:/home/filiparag/\x2essh_environment
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
 SETUVAR Z_DATA:/home/filiparag/\x2elocal/share/z/data
