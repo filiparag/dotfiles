@@ -1,4 +1,4 @@
-set -U SSH_ENV $HOME/.ssh_environment
+set -x SSH_ENV $HOME/.ssh_environment
 
 function start_agent                                                                                                                                                                    
     ssh-agent -c | sed 's/^echo/#echo/' > $SSH_ENV

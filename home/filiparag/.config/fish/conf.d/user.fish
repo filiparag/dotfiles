@@ -1,6 +1,6 @@
 # Personal environment variables
-set -U NAME     "Filip Parag"
-set -U EMAIL    "filip@parag.rs"
-set -U EDITOR   "vim"
-set -U BROWSER  "firefox"
-set -U PATH     "$PATH:$HOME/.scripts"
+set -x NAME     "Filip Parag"
+set -x EMAIL    "filip@parag.rs"
+set -x EDITOR   "vim"
+set -x BROWSER  "firefox"
+set -x PATH     "$PATH:$HOME/.scripts"

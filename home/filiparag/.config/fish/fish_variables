@@ -1,24 +1,26 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR BROWSER:firefox
-SETUVAR EDITOR:vim
-SETUVAR EMAIL:filip\x40parag\x2ers
+SETUVAR --export BROWSER:firefox
+SETUVAR --export EDITOR:vim
+SETUVAR --export EMAIL:filip\x40parag\x2ers
 SETUVAR FZF_DEFAULT_OPTS:\x2d\x2dheight\x2040\x25
 SETUVAR --export FZF_LEGACY_KEYBINDINGS:0
 SETUVAR FZF_PREVIEW_DIR_CMD:ls
 SETUVAR FZF_PREVIEW_FILE_CMD:head\x20\x2dn\x2010
 SETUVAR FZF_TMUX_HEIGHT:40\x25
-SETUVAR --path GOPATH:/home/filiparag/Projects/go
-SETUVAR NAME:Filip\x20Parag
-SETUVAR --path PATH:/usr/local/sbin\x1e/usr/local/bin\x1e/usr/bin\x1e/usr/bin/site_perl\x1e/usr/bin/vendor_perl\x1e/usr/bin/core_perl\x1e/home/filiparag/\x2escripts
-SETUVAR QT_AUTO_SCREEN_SCALE_FACTOR:0
-SETUVAR QT_QPA_PLATFORMTHEME:qt5ct
-SETUVAR SSH_ENV:/home/filiparag/\x2essh_environment
+SETUVAR --export --path GOPATH:/home/filiparag/Projects/go
+SETUVAR --export NAME:Filip\x20Parag
+SETUVAR --path PATH:/usr/local/sbin\x1e/usr/local/bin\x1e/usr/bin\x1e/home/filiparag/\x2escripts
+SETUVAR --export QT_AUTO_SCREEN_SCALE_FACTOR:0
+SETUVAR --export QT_QPA_PLATFORMTHEME:qt5ct
+SETUVAR --export SSH_ENV:/home/filiparag/\x2essh_environment
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
 SETUVAR Z_DATA:/home/filiparag/\x2elocal/share/z/data
 SETUVAR Z_DATA_DIR:/home/filiparag/\x2elocal/share/z
 SETUVAR Z_EXCLUDE:/home/filiparag
+SETUVAR --export _JAVA_AWT_WM_NONREPARENTING:1
+SETUVAR --export _JAVA_OPTIONS:\x2dDawt\x2euseSystemAAFontSettings\x3don\x20\x2dDswing\x2eaatext\x3dtrue
 SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
