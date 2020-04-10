@@ -13,6 +13,7 @@
 >/home/filiparag/.config/i3#
 >/home/filiparag/.config/omf#
 %/home/filiparag/.config/pcmanfm/default:/home/filiparag/.config;/pcmanfm/default#
+%/home/filiparag/.config/picom:/home/filiparag/.config;/picom#
 %/home/filiparag/.config/polybar:/home/filiparag/.config;/polybar#
 >/home/filiparag/.config/qt5ct#
 >/home/filiparag/.config/ranger#
@@ -31,4 +32,3 @@
 !.stfolder#
 !.stignore#
 !.stversions#
-%/home/filiparag/.config/picom:/home/filiparag/.config;/picom#
