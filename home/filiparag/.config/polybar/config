@@ -455,8 +455,8 @@ format-foreground = ${color.fg}
 
 click-left = deadbeef --toggle-pause
 click-right = deadbeef
-double-click-left = deadbeef --prev
-double-click-right = deadbeef --next
+double-click-left = deadbeef --next
+double-click-right = deadbeef --prev
 
 # scroll-up = deadbeef --volume +1
 # scroll-down = deadbeef --volume -1

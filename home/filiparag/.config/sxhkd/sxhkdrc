@@ -92,11 +92,16 @@ super + {@Up,@Down,@Left,@Right}
 		bspc node -f {north,south,west,east}; \
 	fi
 
-# Move window if tiling
+# Move window if tiled
 super + shift + {@Up,@Down,@Left,@Right}
 	if [ -z "$(bspc query -N -n focused.floating)" ]; then \
 		node=$(bspc query -N -n); \
-		bspc node -s {north,south,west,east}; \
+		desktop=$(bspc query -D -d); \
+		dir={north,south,west,east}; \
+		bspc node -f $dir.local && \
+		bspc node -f ${node} && \
+		bspc node -s $dir || \
+		bspc node -m $dir; \
 		bspc node -f ${node}; \
 	fi
 
@@ -109,26 +114,26 @@ super + {Up,Down,Left,Right}
 # Resize window (Up)
 super + alt + @Up
 	if [ "$(bspc query -N -n focused.tiled)" ]; then \
-		bspc node @north -r -10; \
-		bspc node @south -r -10; \
+		bspc node -z bottom 0 -10 || \
+		bspc node -z top 0 -10; \
 	else \
-		bspc node -z bottom 0 -20; \
+		bspc node -z bottom 0 -10; \
 	fi
 
 # Resize window (Down)
 super + alt + @Down
 	if [ "$(bspc query -N -n focused.tiled)" ]; then \
-		bspc node @north -r +10; \
-		bspc node @south -r +10; \
+		bspc node -z bottom 0 +10 || \
+		bspc node -z top 0 +10; \
 	else \
-		bspc node -z bottom 0 +20; \
+		bspc node -z bottom 0 +10; \
 	fi
 
 # Resize window (Left)
 super + alt + @Left
 	if [ "$(bspc query -N -n focused.tiled)" ]; then \
-		bspc node @east -r -10; \
-		bspc node @west -r -10; \
+		bspc node -z left -10 0 || \
+		bspc node -z right -10 0; \
 	else \
 		bspc node -z right -10 0; \
 	fi
@@ -136,19 +141,11 @@ super + alt + @Left
 # Resize window (Right)
 super + alt + @Right
 	if [ "$(bspc query -N -n focused.tiled)" ]; then \
-		bspc node @east -r +10; \
-		bspc node @west -r +10; \
+		bspc node -z left +10 0 || \
+		bspc node -z right +10 0; \
 	else \
 		bspc node -z right +10 0; \
 	fi
-
-# Preselect
-super + ctrl + {@Up,@Down,@Left,@Right}
- 	bspc node -p {north,south,west,east}
-
-# Cancel preselect
-super + Escape
-	bspc node -p cancel
 
 # Rotate current leaf
 super + r
@@ -231,10 +228,6 @@ XF86Launch1
 # Lock screen and turn off screen
 super + l
 	$WMRC lock
-
-# Hardened mode (hide polybar and notifications)
-# super + h
-# 	$MODULES/interface/hardened_toggle
 
 # Launch terminal
 super + Return
