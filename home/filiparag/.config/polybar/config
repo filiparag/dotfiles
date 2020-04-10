@@ -60,7 +60,7 @@ module-margin = 1
 font-0 = "Iosevka:size=10;0"
 font-1 = "Material Design Icons:style=Regular:size=10;0"
 
-modules-left = bspwm
+modules-left = bspwm window
 modules-center =
 modules-right = battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date
 
@@ -114,7 +114,7 @@ font-0 = "Iosevka:size=10;0"
 font-1 = "Material Design Icons:style=Regular:size=10;0"
 
 modules-left = bspwm
-modules-center =
+modules-center = deadbeef
 modules-right = updates monitor host date
 
 separator = %{F#66FFFFFF}|%{F-}
@@ -438,3 +438,25 @@ type = internal/xwindow
 format = <label>
 label = 󰖯 %title%
 label-maxlen = 80
+
+[module/deadbeef]
+
+type = custom/script
+
+exec = deadbeef --nowplaying-tf '$if(%isplaying%,󰎇 )$if(%ispaused%,󰎊 )$if(%artist%,$left(%artist%,20) - )$left(%title%,40)'
+exec-if = deadbeef --nowplaying-tf '%isplaying% %ispaused%' | grep '1'
+tail = true
+interval = 1
+
+label = %output%
+format = <label>
+format-background = ${color.bg}
+format-foreground = ${color.fg}
+
+click-left = deadbeef --toggle-pause
+click-right = deadbeef
+double-click-left = deadbeef --prev
+double-click-right = deadbeef --next
+
+# scroll-up = deadbeef --volume +1
+# scroll-down = deadbeef --volume -1

@@ -15,6 +15,7 @@ if status --is-interactive
     alias l            	'lsd --classify --almost-all --icon-theme unicode --icon always --color never --date --group-dirs first'
     alias ll            'lsd --classify --long --almost-all --icon-theme unicode --icon always --blocks name,size,permission,date,user,group --color always --date --group-dirs first'
     alias subl          'subl3'
+    alias dmenu         'rofi -dmenu'
 
     abbr --add ys       'yay -S'
     abbr --add yss      'yay -Ss'

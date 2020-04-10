@@ -172,25 +172,21 @@ super + bracketleft
 	bspc config -d focused window_gap 0; \
 	bspc config -d focused border_width 1
 
-# Change volume using standard keys for all sinks
+# Change volume using standard keys for default sink
 super + {Prior, Next}
-	for sink in `pactl list sinks | grep -E "Sink \#[0-9]+" | sed -r 's/Sink \#//g'`; do \
-	   pactl set-sink-volume $sink {+,-}2%; \
-	done
+	pactl set-sink-volume "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" {+,-}1%
 
-# Change volume using media keys for all sinks
+# Change volume using media keys for default sink
 {XF86AudioRaiseVolume,XF86AudioLowerVolume}
-	for sink in `pactl list sinks | grep -E "Sink \#[0-9]+" | sed -r 's/Sink \#//g'`; do \
-	   pactl set-sink-volume $sink {+,-}2%; \
-	done
+	pactl set-sink-volume "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" {+,-}1%
 
-# Toggle volume using standard keys for all sinks
+# Toggle volume using standard keys for default sink
 super + Insert
-	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
+	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
 
-# Toggle volume using media keys for all sinks
+# Toggle volume using media keys for default sink
 XF86AudioMute
-	pactl list sinks | grep -q Mute:.no && pactl set-sink-mute 0 1 || pactl set-sink-mute 0 0
+	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
 
 # Change brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
@@ -208,9 +204,13 @@ super + {o, XF86AudioMicMute}
 super + XF86AudioMute
 	pavucontrol
 
-# Toggle mute microphone
+# Toggle mute microphone using standard keys
+super + shift + Insert
+	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
+
+# Toggle mute microphone using media keys
 XF86AudioMicMute
-	amixer set Capture toggle
+	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
 
 # Sleep
 super + @Delete
