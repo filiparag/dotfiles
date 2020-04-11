@@ -261,7 +261,7 @@ super + n
 super + shift + n
 	sudo $FILEMGR
 
-# Launch mail client
+# Launch default mail client
 super + m
 	$MAILCLIENT
 
@@ -276,6 +276,22 @@ super + k
 # Launch Sublime Text 3
 super + s
 	subl3
+
+# Launch Signal Messenger
+super + c
+	signal-desktop
+
+# Deadbeef previous track in playlist
+super + @F10
+	deadbeef --prev
+
+# Deadbeef next track in playlist
+super + @F11
+	deadbeef --next
+
+# Deadbeef toggle pause playback
+super + @F12
+	deadbeef --toggle-pause
 
 # Show character menu
 super + z
