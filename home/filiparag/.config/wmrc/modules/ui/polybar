@@ -36,10 +36,25 @@ start() {
   esac
 
   for M in $MONITORS; do
-    [ "$M" = "$M_PRIMARY" ] && \
-      TYPE="primary" || \
-      TYPE="secondary"
-    MONITOR="$M" WLP="$WLP" ENP="$ENP" MNT="$MNT" polybar --reload "$TYPE" &
+
+    WIDTH="$(xrandr --listmonitors | perl -nle "/$M (\d+)/ && print \$1")"
+    HEIGHT="$(xrandr --listmonitors | perl -nle "/$M \d+\/\d+x(\d+)/ && print \$1")"
+
+    if [ "$M" = "$M_PRIMARY" ]; then
+      [ "$WIDTH" -ge 1920 ] && \
+        MOD_L="bspwm window" || MOD_L="bspwm"
+      MOD_C=""
+      MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date"
+      NOTIF="right"
+    else
+      MOD_L="bspwm"
+      MOD_C="deadbeef"
+      MOD_R="updates monitor host date"
+      NOTIF="none"
+    fi
+
+    MONITOR="$M" WLP="$WLP" ENP="$ENP" MNT="$MNT" ML="$MOD_L" MC="$MOD_C" MR="$MOD_R" NOTIF="$NOTIF" polybar --reload "main" &
+
   done
 
 }

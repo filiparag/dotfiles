@@ -1,4 +1,4 @@
-&022107152fce11be3f44f5c8f2a4b8bfefcc5590#
+&8482cc0e04466dada52a400b6960a29e7f6cd4aa#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -14,6 +14,7 @@
 >/home/filiparag/.config/omf#
 %/home/filiparag/.config/pcmanfm/default:/home/filiparag/.config;/pcmanfm/default#
 %/home/filiparag/.config/picom:/home/filiparag/.config;/picom#
+>/home/filiparag/.config/polybar#
 %/home/filiparag/.config/polybar:/home/filiparag/.config;/polybar#
 >/home/filiparag/.config/qt5ct#
 >/home/filiparag/.config/ranger#
