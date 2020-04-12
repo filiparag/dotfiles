@@ -14,6 +14,7 @@ mkdir -p "$HOME/.config"
 echo "$HOME/.sydf" > "$HOME/.config/sydf.conf"
 sydf hook
 sudo systemctl enable sshd
+sudo systemctl enable cronie
 sudo systemctl enable NetworkManager
 sudo systemctl enable "suspend@$USER"
 sudo systemctl enable "syncthing@$USER"
