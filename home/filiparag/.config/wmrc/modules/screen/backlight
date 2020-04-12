@@ -85,4 +85,4 @@ equ() {
 
 }
 
-. "$MODULES/init"
+. "$WMRC_MODULES/init"

@@ -2,11 +2,11 @@
 
 # Show application launcher
 super + d
-	$MODULES/ui/rofi
+	wmrc -r 'ui/rofi'
 
 # Show all running windows
 super + grave
-	$MODULES/ui/rofi files
+	wmrc -r 'ui/rofi(files)'
 
 # Switch to last node / desktop
 {alt, super} + @Tab
@@ -18,10 +18,10 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	if $WMRC reload; then \
-		$MODULES/ui/notify info "wmrc" "Desktop configuration reloaded successfully."; \
+	if wmrc reload; then \
+		$WMRC_MODULES/ui/notify info "wmrc" "Desktop configuration reloaded successfully."; \
 	else \
-		$MODULES/ui/notify warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
+		$WMRC_MODULES/ui/notify warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
 	fi
 
 # Close application
@@ -66,15 +66,15 @@ super + @F1
 
 # Move selected nodes
 super + @F2
-	$MODULES/wm/bspwm move_node
+	wmrc -r 'wm/bspwm(move_node)'
 	
 # Swap desktops
 super + @F3
-	$MODULES/wm/bspwm swap_desktop
+	wmrc -r 'wm/bspwm(swap_desktop)'
 	
 # Swap monitors
 super + @F4
-	$MODULES/wm/bspwm swap_monitor
+	wmrc -r 'wm/bspwm(swap_monitor)'
 
 # Change window tiling mode
 super + shift + @space
@@ -187,15 +187,15 @@ XF86AudioMute
 
 # Change brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	$MODULES/screen/backlight {dec,inc} 20
+	wmrc -r 'screen/backlight({dec,inc},20)'
 
 # Set brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	$MODULES/screen/backlight equ {0,100}
+	wmrc -r 'screen/backlight(equ,{0,100})'
 
 # Select monitor layout
 super + {o, XF86AudioMicMute}
-	$MODULES/screen/layout
+	wmrc -r 'screen/layout'
 
 # Launch Pulseaudio control interface
 super + XF86AudioMute
@@ -227,7 +227,7 @@ XF86Launch1
 
 # Lock screen and turn off screen
 super + l
-	$WMRC lock
+	wmrc lock
 
 # Launch terminal
 super + Return
@@ -273,12 +273,12 @@ super + v
 super + k
 	keepassxc
 
-# Launch Sublime Text 3
-super + s
-	subl3
+# Launch default visual text editor
+super + e
+	$VISUAL
 
 # Launch Signal Messenger
-super + c
+super + s
 	signal-desktop
 
 # Deadbeef previous track in playlist
@@ -295,13 +295,13 @@ super + @F12
 
 # Show character menu
 super + z
-	$MODULES/ui/rofi character
+	wmrc -r 'ui/rofi(character)'
 
 # Show calculator
 super + @less
-	$MODULES/ui/rofi calc
+	wmrc -r 'ui/rofi(calc)'
 
 # Print screen
 super + p
-	mkdir -p $HOME/Pictures/Screenshots/; \
-	flameshot gui -p $HOME/Pictures/Screenshots/
+	mkdir -p "$HOME/Pictures/Screenshots"; \
+	flameshot gui -p "$HOME/Pictures/Screenshots"

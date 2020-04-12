@@ -67,4 +67,4 @@ resume() {
 
 }
 
-. "$MODULES/init"
+. "$WMRC_MODULES/init"

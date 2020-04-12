@@ -85,4 +85,4 @@ character() {
 
 }
 
-. "$MODULES/init"
+. "$WMRC_MODULES/init"

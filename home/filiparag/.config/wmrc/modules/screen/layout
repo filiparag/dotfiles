@@ -98,10 +98,10 @@ monitor() {
 
 reload_ui() {
 
-  "$MODULES/ui/$WM"
-  "$MODULES/ui/polybar" restart &
-  "$MODULES/screen/wallpaper" &
-  "$MODULES/screen/lock" generate_composite &
+  "$WMRC_MODULES/ui/$WM"
+  "$WMRC_MODULES/ui/polybar" restart &
+  "$WMRC_MODULES/screen/wallpaper" &
+  "$WMRC_MODULES/screen/lock" generate_composite &
 
 }
 
@@ -152,4 +152,4 @@ start() {
 
 }
 
-. "$MODULES/init"
+. "$WMRC_MODULES/init"
