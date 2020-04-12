@@ -14,6 +14,7 @@ SETUVAR --path PATH:/usr/local/sbin\x1e/usr/local/bin\x1e/usr/bin\x1e/home/filip
 SETUVAR --export QT_AUTO_SCREEN_SCALE_FACTOR:0
 SETUVAR --export QT_QPA_PLATFORMTHEME:qt5ct
 SETUVAR --export SSH_ENV:/home/filiparag/\x2essh_environment
+SETUVAR WMRC_MODULES:/home/filiparag/\x2econfig/wmrc/modules/
 SETUVAR ZO_CMD:zo
 SETUVAR Z_CMD:z
 SETUVAR Z_DATA:/home/filiparag/\x2elocal/share/z/data
@@ -25,7 +26,19 @@ SETUVAR __fish_init_2_39_8:\x1d
 SETUVAR __fish_init_2_3_0:\x1d
 SETUVAR __fish_init_3_x:\x1d
 SETUVAR __fish_initialized:3100
+SETUVAR _fish_abbr_c:bat
+SETUVAR _fish_abbr_ga:git\x20add
+SETUVAR _fish_abbr_gc:git\x20commit\x20\x2dm
+SETUVAR _fish_abbr_gcl:git\x20clone
+SETUVAR _fish_abbr_gm:git\x20commit\x20\x2dm
+SETUVAR _fish_abbr_gp:git\x20push
+SETUVAR _fish_abbr_gs:git\x20status
+SETUVAR _fish_abbr_h:cd\x20\x7e
 SETUVAR _fish_abbr_led:sudo\x20bash\x20\x2dc\x20\x22echo\x20\x270\x20off\x27\x20\x3e\x20/proc/acpi/ibm/led\x22
+SETUVAR _fish_abbr_r:cd\x20/
+SETUVAR _fish_abbr_s:ssh
+SETUVAR _fish_abbr_v:vim
+SETUVAR _fish_abbr_y:yay
 SETUVAR _fish_abbr_yr:yay\x20\x2dRcsn
 SETUVAR _fish_abbr_ys:yay\x20\x2dS
 SETUVAR _fish_abbr_yss:yay\x20\x2dSs
