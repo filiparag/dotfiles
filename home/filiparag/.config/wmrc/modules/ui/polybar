@@ -42,9 +42,12 @@ start() {
 
     if [ "$M" = "$M_PRIMARY" ]; then
       [ "$WIDTH" -ge 1920 ] && \
-        MOD_L="bspwm window" || MOD_L="bspwm"
+        MOD_L="bspwm window" || \
+        MOD_L="bspwm"
       MOD_C=""
-      MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date"
+      [ "$WIDTH" -ge 1920 ] && \
+        MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date" || \
+        MOD_R="battery wireless wired cpu memory fan temperature pulseaudio keyboard date"
       NOTIF="right"
     else
       MOD_L="bspwm"

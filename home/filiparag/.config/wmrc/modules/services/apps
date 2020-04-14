@@ -7,7 +7,6 @@ APPS='unclutter -idle 1
       dunst
       flameshot
       keepassxc
-      synergy
       signal-desktop --start-in-tray
       gajim
       wire-desktop --startup

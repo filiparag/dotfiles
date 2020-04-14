@@ -78,8 +78,8 @@ character() {
     LINE="$(echo "$LIST" | grep -n "$SEL" | cut -f1 -d:)p"
     CHAR="$(echo "$TXT" | sed -n "$LINE" | sed "s/\[//; s/\]\[.*//")"
 
-    echo "$CHAR" | xclip -in -selection clipboard
-    xdotool type "$CHAR"
+    printf "$CHAR" | xclip -in -selection clipboard
+    # xdotool type "$CHAR"
 
   fi
 

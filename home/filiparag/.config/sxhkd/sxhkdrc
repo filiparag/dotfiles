@@ -89,7 +89,9 @@ super + shift + @space
 # Select window if tiled
 super + {@Up,@Down,@Left,@Right}
 	if [ -z "$(bspc query -N -n focused.floating)" ]; then \
-		bspc node -f {north,south,west,east}; \
+		dir={north,south,west,east}; \
+		bspc node -f $dir || \
+		bspc monitor -f $dir; \
 	fi
 
 # Move window if tiled
