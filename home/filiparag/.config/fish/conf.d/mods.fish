@@ -28,7 +28,7 @@ if status --is-interactive
 
     abbr --add gs       'git status'
     abbr --add ga       'git add'
-    abbr --add gc       'git commit -m'
+    abbr --add gc       'git commit -S -m'
     abbr --add gp       'git push'
     abbr --add gcl      'git clone'
 
