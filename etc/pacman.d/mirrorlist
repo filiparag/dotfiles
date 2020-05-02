@@ -3,14 +3,6 @@
 ## Generated on 2020-04-11
 ##
 
-## Hungary
-Server = https://nova.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
-Server = https://quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
-Server = https://super.quantum-mirror.hu/mirrors/pub/archlinux/$repo/os/$arch
-
-## Austria
-Server = https://mirror.reisenbauer.ee/archlinux/$repo/os/$arch
-
 ## Germany
 Server = https://mirror.23media.com/archlinux/$repo/os/$arch
 Server = https://appuals.com/archlinux/$repo/os/$arch
