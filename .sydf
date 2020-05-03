@@ -1,4 +1,4 @@
-&707a892bad4345b2afaf65ba3a677b1e4cccb620#
+&f7b7e1d9fdb8b185ba3e7588bd737cfab35a8633#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -32,3 +32,5 @@
 !.stfolder#
 !.stignore#
 !.stversions#
+%/home/filiparag/.config/fish:/home/filiparag/.config;/fish#
+%/home/filiparag/.config/fish/conf.d:/home/filiparag/.config/fish;/conf.d#

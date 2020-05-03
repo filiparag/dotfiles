@@ -111,11 +111,11 @@ smart_lock() {
     xset dpms force off
   fi
 
-  "$WMRC_MODULES/ui/notify" pause
+  wmrc -r 'ui/notify(pause)'
 
   lock 'lock' 'wait'
 
-  "$WMRC_MODULES/ui/notify" resume
+  wmrc -r 'ui/notify(resume)'
 
   xkb-switch -s "$LANG"
   if [ "$CAPS" = "on" ]; then
@@ -146,7 +146,7 @@ start() {
 		--timer $BLANK_TIMEOUT \
 			"xset dpms force off" '' \
 		--timer $LOCK_TIMEOUT \
-			"$WMRC_MODULES/screen/lock smart_lock" '' \
+			"wmrc -r 'screen/lock(smart_lock)'" '' \
 		>/dev/null &
 
 }

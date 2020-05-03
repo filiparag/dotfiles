@@ -2347,7 +2347,7 @@
 [≡][math][equivalence]
 [≠][math][not equal]
 [≈][math][approximately equal]
-[≥][math][less than or equal to]
+[≤][math][less than or equal to]
 [≪][math][much less than]
 [≥][math][greater than or equal to]
 [≫][math][much greater than]
