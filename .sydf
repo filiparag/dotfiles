@@ -1,4 +1,4 @@
-&f7b7e1d9fdb8b185ba3e7588bd737cfab35a8633#
+&29861cfb1273f71fe1eff767b54e10aabedf5cd3#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -34,3 +34,5 @@
 !.stfolder#
 !.stignore#
 !.stversions#
+!.archlinux.sh#
+!LICENSE#

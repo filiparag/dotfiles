@@ -203,12 +203,8 @@ super + {o, XF86AudioMicMute}
 super + XF86AudioMute
 	pavucontrol
 
-# Toggle mute microphone using standard keys
-super + shift + Insert
-	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
-
-# Toggle mute microphone using media keys
-XF86AudioMicMute
+# Toggle mute microphone
+{super + shift + Insert, XF86AudioMicMute}
 	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
 
 # Sleep
@@ -284,15 +280,15 @@ super + s
 	signal-desktop
 
 # Deadbeef previous track in playlist
-super + @F10
+{super + @F10, XF86AudioPrev}
 	deadbeef --prev
 
 # Deadbeef next track in playlist
-super + @F11
+{super + @F11, XF86AudioNext}
 	deadbeef --next
 
 # Deadbeef toggle pause playback
-super + @F12
+{super + @F12, XF86AudioPlay}
 	deadbeef --toggle-pause
 
 # Show character menu
@@ -304,6 +300,6 @@ super + @less
 	wmrc -r 'ui/rofi(calc)'
 
 # Print screen
-super + p
+{super + p, Print}
 	mkdir -p "$HOME/Pictures/Screenshots"; \
 	flameshot gui -p "$HOME/Pictures/Screenshots"
