@@ -65,7 +65,7 @@ start() {
 stop() {
 
   [ -z "$(pgrep -u "$(whoami)" polybar)" ] && \
-    error "Polybar is not running!" fatal 3
+    error "Polybar is not running!"
 
   killall -u "$(whoami)" -9 polybar > /dev/null
 

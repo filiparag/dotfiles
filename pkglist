@@ -118,5 +118,6 @@ xorg-server
 xorg-xinit
 xorg-xrandr
 xorg-xset
+xpra
 yay
 youtube-dl
