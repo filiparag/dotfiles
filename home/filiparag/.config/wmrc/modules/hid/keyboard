@@ -1,6 +1,6 @@
 #! /usr/bin/env dash
 # WMRC_DEPS: setxkbmap, numlockx, xmodmap, sudo
-# WMRC_FLAGS:
+# WMRC_FLAGS: async_lock
 
 layout() {
 
