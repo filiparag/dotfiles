@@ -72,9 +72,9 @@ generate_composite() {
   
   if ! [ -f "$OUTPUT_IMG" ]; then
 
-    convert -size ${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT} \
+    convert -size "${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT}" \
       "xc:#101010" "$OUTPUT_IMG"
-    convert "$OUTPUT_IMG" $PARAMS "$OUTPUT_IMG"
+    convert -colorspace sRGB -type truecolor "$OUTPUT_IMG" $PARAMS "$OUTPUT_IMG"
     
   fi
 

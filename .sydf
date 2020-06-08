@@ -1,4 +1,5 @@
 &29861cfb1273f71fe1eff767b54e10aabedf5cd3#
+!.archlinux.sh#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -30,9 +31,8 @@
 >/home/filiparag/.screen#
 >/home/filiparag/.vim#
 >/home/filiparag/.vim_runtime#
+!LICENSE#
 !pkglist#
 !.stfolder#
 !.stignore#
 !.stversions#
-!.archlinux.sh#
-!LICENSE#

@@ -10,7 +10,7 @@ APPS='unclutter -idle 1
       signal-desktop --start-in-tray
       gajim
       wire-desktop --startup
-      mailspring --background
+      mail-notification
       '
 
 app_list() {
