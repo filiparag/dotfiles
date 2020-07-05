@@ -19,9 +19,9 @@ super + shift + e : Return
 # Reload config
 super + alt + r
 	if wmrc reload; then \
-		$WMRC_MODULES/ui/notify info "wmrc" "Desktop configuration reloaded successfully."; \
+		"$WMRC_MODULES/ui/notify" info "wmrc" "Desktop configuration reloaded successfully."; \
 	else \
-		$WMRC_MODULES/ui/notify warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
+		"$WMRC_MODULES/ui/notify" warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
 	fi
 
 # Close application
@@ -209,15 +209,15 @@ super + XF86AudioMute
 
 # Sleep
 super + @Delete
-	systemctl suspend
+	wmrc suspend
 
 # Shut down
 super + shift + @Delete : Return
-	systemctl poweroff
+	wmrc -r 'hardware/power(off)'
 
 # Reboot
 super + shift + ctrl + @Delete : Return
-	systemctl reboot
+	wmrc -r 'hardware/power(reboot)'
 
 # Lock the device using physlock
 XF86Launch1

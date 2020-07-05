@@ -1,0 +1,46 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: sudo
+# WMRC_FLAGS:
+
+off() {
+
+	sudo shutdown -P now
+
+}
+
+reboot() {
+
+	sudo shutdown -r now
+
+}
+
+suspend() {
+
+	type='mem'
+
+	if [ -n "$2" ]; then
+		case $2 in
+
+			freeze)
+				type='freeze';
+				break;;
+
+			mem)
+				type='mem';
+				break;;
+
+			disk)
+				type='disk';
+				break;;
+
+			*)
+				return 1;;
+
+		esac
+	fi
+
+	sudo su -c "echo -n $type > /sys/power/state"
+
+}
+
+. "$WMRC_MODULES/init"

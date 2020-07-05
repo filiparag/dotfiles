@@ -6,7 +6,7 @@ Before=sleep.target suspend.target
 User=%I
 Type=forking
 Environment=DISPLAY=:0
-ExecStartPre=/usr/bin/wmrc suspend &
+ExecStartPre=/usr/bin/wmrc suspend-event &
 ExecStart=/usr/bin/sleep 0.2
 
 [Install]

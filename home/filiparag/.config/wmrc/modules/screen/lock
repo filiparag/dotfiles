@@ -1,5 +1,5 @@
 #! /usr/bin/env dash
-# WMRC_DEPS: i3lock, xrandr, convert, perl, xidlehook, xkb-switch, xset, xdotool
+# WMRC_DEPS: i3lock, xrandr, convert, perl, xkb-switch, xset, xdotool
 # WMRC_FLAGS:
 
 CACHE_DIR="$HOME/.cache/lockscreen"
