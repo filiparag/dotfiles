@@ -1,0 +1,128 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: xprop
+# WMRC_FLAGS:
+
+# https://github.com/JopStro/bspswallow/blob/master/alternative/bspswallow
+
+get_class() {
+
+  id=$1
+  if [ -z "$id" ]; then
+    echo ""
+  else
+
+    output="$(xprop -id "$id" WM_CLASS WM_COMMAND WM_NAME)"
+
+    command="$(echo "$output" | grep WM_COMMAND | sed 's/WM_COMMAND.*= { "\([^"]*\).*/\1/')"
+    class="$(echo "$output" | grep WM_CLASS | sed 's/WM_CLASS.*= "\([^"]*\).*/\1/')"
+    name="$(echo "$output" | grep WM_NAME | sed 's/WM_NAME.*= "\([^"]*\).*/\1/')"
+
+    if [ "$command" != 'WM_COMMAND:  not found.' ]; then
+      echo "$command"
+    elif [ "$class" != 'WM_CLASS:  not found.' ]; then
+      echo "$class"
+    elif [ "$name" != 'WM_NAME:  not found.' ]; then
+      echo "$name"
+    else
+      echo ""
+    fi
+
+  fi
+
+}
+
+is_command() {
+
+  id=$1
+  if [ -z "$id" ]; then
+    return 1
+  else
+    xprop WM_COMMAND -id "$id" | grep -vq 'WM_COMMAND:  not found.'
+  fi
+
+}
+
+swallow() {
+
+  addedtodesktop=$2
+  lasttermdesktop=$(bspc query -D -n last)
+
+  swallowerid=$1
+  swallowingid=$(bspc query -N -n last)
+
+  if [ "$addedtodesktop" = "$lasttermdesktop" ]; then
+
+    # echo ":$(get_class "$swallowingid"):"
+    # echo "$$(get_class "$swallowerid")$"
+
+    is_command "$swallowerid" && \
+      [ "$(get_class "$swallowingid")" = 'Alacritty' ] && \
+      [ "$(get_class "$swallowerid")" != 'xev' ] || \
+        return
+    
+    echo "$swallowerid $swallowingid" >> "/tmp/swallowids.$(whoami)"
+    bspc node "$swallowingid" --flag hidden=on
+  fi
+
+}
+
+spit() {
+
+  spitterid=$1
+  spitterdesktop=$2
+  grep "^$spitterid" "/tmp/swallowids.$(whoami)" || return
+  spittingid=$(grep "^$spitterid" /tmp/swallowids | head -n1 | awk '{print $2}')
+
+  bspc node "$spittingid" --flag hidden=off
+
+  termdesktop=$(bspc query -D -n "$spittingid")
+  [ "$termdesktop" = "$spitterdesktop" ] || bspc node "$spittingid" -d "$spitterdesktop"
+
+  bspc node "$spittingid" -f
+  sed -i "/^$spitterid/d" "/tmp/swallowids.$(whoami)"
+
+}
+
+run() {
+
+  bspc subscribe node_add node_remove | while read -r event; do
+    case $(echo "$event" | awk '{ print $1 }') in
+    node_add)
+      swallow $(echo "$event" | awk '{print $5 " " $3}')
+      ;;
+    node_remove)
+      spit $(echo "$event" | awk '{print $4 " " $3}')
+      ;;
+    esac
+  done
+
+}
+
+start() {
+
+  [ -z "$(pgrep -u "$(whoami)" bspwm)" ] &&
+    error "Bspwm is not running!" fatal 2
+
+  touch "/tmp/swallow.$(whoami)"
+
+  if [ -s "/tmp/swallow.$(whoami)" ]; then
+    kill -0 "$(cat "/tmp/swallow.$(whoami)")" 2>/dev/null && \
+      error "Swallow is already running!" fatal 2
+  fi
+
+
+  echo '' > "/tmp/swallowids.$(whoami)"
+
+  run &
+  echo "$!" > "/tmp/swallow.$(whoami)"
+
+}
+
+stop() {
+
+  kill -9 "$(cat "/tmp/swallow.$(whoami)")" 2>/dev/null || \
+    error "Swallow is not running!" fatal 3
+
+}
+
+. "$WMRC_MODULES/init"
