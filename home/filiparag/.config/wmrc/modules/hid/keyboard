@@ -8,7 +8,8 @@ layout() {
   local VARIANT
 
   LANGUAGES="us,rs,rs"
-  VARIANT=",latinunicode,"
+  #VARIANT=",latinunicode,"
+  VARIANT=",latin,"
 
   setxkbmap -layout "$LANGUAGES" -variant "$VARIANT" -option grp:alt_shift_toggle
   numlockx on &
