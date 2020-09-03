@@ -27,16 +27,23 @@ if status --is-interactive
     abbr --add yr       'yay -Rcsn'
 
     abbr --add gs       'git status'
+    abbr --add gsh      'git show'
     abbr --add ga       'git add'
     abbr --add gc       'git commit -S -m'
+    abbr --add gl       'git log'
     abbr --add gp       'git push'
+    abbr --add gpt      'git push --tags'
     abbr --add gcl      'git clone'
+    abbr --add gt       'git tag'
+    abbr --add gw       'git whatchanged'
 
     abbr --add r        'cd /'
     abbr --add h        'cd ~'
 
     abbr --add v        'vim'
-    abbr --add c        'bat'
+    abbr --add b        'bat'
     abbr --add s        'ssh'
+
+    source '/usr/share/wikiman/widgets/widget.fish' 2>/dev/null
 
 end
