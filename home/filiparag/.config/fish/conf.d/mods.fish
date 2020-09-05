@@ -47,3 +47,20 @@ if status --is-interactive
     source '/usr/share/wikiman/widgets/widget.fish' 2>/dev/null
 
 end
+
+# History bind
+
+function _history_widget -d "Show interactive fish history"
+    if [ (commandline -b) = '' ]
+        history merge
+        set selected (history | fzf)
+        if [ $status -eq 0 ]
+            commandline -i $selected
+        end
+    end
+end
+
+bind \cr _history_widget
+if bind -M insert > /dev/null 2>&1
+  bind -M insert \cr _history_widget
+end
