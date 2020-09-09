@@ -36,9 +36,27 @@ super + ctrl + shift + q
 super + {0-9}
 	bspc desktop -f {0-9}.local
 
+# Change desktop on all monitors
+super + alt + {0-9}
+	cur="$(bspc query -M -m)"; \
+	for m in $(bspc query -M); do \
+		bspc monitor -f "$m"; \
+		bspc desktop -f {0-9}.local; \
+	done; \
+	bspc monitor -f "$cur";
+
 # Move through neighbouring desktops on current monitor
 super + {@Home,@End}
 	bspc desktop -f {prev,next}.local
+
+# Move through neighbouring desktops on all monitors
+super + alt + {@Home,@End}
+	cur="$(bspc query -M -m)"; \
+	for m in $(bspc query -M); do \
+		bspc monitor -f "$m"; \
+		bspc desktop -f {prev,next}.local; \
+	done; \
+	bspc monitor -f "$cur";
 
 # Move focused window to desktop on current monitor
 super + shift + {0-9}

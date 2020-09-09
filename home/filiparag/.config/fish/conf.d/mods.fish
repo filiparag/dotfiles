@@ -33,7 +33,10 @@ if status --is-interactive
     abbr --add gl       'git log'
     abbr --add gp       'git push'
     abbr --add gpt      'git push --tags'
+    abbr --add gpf      'git push --force'
     abbr --add gcl      'git clone'
+    abbr --add gcls     'git clone git@github.com:'
+    abbr --add gclh     'git clone https://github.com/'
     abbr --add gt       'git tag'
     abbr --add gw       'git whatchanged'
 
@@ -43,6 +46,7 @@ if status --is-interactive
     abbr --add v        'vim'
     abbr --add b        'bat'
     abbr --add s        'ssh'
+    abbr --add sr       'ssh root@'
 
     source '/usr/share/wikiman/widgets/widget.fish' 2>/dev/null
 
@@ -51,13 +55,12 @@ end
 # History bind
 
 function _history_widget -d "Show interactive fish history"
-    if [ (commandline -b) = '' ]
-        history merge
-        set selected (history | fzf)
-        if [ $status -eq 0 ]
-            commandline -i $selected
-        end
+    history merge
+    set selected (history | fzf --query (commandline -b) --cycle --height (math -s0 (tput lines) / 3))
+    if [ $status -eq 0 ]
+        commandline -i $selected
     end
+    commandline -f repaint
 end
 
 bind \cr _history_widget
