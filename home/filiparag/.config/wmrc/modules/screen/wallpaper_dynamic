@@ -7,6 +7,7 @@ COMPOSITE="convert -colorspace Gray \( $BCK_IMG -evaluate multiply %.2f \) \( $B
 DELAY=$((5*60))
 
 PID_FILE="/tmp/dynamic_wallpaper_daemon@$(whoami)"
+LATLNG="$(echo "$LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
 
 start() {
 
@@ -41,22 +42,31 @@ daemon() {
 
 	while true; do
 
-		cron
+		api
+		background
 		sleep "$DELAY"
 
 	done
 
 }
 
-cron() {
+api() {
+
+	api_new_date="$(date -u +%D)"
+
+	if [ "$api_response" = '' ] || [ "$api_new_date" != "$api_date" ]; then
+		api_date="$api_new_date"
+		api_response="$(curl --silent "https://api.sunrise-sunset.org/json$LATLNG&formatted=0")"
+		sunrise="$(echo "$api_response" | jq -r '.results.sunrise' | xargs date +%s -d)"
+		sunset="$(echo "$api_response" | jq -r '.results.sunset' | xargs date +%s -d)"
+	fi
+
+}
+
+background() {
 
 	fade_period=3600
 
-	latlng="$(echo "$LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
-	api_response="$(curl --silent "https://api.sunrise-sunset.org/json$latlng&formatted=0")"
-
-	sunrise="$(echo "$api_response" | jq -r '.results.sunrise' | xargs date +%s -d)"
-	sunset="$(echo "$api_response" | jq -r '.results.sunset' | xargs date +%s -d)"
 	now="$(date -u +%s)"
 
 	part='night'
