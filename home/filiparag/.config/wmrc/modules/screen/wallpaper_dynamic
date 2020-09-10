@@ -1,0 +1,107 @@
+#! /usr/bin/env dash
+# WMRC_DEPS: feh, convert, jq, curl, bc, printf, xargs
+# WMRC_FLAGS:
+
+BCK_IMG="$HOME/Pictures/wallpaper-%s.png"
+COMPOSITE="convert -colorspace Gray \( $BCK_IMG -evaluate multiply %.2f \) \( $BCK_IMG -evaluate multiply %.2f \) -compose plus -composite %s"
+DELAY=$((5*60))
+
+PID_FILE="/tmp/dynamic_wallpaper_daemon@$(whoami)"
+
+start() {
+
+  
+	[ -f "$(printf "$BCK_IMG" 'day')" ] && [ -f "$(printf "$BCK_IMG" 'night')" ] || \
+    	error "Wallpaper images are missing!" fatal 2
+  
+    [ -f "$PID_FILE" ] && ps "$(cat "$PID_FILE")" >/dev/null && \
+    	error "Dynamic wallpaper daemon is already running!" fatal 3
+
+	daemon &
+
+	echo $! > "$PID_FILE"
+
+}
+
+stop() {
+
+  [ -f "$PID_FILE" ] ||
+    exit
+
+  PID="$(cat "$PID_FILE")"
+
+  ps "$PID" >/dev/null ||
+    error "Dynamic wallpaper daemon is not running!" fatal 4
+
+  kill -9 "$PID"
+
+}
+
+daemon() {
+
+	while true; do
+
+		cron
+		sleep "$DELAY"
+
+	done
+
+}
+
+cron() {
+
+	fade_period=3600
+
+	latlng="$(echo "$LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
+	api_response="$(curl --silent "https://api.sunrise-sunset.org/json$latlng&formatted=0")"
+
+	sunrise="$(echo "$api_response" | jq -r '.results.sunrise' | xargs date +%s -d)"
+	sunset="$(echo "$api_response" | jq -r '.results.sunset' | xargs date +%s -d)"
+	now="$(date -u +%s)"
+
+	part='night'
+	if [ $now -gt $((sunset - fade_period / 2)) ]; then
+		if [ $now -lt $((sunset + fade_period / 2)) ]; then
+			part='sunset'
+		fi
+	elif [ $now -gt $((sunrise - fade_period / 2)) ]; then
+		if [ $now -lt $((sunrise + fade_period / 2)) ]; then
+			part='sunrise'
+		else
+			part='day'
+		fi
+	fi
+
+	command=''
+
+	case "$part" in
+		'night'|'day')
+			command="$(printf "DISPLAY=$DISPLAY feh --bg-fill $BCK_IMG\n" "$part")";
+			break;;
+		'sunrise')
+			day_mul="$(echo "scale=2;($now-($sunrise-$fade_period/2))/$fade_period" | bc)";
+			night_mul="$(echo "scale=2;(1-$day_mul)" | bc)";
+			command="$(
+				printf "$COMPOSITE && DISPLAY=$DISPLAY feh --bg-fill %s" \
+				'day' "$day_mul" 'night' "$night_mul" \
+				"/tmp/dynamic_wallpaper.$USER.png" \
+				"/tmp/dynamic_wallpaper.$USER.png"
+			)";
+			break;;
+		'sunset')
+			night_mul="$(echo "scale=2;($now-($sunset-$fade_period/2))/$fade_period" | bc)";
+			day_mul="$(echo "scale=2;(1-$night_mul)" | bc)";
+			command="$(
+				printf "$COMPOSITE && DISPLAY=$DISPLAY feh --bg-fill %s" \
+				'day' "$day_mul" 'night' "$night_mul" \
+				"/tmp/dynamic_wallpaper.$USER.png" \
+				"/tmp/dynamic_wallpaper.$USER.png"
+			)";
+			break;;
+	esac
+
+	eval "$command"
+
+}
+
+. "$WMRC_MODULES/init"

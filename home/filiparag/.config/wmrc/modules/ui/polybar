@@ -52,7 +52,7 @@ start() {
     else
       MOD_L="bspwm"
       MOD_C="deadbeef"
-      MOD_R="updates monitor host date"
+      MOD_R="updates pulseaudio monitor host date"
       NOTIF="none"
     fi
 
