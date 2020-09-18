@@ -6,13 +6,20 @@
 DIR="$(dirname "$0")"
 TMPDIR="$(mktemp -d)"
 
+# Install curl
+sudo pacman -Sy --needed curl
+
+# Generate new mirrorlist
+curl -L 'https://www.archlinux.org/mirrorlist/?country=AT&country=DE&country=HU&country=RO&country=RS&country=SI&protocol=https&ip_version=4&ip_version=6&use_mirror_status=on' | sed 's|#Server|Server|' > "$TMPDIR/mirrorlist"
+sudo cp -f "$TMPDIR/mirrorlist" "/etc/pacman.d/mirrorlist"
+
 # Update system
 sudo pacman -Syu
 
 # Install yay
 mkdir -p "$TMPDIR/yay"
 cd "$TMPDIR/yay"
-GET 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=yay' > PKGBUILD
+curl -L 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=yay' > "$TMPDIR/yay/PKGBUILD"
 makepkg -si
 
 # Install all required packages
@@ -32,9 +39,12 @@ echo "$HOME/.sydf" > "$HOME/.config/sydf.conf"
 
 # Download wallpaper
 mkdir -p "$HOME/.sydf/home/$USER/Pictures"
-GET 'http://ftp.parag.rs/wallpaper-day.png' > "$HOME/.sydf/home/$USER/Pictures/wallpaper-day.png"
-GET 'http://ftp.parag.rs/wallpaper-night.png' > "$HOME/.sydf/home/$USER/Pictures/wallpaper-night.png"
+curl -L 'http://ftp.parag.rs/wallpaper-day.png' > "$HOME/.sydf/home/$USER/Pictures/wallpaper-day.png"
+curl -L 'http://ftp.parag.rs/wallpaper-night.png' > "$HOME/.sydf/home/$USER/Pictures/wallpaper-night.png"
 cp -p "$HOME/.sydf/home/$USER/Pictures/wallpaper-night.png" "$HOME/.sydf/home/$USER/Pictures/lockscreen.png"
+
+# Replace provided mirrorlist with generated one
+cp -f "$TMPDIR/mirrorlist" "$DIR/etc/pacman.d/mirrorlist"
 
 # Hook dotfiles using sydf
 sydf hook
