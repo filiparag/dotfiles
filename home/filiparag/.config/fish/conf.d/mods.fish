@@ -11,12 +11,6 @@ end
 if status --is-interactive
 
     set -g fish_user_abbreviations
-
-    alias l            	'lsd --classify --almost-all --icon-theme unicode \
-                            --icon always --color never --date --group-dirs first'
-    alias ll            'lsd --classify --long --almost-all --icon-theme unicode \
-                            --icon always --blocks name,size,permission,date,user,group \
-                            --color always --date --group-dirs first'
     
     alias subl          'subl3'
     alias dmenu         'rofi -dmenu'
@@ -45,6 +39,7 @@ if status --is-interactive
 
     abbr --add v        'vim'
     abbr --add b        'bat'
+    abbr --add ht       'htop'
     abbr --add s        'ssh'
     abbr --add sr       'ssh root@'
 
@@ -52,9 +47,34 @@ if status --is-interactive
 
 end
 
+# List files
+
+function l -d 'Simple pretty file list'
+    lsd --classify --icon-theme unicode --oneline \
+        --icon always --color always --date --group-dirs first $argv
+end
+
+function la -d 'Simple pretty file list (with hidden)'
+    lsd --classify --almost-all --icon-theme unicode --oneline \
+        --icon always --color always --date --group-dirs first $argv
+end
+
+function ll -d 'Detailed pretty file list'
+    lsd --classify --long --almost-all --icon-theme unicode \
+        --icon always --blocks name,size,permission,user,group,date \
+        --color always --date --group-dirs first $argv
+end
+
+# NNN File manager bind
+
+bind \cn nnn
+if bind -M insert > /dev/null 2>&1
+  bind -M insert \cn nnn
+end
+
 # History bind
 
-function _history_widget -d "Show interactive fish history"
+function _history_widget -d 'Show interactive fish history'
     history merge
     set selected (history | fzf --query (commandline -b) --cycle --height (math -s0 (tput lines) / 3))
     if [ $status -eq 0 ]
