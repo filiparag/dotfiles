@@ -115,4 +115,18 @@ finish_cleanup() {
 
 }
 
-check_sudo && workdir && build_tools && install_packages && install_dotfiles && wmrc_deps_and_services && finish_cleanup
+shortcuts_manual() {
+
+	cat home/filiparag/.config/sxhkd/sxhkdrc | awk 'NR > 1 {
+		if ($0 ~ /^## /) {
+			gsub(/^## */,"",$0); printf("\n### %s\n\n",$0)
+		} else if ($0 ~ /^# /) {
+			gsub(/^# */,"",$0); printf("%s ",$0); c=1
+		} else if (c==1) {
+			printf("`%s`\n\n", $0); c=0
+		}
+	}' > "$HOME/.sydf/SHORTCUTS.md"
+
+}
+
+check_sudo && workdir && build_tools && install_packages && install_dotfiles && wmrc_deps_and_services && finish_cleanup && shortcuts_manual

@@ -1,6 +1,7 @@
 ## Prerequisites
 
 To install these dotfiles using `archlinux.sh`, you should have:
+
 - base Arch Linux installed
 - at least 8 GiB of free space on root partition
 - user account with `sudo` privileges
@@ -25,21 +26,27 @@ sudo systemctl reboot
 ### Hardware-specific modifications
 
 If you are not using a newer AMD GPU:
+
 - install appropriate `xf86-video-` driver
 - make sure files in `/etc/X11/xorg.conf.d/` are compatible with you hardware
 
 
 ## Customization
 
-User-specific environment variables are located in `~/.config/fish/conf.d/user.fish`.
+User-specific environment variables: `~/.config/fish/conf.d/user.fish`
 
-Window manager configuration is located in `~/.config/wmrc/rc.conf`.
+Window manager configuration: `~/.config/wmrc/rc.conf`
 
-Startup applications are listed in `APPS` variable in `~/.config/wmrc/modules/services/apps`.
+Shortcut configuration is in `~/.config/sxhkd/sxhkdrc`
 
-Wallpaper and lockscreen are located in `~/Pictures` directory.
+Shortcuts manual: [`~/.sydf/SHORTCUTS.md`](./SHORTCUTS.md)
+
+Startup applications are listed in `APPS` variable in `~/.config/wmrc/modules/services/apps`
+
+Wallpaper and lockscreen are located in `~/Pictures` directory
 
 To enable VNC server, run:
+
 ``` bash
 # Set VNC password
 vncpasswd

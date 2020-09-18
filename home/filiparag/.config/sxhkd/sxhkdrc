@@ -1,28 +1,83 @@
 #! /usr/bin/dash
 
+## Launchers
+
 # Show application launcher
 super + d
 	wmrc -r 'ui/rofi'
 
-# Show all running windows
+# Show quick file browser
 super + grave
 	wmrc -r 'ui/rofi(files)'
 
-# Switch to last node / desktop
-{alt, super} + @Tab
-	bspc {node,desktop} --focus last
+# Show character menu
+super + z
+	wmrc -r 'ui/rofi(character)'
 
-# Quit bspwm
-super + shift + e : Return
-	bspc quit 1
+# Show calculator
+super + @less
+	wmrc -r 'ui/rofi(calc)'
 
-# Reload config
-super + alt + r
-	if wmrc reload; then \
-		"$WMRC_MODULES/ui/notify" info "wmrc" "Desktop configuration reloaded successfully."; \
-	else \
-		"$WMRC_MODULES/ui/notify" warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
-	fi
+## Applications
+
+# Launch terminal
+super + Return
+	$TERMINAL
+
+# Launch terminal as root
+super + shift + Return
+	$TERMINAL -e sudo /usr/bin/fish
+
+# Launch scratchpad terminal
+super + BackSpace
+	$TERMINAL -e tmux new-session -A -s scratchpad
+
+# Launch Firefox
+super + b
+	$BROWSER
+
+# Firefox fix (ignore)
+ctrl + q
+	true
+
+# Launch Firefox in private mode
+super + shift + b
+	firefox -private-window
+
+# Launch file manager
+super + n
+	$FILEMGR
+
+# Launch file manager as root
+super + shift + n
+	sudo $FILEMGR
+
+# Launch default mail client
+super + m
+	$MAILCLIENT
+
+# Launch Visual Studio Code
+super + v
+	code
+
+# Launch KeePassXC
+super + k
+	keepassxc
+
+# Launch default visual text editor
+super + e
+	$VISUAL
+
+# Launch Signal Messenger
+super + s
+	signal-desktop
+
+# Print screen
+{super + p, Print}
+	mkdir -p "$HOME/Pictures/Screenshots"; \
+	flameshot gui -p "$HOME/Pictures/Screenshots"
+
+## Window control
 
 # Close application
 super + shift + q
@@ -32,67 +87,11 @@ super + shift + q
 super + ctrl + shift + q
 	bspc node -k
 
-# Change desktop on current monitor
-super + {0-9}
-	bspc desktop -f {0-9}.local
+## Window selection
 
-# Change desktop on all monitors
-super + alt + {0-9}
-	cur="$(bspc query -M -m)"; \
-	for m in $(bspc query -M); do \
-		bspc monitor -f "$m"; \
-		bspc desktop -f {0-9}.local; \
-	done; \
-	bspc monitor -f "$cur";
-
-# Move through neighbouring desktops on current monitor
-super + {@Home,@End}
-	bspc desktop -f {prev,next}.local
-
-# Move through neighbouring desktops on all monitors
-super + alt + {@Home,@End}
-	cur="$(bspc query -M -m)"; \
-	for m in $(bspc query -M); do \
-		bspc monitor -f "$m"; \
-		bspc desktop -f {prev,next}.local; \
-	done; \
-	bspc monitor -f "$cur";
-
-# Move focused window to desktop on current monitor
-super + shift + {0-9}
-	bspc node -d {0-9}.local -f
-
-# Move focused window to neighbouring desktop on current monitor
-super + shift + {@Home,@End}
-	bspc node -d {prev,next}.local -f
-
-# Toggle monocle mode for focused window
-super + f 
-	bspc desktop -l next
-
-# Sift through windows in monocle mode
-super + {comma,period}
-  bspc node -f {next,prev}.local
-
-# Toggle fullscreen mode for focused window
-super + shift + f 
-	bspc node -t ~fullscreen
-
-# Select parent node
-super + @F1
-	bspc node -f @parent
-
-# Move selected nodes
-super + @F2
-	wmrc -r 'wm/bspwm(move_node)'
-	
-# Swap desktops
-super + @F3
-	wmrc -r 'wm/bspwm(swap_desktop)'
-	
-# Swap monitors
-super + @F4
-	wmrc -r 'wm/bspwm(swap_monitor)'
+# Switch to last node / desktop
+{alt, super} + @Tab
+	bspc {node,desktop} --focus last
 
 # Change window tiling mode
 super + shift + @space
@@ -130,6 +129,34 @@ super + {Up,Down,Left,Right}
 	if [ "$(bspc query -N -n focused.floating)" ]; then \
 		bspc node -v {0 -10,0 10,-10 0,10 0}; \
 	fi
+
+## Window manipulation
+
+# Move focused window to desktop on current monitor
+super + shift + {0-9}
+	bspc node -d {0-9}.local -f
+
+# Move focused window to neighbouring desktop on current monitor
+super + shift + {@Home,@End}
+	bspc node -d {prev,next}.local -f
+
+# Toggle monocle mode for focused window
+super + f 
+	bspc desktop -l next
+
+# Sift through windows in monocle mode
+super + {comma,period}
+  bspc node -f {next,prev}.local
+
+# Toggle fullscreen mode for focused window
+super + shift + f 
+	bspc node -t ~fullscreen
+
+# Swap places of current and last focused window
+super + w
+	bspc node -s last
+
+## Window size and rotation
 
 # Resize window (Up)
 super + alt + @Up
@@ -175,19 +202,89 @@ super + r
 super + shift + r
 	bspc node @/ -R 90
 
-# Swap places of current and last focused window
-super + w
-	bspc node -s last
+## Desktop and monitor
 
-# Turn on gaps for current desktop
-super + bracketright
-	bspc config -d focused window_gap 15; \
-	bspc config -d focused border_width 2
+# Change desktop on current monitor
+super + {0-9}
+	bspc desktop -f {0-9}.local
 
-# Turn off gaps for current desktop
-super + bracketleft
-	bspc config -d focused window_gap 0; \
-	bspc config -d focused border_width 1
+# Change desktop on all monitors
+super + alt + {0-9}
+	cur="$(bspc query -M -m)"; \
+	for m in $(bspc query -M); do \
+		bspc monitor -f "$m"; \
+		bspc desktop -f {0-9}.local; \
+	done; \
+	bspc monitor -f "$cur";
+
+# Move through neighbouring desktops on current monitor
+super + {@Home,@End}
+	bspc desktop -f {prev,next}.local
+
+# Move through neighbouring desktops on all monitors
+super + alt + {@Home,@End}
+	cur="$(bspc query -M -m)"; \
+	for m in $(bspc query -M); do \
+		bspc monitor -f "$m"; \
+		bspc desktop -f {prev,next}.local; \
+	done; \
+	bspc monitor -f "$cur";
+
+## Node tree manipulation
+
+# Select parent node
+super + @F1
+	bspc node -f @parent
+
+# Move selected nodes
+super + @F2
+	wmrc -r 'wm/bspwm(move_node)'
+	
+# Swap desktops
+super + @F3
+	wmrc -r 'wm/bspwm(swap_desktop)'
+	
+# Swap monitors
+super + @F4
+	wmrc -r 'wm/bspwm(swap_monitor)'
+
+## Bspwm
+
+# Quit bspwm
+super + shift + e : Return
+	bspc quit 1
+
+# Reload config
+super + alt + r
+	if wmrc reload; then \
+		"$WMRC_MODULES/ui/notify" info "wmrc" "Desktop configuration reloaded successfully."; \
+	else \
+		"$WMRC_MODULES/ui/notify" warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
+	fi
+
+## System lock and power
+
+# Sleep
+super + @Delete
+	wmrc suspend
+
+# Shut down
+super + shift + @Delete : Return
+	wmrc -r 'hardware/power(off)'
+
+# Reboot
+super + shift + ctrl + @Delete : Return
+	wmrc -r 'hardware/power(reboot)'
+
+# Lock the device using physlock
+XF86Launch1
+	physlock -m -d
+
+# Lock screen and turn off screen
+super + l
+	wmrc lock
+
+## Multimedia keys
 
 # Change volume using standard keys for default sink
 super + {Prior, Next}
@@ -225,78 +322,6 @@ super + XF86AudioMute
 {super + shift + Insert, XF86AudioMicMute}
 	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
 
-# Sleep
-super + @Delete
-	wmrc suspend
-
-# Shut down
-super + shift + @Delete : Return
-	wmrc -r 'hardware/power(off)'
-
-# Reboot
-super + shift + ctrl + @Delete : Return
-	wmrc -r 'hardware/power(reboot)'
-
-# Lock the device using physlock
-XF86Launch1
-	physlock -m -d
-
-# Lock screen and turn off screen
-super + l
-	wmrc lock
-
-# Launch terminal
-super + Return
-	$TERMINAL
-
-# Launch terminal as root
-super + shift + Return
-	$TERMINAL -e sudo /usr/bin/fish
-
-# Launch scratchpad terminal
-super + BackSpace
-	$TERMINAL -e tmux new-session -A -s scratchpad
-
-# Launch Firefox
-super + b
-	$BROWSER
-
-# Firefox fix
-ctrl + q
-	true
-
-# Launch Firefox in private mode
-super + shift + b
-	firefox -private-window
-
-# Launch file manager
-super + n
-	$FILEMGR
-
-# Launch file manager as root
-super + shift + n
-	sudo $FILEMGR
-
-# Launch default mail client
-super + m
-	$MAILCLIENT
-
-# Launch Visual Studio Code
-super + v
-	code
-
-# Launch KeePassXC
-super + k
-	keepassxc
-
-# Launch default visual text editor
-super + e
-	$VISUAL
-
-# Launch Signal Messenger
-super + s
-	signal-desktop
-
 # Deadbeef previous track in playlist
 {super + @F10, XF86AudioPrev}
 	deadbeef --prev
@@ -309,15 +334,14 @@ super + s
 {super + @F12, XF86AudioPlay}
 	deadbeef --toggle-pause
 
-# Show character menu
-super + z
-	wmrc -r 'ui/rofi(character)'
+## Appearance
 
-# Show calculator
-super + @less
-	wmrc -r 'ui/rofi(calc)'
+# Turn on gaps for current desktop
+super + bracketright
+	bspc config -d focused window_gap 15; \
+	bspc config -d focused border_width 2
 
-# Print screen
-{super + p, Print}
-	mkdir -p "$HOME/Pictures/Screenshots"; \
-	flameshot gui -p "$HOME/Pictures/Screenshots"
+# Turn off gaps for current desktop
+super + bracketleft
+	bspc config -d focused window_gap 0; \
+	bspc config -d focused border_width 1
