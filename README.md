@@ -22,7 +22,7 @@ git clone https://github.com/filiparag/dotfiles.git /tmp/dotfiles
 sudo systemctl reboot
 ```
 
-Username `filiparag` will be raplaced with your username.
+Username `filiparag` will be replaced with your username.
 
 ### Hardware-specific modifications
 
@@ -46,7 +46,7 @@ Shortcuts manual: [`~/.sydf/SHORTCUTS.md`](./SHORTCUTS.md)
 
 Startup applications are listed in `APPS` variable in [`~/.config/wmrc/modules/services/apps`](./home/filiparag/.config/wmrc/modules/services/apps)
 
-Wallpaper and lockscreen are located in `~/Pictures` directory
+Wallpaper and lockscreen images are located in `~/Pictures` directory
 
 To enable VNC server, run:
 
@@ -58,5 +58,5 @@ vncpasswd
 sudo ufw allow in 5900/tcp
 
 # Restart wmrc VNC module
-wmrc -r 'services/vnc(restart)'
+wmrc -r 'services/vnc(start)'
 ```

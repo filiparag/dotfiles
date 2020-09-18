@@ -110,6 +110,9 @@ finish_cleanup() {
 	# use fish as default shell
 	chsh -s /usr/bin/fish &&\
 
+	# clear fish greeting
+	fish -c 'set fish_greeting ""'
+
 	# Remove temporary files
 	rm -rf "$TMPDIR"
 
@@ -117,7 +120,7 @@ finish_cleanup() {
 
 shortcuts_manual() {
 
-	cat home/filiparag/.config/sxhkd/sxhkdrc | awk 'NR > 1 {
+	cat "$DIR/home/filiparag/.config/sxhkd/sxhkdrc" | awk 'NR > 1 {
 		if ($0 ~ /^## /) {
 			gsub(/^## */,"",$0); printf("\n### %s\n\n",$0)
 		} else if ($0 ~ /^# /) {

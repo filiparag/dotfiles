@@ -100,7 +100,7 @@ reload_ui() {
 
   wmrc -r "wm/$WM"
   wmrc -r 'ui/polybar(restart)'
-  wmrc -r 'screen/wallpaper,lock(generate_composite)'
+  wmrc -r 'screen/wallpaper_dynamic(restart),lock(generate_composite)'
 
 }
 
