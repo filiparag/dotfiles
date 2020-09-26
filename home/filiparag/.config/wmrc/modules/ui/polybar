@@ -2,10 +2,14 @@
 # WMRC_DEPS: polybar, pgrep, xrandr
 # WMRC_FLAGS:
 
+PID_FILE="/tmp/polybar@$(whoami)"
+
 start() {
 
-  [ -z "$(pgrep -u "$(whoami)" polybar)" ] || \
-    error "Polybar is already running!" fatal 2
+  if [ -f "$PID_FILE" ]; then
+    cat "$PID_FILE" | xargs kill -0 && \
+      error "Polybar is already running!" fatal 2
+  fi
 
   local WLP
   local ENP
@@ -51,12 +55,14 @@ start() {
       NOTIF="right"
     else
       MOD_L="bspwm"
-      MOD_C="deadbeef"
+      MOD_C="playerctl"
       MOD_R="updates pulseaudio monitor host date"
       NOTIF="none"
     fi
 
     MONITOR="$M" WLP="$WLP" ENP="$ENP" MNT="$MNT" ML="$MOD_L" MC="$MOD_C" MR="$MOD_R" NOTIF="$NOTIF" polybar --reload "main" &
+
+    echo $! >> "$PID_FILE"
 
   done
 
@@ -67,7 +73,9 @@ stop() {
   [ -z "$(pgrep -u "$(whoami)" polybar)" ] && \
     error "Polybar is not running!"
 
-  killall -u "$(whoami)" -9 polybar > /dev/null
+  # killall -u "$(whoami)" -9 polybar > /dev/null
+  cat "$PID_FILE" | xargs kill -9
+  rm -f "$PID_FILE"
 
 }
 

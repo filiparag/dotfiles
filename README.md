@@ -48,6 +48,8 @@ Startup applications are listed in `APPS` variable in [`~/.config/wmrc/modules/s
 
 Wallpaper and lockscreen images are located in `~/Pictures` directory
 
+To change default monitor setup, create desired layout using `arandr` and save it as `~/.screenlayout/Default.sh`
+
 To enable VNC server, run:
 
 ``` bash

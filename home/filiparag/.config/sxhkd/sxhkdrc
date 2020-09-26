@@ -322,17 +322,17 @@ super + XF86AudioMute
 {super + shift + Insert, XF86AudioMicMute}
 	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
 
-# Deadbeef previous track in playlist
+# Playerctl previous track in playlist
 {super + @F10, XF86AudioPrev}
-	deadbeef --prev
+	playerctl -a previous
 
-# Deadbeef next track in playlist
+# Playerctl next track in playlist
 {super + @F11, XF86AudioNext}
-	deadbeef --next
+	playerctl -a next
 
-# Deadbeef toggle pause playback
+# Playerctl toggle pause playback
 {super + @F12, XF86AudioPlay}
-	deadbeef --toggle-pause
+	playerctl -a play-pause
 
 ## Appearance
 

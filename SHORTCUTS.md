@@ -153,11 +153,11 @@ Launch Pulseaudio control interface `super + XF86AudioMute`
 
 Toggle mute microphone `{super + shift + Insert, XF86AudioMicMute}`
 
-Deadbeef previous track in playlist `{super + @F10, XF86AudioPrev}`
+Playerctl previous track in playlist `{super + @F10, XF86AudioPrev}`
 
-Deadbeef next track in playlist `{super + @F11, XF86AudioNext}`
+Playerctl next track in playlist `{super + @F11, XF86AudioNext}`
 
-Deadbeef toggle pause playback `{super + @F12, XF86AudioPlay}`
+Playerctl toggle pause playback `{super + @F12, XF86AudioPlay}`
 
 
 ### Appearance

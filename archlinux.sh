@@ -111,7 +111,7 @@ finish_cleanup() {
 	chsh -s /usr/bin/fish &&\
 
 	# clear fish greeting
-	fish -c 'set fish_greeting ""'
+	fish -c 'set fish_greeting ""' &&\
 
 	# Remove temporary files
 	rm -rf "$TMPDIR"
