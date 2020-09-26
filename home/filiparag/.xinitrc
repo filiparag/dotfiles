@@ -27,6 +27,8 @@ dbus-update-activation-environment --systemd DISPLAY
 eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
 export SSH_AUTH_SOCK
 
+export XDG_SESSION_TYPE=x11
+
 ! command -v wmrc >/dev/null && \
     >&2 echo "wmrc not found in PATH!" && exit 1
 

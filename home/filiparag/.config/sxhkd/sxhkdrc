@@ -156,6 +156,17 @@ super + shift + f
 super + w
 	bspc node -s last
 
+# Bring last focused window to current subnode
+super + shift + w
+	cur="$(bspc query -N -n focused)"; \
+	last="$(bspc query -N -n last)"; \
+	bspc node -i; \
+	rec="$(bspc query -N -n '.leaf.!window')"; \
+	bspc node -f "$last"; \
+	bspc node -n "$rec"; \
+	bspc node -f "$last"
+
+
 ## Window size and rotation
 
 # Resize window (Up)

@@ -52,7 +52,7 @@ noto-fonts-emoji
 ntp
 numlockx
 openssh
-paper-icon-theme
+paper-icon-theme-git
 pavucontrol
 pcmanfm
 perl
@@ -77,6 +77,7 @@ sudo
 sxhkd
 sydf
 syncthing
+sysstat
 tigervnc
 tmux
 tree

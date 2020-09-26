@@ -75,6 +75,8 @@ Toggle fullscreen mode for focused window `super + shift + f `
 
 Swap places of current and last focused window `super + w`
 
+Bring last focused window to current subnode node `super + shift + w`
+
 
 ### Window size and rotation
 

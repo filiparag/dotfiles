@@ -1,5 +1,5 @@
-&db93ae8c15cb4b9038b3ea0aaa14c6a9ad1521f3#
 !archlinux.sh#
+&4678c00a745b784e8e71da774bbc79199fa106a7#
 !.git#
 !.gitignore#
 !.gitmodules#
@@ -38,3 +38,4 @@
 !.stfolder#
 !.stignore#
 !.stversions#
+%/etc/systemd/system/getty@tty1.service.d:/etc/systemd/system;/getty@tty1.service.d#
