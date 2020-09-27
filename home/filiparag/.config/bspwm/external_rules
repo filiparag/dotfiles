@@ -1,0 +1,26 @@
+#! /usr/bin/env dash
+
+wid=$1
+class=$2
+instance=$3
+consequences=$4
+
+case "$class" in
+	firefox)
+		# Picture in picture
+		xprop -id "$wid" 'WM_NAME' | grep -q 'Picture-in-Picture' && {
+			rec="$(
+				xwininfo -id "$wid" | awk '
+					/Absolute upper-left X:/ {x=int($NF)};
+					/Absolute upper-left Y:/ {y=int($NF)};
+					/Width:/ {w=int($NF)};
+					/Height:/ {h=int($NF)};
+					END {printf("rectangle=%ix%i+%i+%i",w*3/4,h*3/4,x+w*1/4-20,y+h*1/4-45)};'
+			)"
+			echo "state=floating sticky=on $rec"
+		}
+		;;
+	Sxiv|feh)
+		echo "state=pseudo_tiled"
+		;;
+esac

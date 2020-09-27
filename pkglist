@@ -52,12 +52,14 @@ noto-fonts-emoji
 ntp
 numlockx
 openssh
+openresolv
 paper-icon-theme-git
 pavucontrol
 pcmanfm
 perl
 picom
 pkgconf
+playerctl
 polybar
 pulseaudio
 python-axolotl
