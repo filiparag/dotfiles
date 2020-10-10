@@ -2,283 +2,374 @@
 
 # System installation script for Arch Linux
 
-ct="$(tput setaf 2; tput bold)=== "
-ce="$(tput setaf 1; tput bold)!!! "
-cw="$(tput setaf 3; tput bold)=== "
-cp="$(tput setaf 6; tput bold)==> "
-cs="$(tput setaf 2; tput bold)==> "
-cl="$(tput sgr0)    - "
-ch="$(tput setaf 5)"
-cn="$(tput sgr0)"
-ci="    "
+cb="$(tput setaf 0)"
+cr="$(tput setaf 1)"
+cg="$(tput setaf 2)"
+cy="$(tput setaf 3)"
+cb="$(tput setaf 4)"
+cm="$(tput setaf 5)"
+cc="$(tput setaf 6)"
+cw="$(tput setaf 7)"
+sb="$(tput bold)"
+sn="$(tput sgr0)"
+sr="$(tput smso)"
+su="$(tput smul)"
 
-# Initialization
-printf "${ct}Initialization\n${cn}"
-
-# Check internet
-printf "${cl}Check internet connection\n${cn}"
-ping -q -W 5 -c 1 1.1.1.1 1>/dev/null 2>/dev/null || {
-	printf "${ce}Not connected to the internet!\n${cn}"
-	exit 1
+print() {
+	case "$1" in
+		t|title)
+			shift;
+			printf "%s\n" "${sb}${cg}### $*${sn}"
+			;;
+		s|step)
+			shift;
+			printf "%s\n" "${sb}${cm}=== $*${sn}"
+			;;
+		l|list)
+			shift;
+			printf "%s\n" "${sb}${cb}  - $*${sn}"
+			;;
+		w|warning)
+			shift;
+			printf "%s\n" "${sb}${cy}::: $*${sn}"
+			;;
+		e|error)
+			shift;
+			printf "%s\n" "${sb}${cr}!!! $*${sn}"
+			exit 1
+			;;
+		i|input)
+			shift;
+			rg="$1";
+			shift;
+			user_input=''
+			while [ -z "$user_input" ]; do
+				printf "%s" "${sb}${cc}==> $* ${sn}";
+				read;
+				user_input="$REPLY"
+				if [ -n "$rg" ] && echo "$user_input" | grep -Evq "^$rg$"; then
+					print w 'Invalid input, try again!';
+					user_input='';
+				fi;
+			done;
+			;;
+		p|protected)
+			shift;
+			rg="$1";
+			shift;
+			user_input=''
+			while [ -z "$user_input" ]; do
+				printf "%s" "${sb}${cc}==> $* ${sn}";
+				stty -echo
+				read;
+				user_input="$REPLY"
+				stty echo
+				printf '\n'
+				if [ -n "$rg" ] && echo "$user_input" | grep -Evq "^$rg$"; then
+					print w 'Invalid input, try again!';
+					user_input='';
+				fi;
+			done;
+			;;
+		c|confirm)
+			shift;
+			def="$1";
+			shift;
+			user_input=''
+			while [ -z "$user_input" ]; do
+				case "$def" in
+					y|Y)
+						printf "%s" "${sb}${cc}==> $* [Y/n] ${sn}";
+						def='y';;
+					n|N)
+						printf "%s" "${sb}${cc}==> $* [y/N] ${sn}";
+						def='n';;
+					*)
+						printf "%s" "${sb}${cc}==> $* [y/n] ${sn}";
+						def='';;
+				esac
+				read user_input
+				case "$user_input" in
+					y|Y)
+						[ "$def" != 'n' ];
+						return $?;;
+					n|N)
+						[ "$def" = 'n' ];
+						return $?;;
+					*)
+						[ "$def" != '' ] && return 0;
+						user_input='';
+						print w 'Invalid input, try again!';;
+				esac
+			done;
+			;;
+		*)
+			printf '%s\n' "$*"
+			;;
+	esac
 }
 
-# Check EFI vars
-printf "${cl}Check boot mode\n${cn}"
-[ -z "$(ls -A /sys/firmware/efi/efivars)" ] && {
-	printf "${ce}Not booted in UEFI mode!\n${cn}"
-	exit 1
+check_environment() {
+
+	# Initialization
+	print t 'Checking installation environment'
+
+	# Check hostname
+	print s 'Verifying installation environment'
+	[ "$(hostname)" = 'archiso' ] || \
+	print w 'Not in the default installation environment, proceed with caution!'
+
+	# Check internet
+	print s 'Checking internet connection'
+	ping -q -W 20 -c 1 1.1.1.1 1>/dev/null 2>/dev/null || \
+	print e 'Not connected to the internet!'
+
+	# Check EFI vars
+	print s 'Checking boot mode'
+	[ -n "$(ls -A /sys/firmware/efi/efivars)" ] || \
+	print e 'Not booted in UEFI mode!'
+
 }
 
-# User configuration
-printf "${ct}User information\n${cn}"
-printf "${cp}Username: ${cn}"
-read config_user
+configure_host() {
 
-stty -echo
-printf "${cp}Password: ${cn}"
-read config_pass
-stty echo
-printf '\n'
+	print t 'Host configuration'
 
-[ -z "$config_pass" ] && {
-	printf "${ce}Empty password!\n${cn}"
-	exit 1
+	print i '[a-zA-Z0-9-]+' 'Hostname:'
+	conf_hostname="$user_input"
+
+	while [ -z "$conf_timezone" ]; do
+		print i '.+' 'Timezone:'
+		if [ -f "/usr/share/zoneinfo/$user_input" ]; then
+			conf_timezone="$user_input"
+		else
+			print w 'Invalid timezone!'
+		fi
+	done
+
+	print s 'Select installation disk'
+	lsblk -no NAME,SIZE,TYPE,FSTYPE
+	avail_disks="$(lsblk -rno NAME,TYPE | awk '$2 == "disk" {d=sprintf("%s%s%s",d,(NR==1)?"":"|","("$1")")} END {print "("d")"}')"
+	print i "$avail_disks" 'Install to:'
+	conf_disk="$user_input"
+
+	if print c 'Y' 'Enable full disk encryption'; then
+		conf_disk_encryption='yes'
+		print p '.+' 'Enter disk password:'
+		conf_disk_pass="$user_input"
+		print p '.+' 'Repeat disk password:'
+		repeat_disk_pass="$user_input"
+		[ "$conf_disk_pass" = "$repeat_disk_pass" ] || \
+		print e 'Disk password mismatch!'
+	else
+		conf_disk_encryption='no'
+	fi
+
 }
 
-stty -echo
-printf "${cp}Repeat password: ${cn}"
-read confirm_pass
-stty echo
-printf '\n'
+configure_user() {
 
-[ "$config_pass" != "$confirm_pass" ] && {
-	printf "${ce}Passwords don't match!\n${cn}"
-	exit 1
+	print t 'User configuration'
+
+	while [ -z "$conf_user" ]; do
+		print i '[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30})' 'Username:'
+		if id -u "$user_input" >/dev/null 2>/dev/null; then
+			print w 'User already exists!'
+		else
+			conf_user="$user_input"
+		fi
+	done
+
+	print p '.+' 'Enter password:'
+	conf_pass="$user_input"
+	print p '.+' 'Repeat password:'
+	repeat_pass="$user_input"
+	[ "$conf_pass" = "$repeat_pass" ] || \
+	print e 'Password mismatch!'
+
+	conf_passwordless='no'
+	print c 'Y' 'Passwordless sudo?' && \
+	conf_passwordless='yes'
+
+	conf_shell='bash'
+	print c 'Y' 'Set default shell to fish?' && \
+	conf_shell='fish'
+
 }
 
-# System configuration
-printf "${ct}Full disk encryption\n${cn}"
+installation_summary() {
 
-stty -echo
-printf "${cp}Password: ${cn}"
-read config_disk_pass
-stty echo
-printf '\n'
+	print t 'Configuration summary'
 
-[ -z "$config_disk_pass" ] && {
-	printf "${ce}Empty password!\n${cn}"
-	exit 1
+	print s 'Host settings'
+	print l 'Hostname:' "${sn}${sb}$conf_hostname"
+	print l 'Timezone:' "${sn}${sb}$conf_timezone"
+	print l 'Installation disk:' "${sn}${sb}$conf_disk"
+	print l 'Encryption:' "${sn}${sb}$conf_disk_encryption"
+
+	print s 'User settings'
+	print l 'Username:' "${sn}${sb}$conf_user"
+	print l 'Passwordless sudo:' "${sn}${sb}$conf_passwordless"
+	print l 'Shell:' "${sn}${sb}$conf_shell"
+
+	print w 'Caution: proceeding with the installation'
+	print w 'will wipe all data from the installation disk!'
+	print w 'Type YES to continue.'
+
+	print i '.*' 'Continue?'
+	[ "$user_input" = 'YES' ] || \
+	print e 'Aborting installation!'
+
 }
 
-stty -echo
-printf "${cp}Repeat password: ${cn}"
-read confirm_disk_pass
-stty echo
-printf '\n'
+pre_installation() {
 
-[ "$config_disk_pass" != "$confirm_disk_pass" ] && {
-	printf "${ce}Passwords don't match!\n${cn}"
-	exit 1
+	print t 'Preparing installation' && \
+
+	print s 'Update the system clock' && \
+	timedatectl set-ntp true && \
+
+	print s 'Update repository mirrors' && \
+	curl -L 'https://www.archlinux.org/mirrorlist/?country=DE&protocol=https&ip_version=4&ip_version=6&use_mirror_status=on' | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
+
+	print s 'Prepare required packages' && \
+	pacman -Sy --noconfirm --needed lvm2 && \
+
+	print s 'Format disk' && \
+	sgdisk /dev/vda -o -n 1:0:512M -t 1:ef00 -N 2 -t 2:8309 && \
+
+	print s 'Format boot partition' && \
+	mkfs.fat -F32 /dev/vda1 && \
+
+	print s 'Setup LUKS blockdevice on system partition' && \
+	echo "$conf_disk_pass" | cryptsetup -q luksFormat /dev/vda2 && \
+
+	print s 'Mount the LUKS container' && \
+	echo "$conf_disk_pass" | cryptsetup open /dev/vda2 cryptlvm && \
+
+	print s 'Create a physical volume on top of the opened LUKS container' && \
+	pvcreate /dev/mapper/cryptlvm && \
+
+	print s 'Create ArchLinux volume group' && \
+	vgcreate ArchLinux /dev/mapper/cryptlvm && \
+
+	print s 'Create root filesystem volume' && \
+	lvcreate -l 100%FREE ArchLinux -n root && \
+	mkfs.ext4 /dev/ArchLinux/root && \
+
+	print s 'Mount partitions' && \
+	mount /dev/ArchLinux/root /mnt && \
+	mkdir -p /mnt/boot && \
+	mount /dev/vda1 /mnt/boot
+
 }
 
-# Host configuration
-printf "${ct}Host configuration\n${cn}"
-printf "${cp}Hostname: ${cn}"
-read config_host
-printf "${cp}Timezone (Region/City): ${cn}"
-read config_timezone
+installation() {
 
-# Choose installation disk
-printf "${ct}Select installation disk\n${cn}"
-lsblk -no NAME,SIZE,TYPE,FSTYPE
-printf "${cp}Install to /dev/${cn}"
-read config_disk
+	print t 'Installing system' && \
 
-test -b "/dev/${config_disk}" || {
-	printf "${ce}Disk /dev/${config_disk} does not exist!\n${cn}"
-	exit 1
-}
+	print s 'Install Arch Linux base system' && \
+	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo "$conf_shell" && \
 
-# Display summary
-printf "${ct}Installation summary\n${cn}"
+	print s 'Enable NetworkManager service' && \
+	arch-chroot /mnt systemctl enable NetworkManager && \
 
-printf "${cl}Format disk /dev/${ch}${config_disk}${cn} using GPT
-${cl}Create /dev/${ch}${config_disk}1${cn} EFI boot partition
-${cl}Create encrypted LVM on /dev/${ch}${config_disk}2${cn}
-${cl}Create ${ch}${config_host}${cn}/root ext4 volume
-${cl}Install Arch Linux base system
-${cl}Set timezone to ${ch}${config_timezone}${cn}
-${cl}Create user ${ch}${config_user}${cn} with passwordless sudo privileges\n"
+	print s 'Generate fstab entries' && \
+	genfstab -U /mnt >> /mnt/etc/fstab && \
 
-printf "${cw}Performing installation is irreversible\n${ci}Type 'YES' to continue.\n${cn}"
-printf "${cp}Continue: ${cn}"
-read confirm_continue
+	print s 'Set timezone' && \
+	ln -sf "/usr/share/zoneinfo/$conf_timezone" /mnt/etc/localtime && \
+	arch-chroot /mnt hwclock --systohc && \
 
-[ "$confirm_continue" = 'YES' ] || {
-	printf "${ce}Aborting\n${cn}"
-	exit 255
-}
+	print s 'Configure localization' && \
+	echo 'en_US.UTF-8 UTF-8' >> /mnt/etc/locale.gen && \
+	arch-chroot /mnt locale-gen && \
+	echo 'LANG=en_US.UTF-8' > /mnt/etc/locale.conf && \
 
-printf "${ct}Installing system\n${cn}"
-
-# Update the system clock
-printf "${cs}Update the system clock${cn}\n"
-timedatectl set-ntp true
-
-# Update repository mirrors
-printf "${cs}Update repository mirrorlist${cn}\n"
-curl -L 'https://www.archlinux.org/mirrorlist/?country=DE&protocol=https&ip_version=4&ip_version=6&use_mirror_status=on' | sed 's/^#//' > /etc/pacman.d/mirrorlist
-
-# Prepare required packages
-printf "${cs}Install required packages${cn}\n"
-pacman -Sy --noconfirm --needed lvm2
-
-# Format disk
-printf "${cs}Format disk${cn}\n"
-sgdisk /dev/vda -o -n 1:0:512M -t 1:ef00 -N 2 -t 2:8309
-
-# Format boot partition
-printf "${cs}Format boot partition${cn}\n"
-mkfs.fat -F32 /dev/vda1
-
-# Format LUKS
-printf "${cs}Create LUKS blockdevice${cn}\n"
-echo "${config_disk_pass}" | cryptsetup -q luksFormat /dev/vda2
-
-# Mount LUKS volume
-echo "${config_disk_pass}" | cryptsetup open /dev/vda2 cryptlvm
-
-# Create a physical volume on top of the opened LUKS container
-pvcreate /dev/mapper/cryptlvm
-
-# Create the volume group
-printf "${cs}Create encrypted volume group${cn}\n"
-vgcreate ArchLinux /dev/mapper/cryptlvm
-
-# Create logical volumes
-printf "${cs}Create root volume${cn}\n"
-lvcreate -l 100%FREE ArchLinux -n root
-mkfs.ext4 /dev/ArchLinux/root
-
-# Mount partitions
-printf "${cs}Mount filesystem${cn}\n"
-mount /dev/ArchLinux/root /mnt
-mkdir -p /mnt/boot
-mount /dev/vda1 /mnt/boot
-
-# Install base system
-printf "${cs}Install Arch Linux base system${cn}\n"
-pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo fish
-
-# Enable NetworkManager
-printf "${cs}Enable NetworkManager service${cn}\n"
-arch-chroot /mnt systemctl enable NetworkManager
-
-# Generate fstab
-printf "${cs}Generate fstab entries${cn}\n"
-genfstab -U /mnt >> /mnt/etc/fstab
-
-# Set timezone
-printf "${cs}Set timezone info${cn}\n"
-ln -sf "/usr/share/zoneinfo/${config_timezone}" /mnt/etc/localtime
-arch-chroot /mnt hwclock --systohc
-
-# Localization
-printf "${cs}Configure localization${cn}\n"
-echo 'en_US.UTF-8 UTF-8' >> /mnt/etc/locale.gen
-arch-chroot /mnt locale-gen
-echo 'LANG=en_US.UTF-8' > /mnt/etc/locale.conf
-
-# Console font
-tee -a /mnt/etc/vconsole.conf << END
+	print s 'Set default console font' && {
+	tee -a /mnt/etc/vconsole.conf << END
 KEYMAP=us
 FONT=default8x16
 END
+	} && \
 
-# Hosts
-printf "${cs}Set hostname and populate hosts file${cn}\n"
-echo "${config_host}" > /mnt/etc/hostname
-tee -a /mnt/etc/hosts << END
+	print s 'Set hostname and populate hosts file' && \
+	echo "$conf_hostname" > /mnt/etc/hostname && {
+	tee -a /mnt/etc/hosts << END
 127.0.0.1   localhost
 ::1         localhost
-127.0.1.1   ${config_host}.localdomain ${config_host}
+127.0.1.1   $conf_hostname.localdomain $conf_hostname
 END
+	} && \
 
-# Add LVM and LUKS to mkinitcpio
-printf "${cs}Create initial ramdisk with LUKS and LVM support${cn}\n"
-sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
-arch-chroot /mnt mkinitcpio -P
+	print s 'Create initial ramdisk with LUKS and LVM support' && \
+	sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf && \
+	arch-chroot /mnt mkinitcpio -P && \
 
-# Setup user
-printf "${cs}Create user account${cn}\n"
-arch-chroot /mnt useradd -m -u 1000 -U -s /usr/bin/fish "${config_user}"
-arch-chroot /mnt su -c "echo '${config_user}:${config_pass}' | chpasswd"
-echo "${config_user} ALL=(ALL) NOPASSWD: ALL" > "/mnt/etc/sudoers.d/${config_user}"
-
-# Microcode
-printf "${cs}Detect CPU vendor and install microcode${cn}\n"
-cat /proc/cpuinfo | grep -qi 'vendor.*intel' && cpu_vendor='intel'
-cat /proc/cpuinfo | grep -qi 'vendor.*amd' && cpu_vendor='amd'
-[ -n "$cpu_vendor" ] && arch-chroot /mnt pacman -Sy --noconfirm --needed "${cpu_vendor}-ucode"
-
-# Setup bootloader
-printf "${cs}Setup bootloader${cn}\n"
-arch-chroot /mnt bootctl install
-tee /mnt/boot/loader/loader.conf << END
+	print s 'Detect CPU vendor and install microcode' && {
+	grep -qi 'vendor.*intel' /proc/cpuinfo && cpu_vendor='intel'
+	grep -qi 'vendor.*amd' /proc/cpuinfo && cpu_vendor='amd'
+	[ -n "$cpu_vendor" ] && arch-chroot /mnt pacman -Sy --noconfirm --needed "${cpu_vendor}-ucode"
+	true
+	} && \
+	print s 'Setup bootloader' && \
+	arch-chroot /mnt bootctl install && {
+	tee /mnt/boot/loader/loader.conf << END
 timeout 1
 default arch
 END
-tee /mnt/boot/loader/entries/arch.conf << END
+	} && {
+	tee /mnt/boot/loader/entries/arch.conf << END
 title    Arch Linux
 linux    /vmlinuz-linux
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
 initrd   /initramfs-linux.img
 options  cryptdevice=UUID=$(lsblk /dev/vda2 -r -n -o UUID | head -n 1):cryptlvm root=/dev/ArchLinux/root rw add_efi_memmap
 END
+	} && \
 
-printf "${cs}Installation successful${cn}\n"
+	print s 'Create user account' && \
+	arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" && \
+	arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd" && \
+	if [ "$conf_passwordless" = 'yes' ]; then
+		echo "$conf_user ALL=(ALL) NOPASSWD: ALL" > "/mnt/etc/sudoers.d/$conf_user"
+	else
+		echo "$conf_user ALL=(ALL) ALL" > "/mnt/etc/sudoers.d/$conf_user"
+	fi
 
-# Dotfiles
-printf "${ct}Post installation configuration${cn}\n"
-printf "${cp}Download dotfiles installer [Y/n]: ${cn}"
-read config_dotfiles
+}
 
-case "$config_dotfiles" in
-	n|N)
-		break
-		;;
-	*)
-		confirm_dotfiles='true'
-		;;
-esac
+post_installation() {
 
-if [ "$confirm_dotfiles" = 'true' ]; then
+	print t 'Post installation'
 
-printf "${cs}Downloading dotfiles snapshot${cn}\n"
-arch-chroot /mnt pacman -Sy --needed --noconfirm git
-arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /opt/dotfiles
+	print c 'Y' 'Download dotfile installer?'
+	dotfiles_installer
 
-printf "${cs}Linking installer script${cn}\n"
-arch-chroot /mnt ln -s /opt/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install
+	print s 'Unmount filesystem'
+	umount -R /mnt && \
+	lvchange -an /dev/ArchLinux && \
+	cryptsetup close cryptlvm && \
 
-# printf "${cs}Installing dotfiles${cn}\n"
-# arch-chroot /mnt su "${config_user}" -c /opt/dotfiles/install-dotfiles.sh
+	print s 'Installation complete' && \
+	print w 'Run reboot command and eject your installation media'
 
-# printf "${cs}Cleaning up dotfiles${cn}\n"
-# arch-chroot /mnt rm -rf /opt/dotfiles
+}
 
-# printf "${cs}Dotfiles installation complete${cn}\n"
+dotfiles_installer() {
 
-printf "${cw}To install dotfiles, run dotfiles-install when you log in${cn}\n"
+	print s 'Downloading latest dotfiles snapshot' && \
+	arch-chroot /mnt pacman -Sy --needed --noconfirm git && \
+	arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /opt/dotfiles && \
 
-fi
+	print s 'Linking installer script' && \
+	arch-chroot /mnt ln -s /opt/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install && \
 
-# Unmount
-printf "${cs}Unmount filesystem${cn}\n"
-umount -R /mnt
-lvchange -an /dev/ArchLinux
-cryptsetup close cryptlvm
+	print w 'To install dotfiles, run dotfiles-install when you log in'
 
-printf "${ct}Exiting installer${cn}\n"
+}
 
-printf "${cw}Run reboot command and eject your installation media${cn}\n"
+check_environment && configure_host && configure_user && installation_summary && \
+pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
+
+exit
