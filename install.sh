@@ -104,7 +104,7 @@ printf "${ct}Installation summary\n${cn}"
 
 printf "${cl}Format disk /dev/${ch}${config_disk}${cn} using GPT
 ${cl}Create /dev/${ch}${config_disk}1${cn} EFI boot partition
-${cl}Create encypted LVM on /dev/${ch}${config_disk}2${cn}
+${cl}Create encrypted LVM on /dev/${ch}${config_disk}2${cn}
 ${cl}Create ${ch}${config_host}${cn}/root ext4 volume
 ${cl}Install Arch Linux base system
 ${cl}Set timezone to ${ch}${config_timezone}${cn}

@@ -7,6 +7,16 @@ To install these dotfiles using [`archlinux.sh`](./archlinux.sh), you should hav
 - user account with [`sudo`](https://wiki.archlinux.org/index.php/Sudo#Example_entries) privileges
 - access to the internet
 
+### System install script
+
+Opinionated automatic [install script](./install.sh) for base Arch Linux is also provided.
+To use it, boot into [live installation system](https://www.archlinux.org/download/) and run following commands:
+```bash
+curl -LO 'https://raw.githubusercontent.com/filiparag/dotfiles/master/install.sh'
+sh install.sh
+```
+Follow colored instructions from the script and skip to [Hardware-specific modifications](#hardware-specific-modifications).
+
 ## Installation
 
 ```bash
@@ -23,6 +33,7 @@ sudo systemctl reboot
 ```
 
 Username `filiparag` will be replaced with your username.
+
 
 ### Hardware-specific modifications
 
