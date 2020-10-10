@@ -236,31 +236,44 @@ pre_installation() {
 	pacman -Sy --noconfirm --needed lvm2 && \
 
 	print s 'Format disk' && \
-	sgdisk /dev/vda -o -n 1:0:512M -t 1:ef00 -N 2 -t 2:8309 && \
+	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t 2:8309 && \
 
 	print s 'Format boot partition' && \
-	mkfs.fat -F32 /dev/vda1 && \
+	mkfs.fat -F32 "/dev/${conf_disk}1" && \
 
-	print s 'Setup LUKS blockdevice on system partition' && \
-	echo "$conf_disk_pass" | cryptsetup -q luksFormat /dev/vda2 && \
+	if [ "$conf_disk_encryption" = 'yes' ]; then
 
-	print s 'Mount the LUKS container' && \
-	echo "$conf_disk_pass" | cryptsetup open /dev/vda2 cryptlvm && \
+		print s 'Setup LUKS blockdevice on system partition' && \
+		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}2" && \
 
-	print s 'Create a physical volume on top of the opened LUKS container' && \
-	pvcreate /dev/mapper/cryptlvm && \
+		print s 'Mount the LUKS container' && \
+		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}2" cryptlvm && \
 
-	print s 'Create ArchLinux volume group' && \
-	vgcreate ArchLinux /dev/mapper/cryptlvm && \
+		print s 'Create a physical volume on top of the opened LUKS container' && \
+		pvcreate /dev/mapper/cryptlvm && \
 
-	print s 'Create root filesystem volume' && \
-	lvcreate -l 100%FREE ArchLinux -n root && \
-	mkfs.ext4 /dev/ArchLinux/root && \
+		print s 'Create ArchLinux volume group' && \
+		vgcreate ArchLinux /dev/mapper/cryptlvm && \
+
+		print s 'Create root filesystem volume' && \
+		lvcreate -l 100%FREE ArchLinux -n root && \
+		mkfs.ext4 /dev/ArchLinux/root
+
+	else
+
+		print s 'Format root partition' && \
+		mkfs.ext4 -F "/dev/${conf_disk}2"
+
+	fi && \
 
 	print s 'Mount partitions' && \
-	mount /dev/ArchLinux/root /mnt && \
+	if [ "$conf_disk_encryption" = 'yes' ]; then
+		mount /dev/ArchLinux/root /mnt
+	else
+		mount "/dev/${conf_disk}2" /mnt
+	fi && \
 	mkdir -p /mnt/boot && \
-	mount /dev/vda1 /mnt/boot
+	mount "/dev/${conf_disk}1" /mnt/boot
 
 }
 
@@ -302,9 +315,11 @@ END
 END
 	} && \
 
-	print s 'Create initial ramdisk with LUKS and LVM support' && \
-	sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf && \
-	arch-chroot /mnt mkinitcpio -P && \
+	if [ "$conf_disk_encryption" = 'yes' ]; then
+		print s 'Create initial ramdisk with LUKS and LVM support' && \
+		sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf && \
+		arch-chroot /mnt mkinitcpio -P
+	fi && \
 
 	print s 'Detect CPU vendor and install microcode' && {
 	grep -qi 'vendor.*intel' /proc/cpuinfo && cpu_vendor='intel'
@@ -318,13 +333,18 @@ END
 timeout 1
 default arch
 END
-	} && {
+	} && 
+	if [ "$conf_disk_encryption" = 'yes' ]; then
+		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/ArchLinux/root"
+	else
+		root_volume="root=UUID=$(lsblk "/dev/${conf_disk}2" -r -n -o UUID | head -n 1)"
+	fi && {
 	tee /mnt/boot/loader/entries/arch.conf << END
 title    Arch Linux
 linux    /vmlinuz-linux
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
 initrd   /initramfs-linux.img
-options  cryptdevice=UUID=$(lsblk /dev/vda2 -r -n -o UUID | head -n 1):cryptlvm root=/dev/ArchLinux/root rw add_efi_memmap
+options  $root_volume rw add_efi_memmap
 END
 	} && \
 
@@ -346,10 +366,15 @@ post_installation() {
 	print c 'Y' 'Download dotfile installer?'
 	dotfiles_installer
 
+	print c 'N' 'Chroot into system for manual modifications?' ||
+	arch-chroot /mnt "/usr/bin/$conf_shell"
+
 	print s 'Unmount filesystem'
 	umount -R /mnt && \
-	lvchange -an /dev/ArchLinux && \
-	cryptsetup close cryptlvm && \
+	if [ "$conf_disk_encryption" = 'yes' ]; then
+		lvchange -an /dev/ArchLinux && \
+		cryptsetup close cryptlvm
+	fi && \
 
 	print s 'Installation complete' && \
 	print w 'Run reboot command and eject your installation media'
