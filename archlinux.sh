@@ -12,7 +12,7 @@ check_sudo() {
 workdir() {
 
 	# Working and scratch directory
-	DOTFILEDIR="$(realpath "$(dirname "$0")")" &&\
+	DOTFILEDIR="$(realpath "$(dirname "$(readlink -f "$0")")")" &&\
 	TMPDIR="$(mktemp -d)"
 
 }
