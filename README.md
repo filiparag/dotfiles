@@ -1,6 +1,6 @@
 ## Prerequisites
 
-To install these dotfiles using [`archlinux.sh`](./archlinux.sh), you should have:
+To install these dotfiles using [`install-dotfiles.sh`](./install-dotfiles.sh), you should have:
 
 - [base Arch Linux](https://wiki.archlinux.org/index.php/Installation_guide) installed
 - at least 8 GiB of free space on root partition
@@ -9,11 +9,11 @@ To install these dotfiles using [`archlinux.sh`](./archlinux.sh), you should hav
 
 ### System install script
 
-Opinionated automatic [install script](./install.sh) for base Arch Linux is also provided.
-To use it, boot into [live installation system](https://www.archlinux.org/download/) and run following commands:
+Opinionated automatic [install script](./install-system.sh) for base Arch Linux is also provided.
+To use it, boot into [live installation system](https://www.archlinux.org/download/) using UEFI and run following commands:
 ```bash
-curl -LO 'https://raw.githubusercontent.com/filiparag/dotfiles/master/install.sh'
-sh install.sh
+curl -LO 'https://raw.githubusercontent.com/filiparag/dotfiles/master/install-system.sh'
+sh install-system.sh
 ```
 Follow colored instructions from the script and skip to [Hardware-specific modifications](#hardware-specific-modifications).
 
@@ -24,7 +24,7 @@ Follow colored instructions from the script and skip to [Hardware-specific modif
 git clone https://github.com/filiparag/dotfiles.git /tmp/dotfiles
 
 # Run semi-automatic installer
-/tmp/dotfiles/archlinux.sh
+/tmp/dotfiles/install-dotfiles.sh
 
 # Hardware-specific commands go here
 

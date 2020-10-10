@@ -108,7 +108,7 @@ ${cl}Create encrypted LVM on /dev/${ch}${config_disk}2${cn}
 ${cl}Create ${ch}${config_host}${cn}/root ext4 volume
 ${cl}Install Arch Linux base system
 ${cl}Set timezone to ${ch}${config_timezone}${cn}
-${cl}Create user ${ch}${config_user}${cn} with passwordless sudo privilege\n"
+${cl}Create user ${ch}${config_user}${cn} with passwordless sudo privileges\n"
 
 printf "${cw}Performing installation is irreversible\n${ci}Type 'YES' to continue.\n${cn}"
 printf "${cp}Continue: ${cn}"
@@ -259,10 +259,10 @@ arch-chroot /mnt pacman -Sy --needed --noconfirm git
 arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /opt/dotfiles
 
 printf "${cs}Linking installer script${cn}\n"
-arch-chroot /mnt ln -s /opt/dotfiles/archlinux.sh /usr/bin/dotfiles-install
+arch-chroot /mnt ln -s /opt/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install
 
 # printf "${cs}Installing dotfiles${cn}\n"
-# arch-chroot /mnt su "${config_user}" -c /opt/dotfiles/archlinux.sh
+# arch-chroot /mnt su "${config_user}" -c /opt/dotfiles/install-dotfiles.sh
 
 # printf "${cs}Cleaning up dotfiles${cn}\n"
 # arch-chroot /mnt rm -rf /opt/dotfiles
