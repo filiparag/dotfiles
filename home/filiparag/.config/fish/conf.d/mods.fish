@@ -24,6 +24,7 @@ if status --is-interactive
     abbr --add gsh      'git show'
     abbr --add ga       'git add'
     abbr --add gc       'git commit -S -m'
+    abbr --add gca      'git commit -S --amend'
     abbr --add gl       'git log'
     abbr --add gp       'git push'
     abbr --add gpt      'git push --tags'

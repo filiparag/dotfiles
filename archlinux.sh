@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Installation script for Arch Linux
+# Dotfiles installation script for Arch Linux
 
 check_sudo() {
 
@@ -12,7 +12,7 @@ check_sudo() {
 workdir() {
 
 	# Working and scratch directory
-	DIR="$(realpath "$(dirname "$0")")" &&\
+	DOTFILEDIR="$(realpath "$(dirname "$0")")" &&\
 	TMPDIR="$(mktemp -d)"
 
 }
@@ -46,14 +46,14 @@ install_packages() {
 	} &&\
 
 	# Install all required packages
-	yay -S --needed - < "$DIR/pkglist"
+	yay -S --needed - < "$DOTFILEDIR/pkglist"
 
 }
 
 install_dotfiles() {
 
 	# Prepare dotfiles
-	cp -rp "$DIR" "$HOME/.sydf" &&\
+	cp -rp "$DOTFILEDIR" "$HOME/.sydf" &&\
 	sudo chown -R "$USER:$USER" "$HOME/.sydf" &&\
 	cd "$HOME/.sydf" &&\
 	git submodule update --init --recursive &&\
@@ -121,7 +121,7 @@ finish_cleanup() {
 
 shortcuts_manual() {
 
-	cat "$DIR/home/filiparag/.config/sxhkd/sxhkdrc" | awk 'NR > 1 {
+	cat "$DOTFILEDIR/home/filiparag/.config/sxhkd/sxhkdrc" | awk 'NR > 1 {
 		if ($0 ~ /^## /) {
 			gsub(/^## */,"",$0); printf("\n### %s\n\n",$0)
 		} else if ($0 ~ /^# /) {
