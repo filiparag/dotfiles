@@ -117,7 +117,8 @@ check_environment() {
 	# Check hostname
 	print s 'Verifying installation environment'
 	[ "$(hostname)" = 'archiso' ] || \
-	print w 'Not in the default installation environment, proceed with caution!'
+	print w 'Not in the default installation environment,'
+	print w 'proceed with caution!'
 
 	# Check internet
 	print s 'Checking internet connection'
@@ -194,6 +195,7 @@ configure_user() {
 	conf_shell='bash'
 	print c 'Y' 'Set default shell to fish?' && \
 	conf_shell='fish'
+	true
 
 }
 
@@ -212,7 +214,7 @@ installation_summary() {
 	print l 'Passwordless sudo:' "${sn}${sb}$conf_passwordless"
 	print l 'Shell:' "${sn}${sb}$conf_shell"
 
-	print w 'Caution: proceeding with the installation'
+	print w 'Warning: proceeding with the installation'
 	print w 'will wipe all data from the installation disk!'
 	print w 'Type YES to continue.'
 
