@@ -64,7 +64,10 @@ install_dotfiles() {
 	{
 		if [ "$USER" != 'filiparag' ]; then
 			mv "$HOME/.sydf/home/filiparag" "$HOME/.sydf/home/$USER" &&\
-			rg --hidden -i filiparag -g '!.git' -g '!install-dotfiles.sh' -g '!install-system.sh' -l "$HOME/.sydf" | xargs sed -i "s|filiparag|$USER|g"
+			rg --hidden -i filiparag \
+				-g '!.git' -g '!install-dotfiles.sh' -g '!install-system.sh' \
+				-g '!README.md' -g '!LICENSE' -g '!pkglist' \
+				-l "$HOME/.sydf" | xargs sed -i "s|filiparag|$USER|g"
 		fi
 	} &&\
 
