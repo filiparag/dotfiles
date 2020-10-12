@@ -127,7 +127,7 @@ check_environment() {
 
 	print s 'Checking root privileges'
 	[ "$(whoami)" = 'root' ] || \
-	print e 'Insufficient privileges!'
+	print w 'Warning: insufficient privileges!'
 
 	print s 'Checking internet connection'
 	ping -q -W 20 -c 1 1.1.1.1 1>/dev/null 2>/dev/null || \
@@ -142,7 +142,7 @@ check_environment() {
 parse_options() {
 	WARN_PARAMS='false'
 	CONF_PASS_PROMPT='p'
-	while getopts H:T:D:E:S:KR:AUu:p:xs:Yih o; do
+	while getopts H:T:D:E:S:K:R:AUu:p:xs:Yih o; do
 		case $o in
 			# Hostname
 			(H) CONF_HOSTNAME="$OPTARG";
@@ -171,8 +171,13 @@ parse_options() {
 				fi;
 				WARN_PARAMS='true';;
 			# Enable LTS kernel
-			(K) CONF_LTS_KERNEL='yes';
-				CONF_LTS='linux-lts';
+			(K) if [ "$OPTARG" = 'yes' ]; then
+					CONF_LTS_KERNEL="$OPTARG";
+					CONF_LTS='linux-lts';
+				else
+					CONF_LTS_KERNEL='no';
+					CONF_LTS='';
+				fi;
 				WARN_PARAMS='true';;
 			# Repository mirror countries
 			(R) CONF_MIRRORS="$OPTARG";
@@ -212,7 +217,7 @@ parse_options() {
 				print l 'D' "${sn}${sb}${cc}DISK         " "${sn}Installation disk";
 				print l 'E' "${sn}${sb}${cc}DISK_PASS    " "${sn}Disk encryption password (${sb}empty${sn} to disable)";
 				print l 'S' "${sn}${sb}${cc}SWAPFILE_SIZE" "${sn}Swap file size (${sb}0${sn} to disable)";
-				print l 'K' "${sn}${sb}${cc}             " "${sn}Enable LTS kernel";
+				print l 'K' "${sn}${sb}${cc}yes/no       " "${sn}Enable LTS kernel";
 				print l 'R' "${sn}${sb}${cc}MIRRORS      " "${sn}Repository mirror countries";
 				print l 'A' "${sn}${sb}${cc}             " "${sn}Disable Arch User Repository";
 				print l 'U' "${sn}${sb}${cc}             " "${sn}Disable primary user";
