@@ -126,8 +126,10 @@ check_environment() {
 	}
 
 	print s 'Checking root privileges'
-	[ "$(whoami)" = 'root' ] || \
-	print w 'Warning: insufficient privileges!'
+	[ "$(whoami)" = 'root' ] || {
+		print w "${cr}Warning: insufficient privileges!"
+		print w "${cr}Rerun as root or installer might misbehave."
+	}
 
 	print s 'Checking internet connection'
 	ping -q -W 20 -c 1 1.1.1.1 1>/dev/null 2>/dev/null || \
@@ -457,7 +459,7 @@ configuration_summary() {
 		print l 'Add primary user:' "${sn}${sb}$conf_add_user"
 	fi
 
-	if [ "$CONF_SKIP_CONFIRMATION" = 'true' ]; then
+	if [ "$CONF_SKIP_CONFIRMATION" != 'true' ]; then
 		print w 'Warning: proceeding with the installation'
 		print w 'will wipe all data from the installation disk!'
 		print w 'Type YES to continue.'
@@ -694,9 +696,7 @@ dotfiles_installer() {
 
 }
 
-# check_environment && configure_host && configure_user && configuration_summary && \
-# pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
-
-check_environment && parse_options "$@" && configure_host && configure_user && configuration_summary 
+parse_options "$@" && check_environment && configure_host && configure_user && configuration_summary && \
+pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
 
 exit
