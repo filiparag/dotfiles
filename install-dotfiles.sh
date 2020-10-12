@@ -166,7 +166,7 @@ wmrc_deps_and_services() {
 
 	# Use fish as default shell
 	print s 'Configure fish shell' && \
-	chsh -s /usr/bin/fish && \
+	sudo chsh -s /usr/bin/fish "$USER" && \
 
 	# Clear fish greeting
 	fish -c 'set fish_greeting ""'

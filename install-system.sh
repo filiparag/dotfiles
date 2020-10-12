@@ -125,7 +125,7 @@ check_environment() {
 		print w 'proceed with caution!'
 	}
 
-	print s 'Check root privileges'
+	print s 'Checking root privileges'
 	[ "$(whoami)" = 'root' ] || \
 	print e 'Insufficient privileges!'
 
@@ -196,7 +196,7 @@ configure_host() {
 
 	repo_countries='AU|AT|BD|BY|BE|BA|BR|BG|CA|CL|CN|CO|HR|CZ|DK|EC|FI|FR|GE|DE|GR|HK|HU|IS|IN|ID|IR|IE|IL|IT|JP|KZ|KE|LV|LT|LU|MD|NL|NC|NZ|MK|NO|PK|PY|PH|PL|PT|RO|RU|RS|SG|SK|SI|ZA|KR|ES|SE|CH|TW|TH|TR|UA|GB|US|VN'
 	repo_countries_default='DE GB'
-	print i "$|( *(($repo_countries) +)*(($repo_countries) *))" "Repository mirror countrues [$repo_countries_default]:"
+	print i "$|( *(($repo_countries) +)*(($repo_countries) *))" "Repository mirror countries [$repo_countries_default]:"
 	if [ -z "$user_input" ]; then
 		conf_mirrors="$repo_countries_default"
 	else
