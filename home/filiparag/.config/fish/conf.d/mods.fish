@@ -19,6 +19,7 @@ if status --is-interactive
     abbr --add ys       'yay -S'
     abbr --add yss      'yay -Ss'
     abbr --add yr       'yay -Rcsn'
+    abbr --add yc       'yay -Sc'
 
     abbr --add gs       'git status'
     abbr --add gsh      'git show'

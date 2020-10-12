@@ -43,13 +43,16 @@ print() {
 			rg="$1";
 			shift;
 			user_input=''
-			while [ -z "$user_input" ]; do
+			user_input_correct='false'
+			while [ "$user_input_correct" != 'true' ]; do
 				printf "%s" "${sb}${cc}==> $* ${sn}";
 				read;
 				user_input="$REPLY"
 				if [ -n "$rg" ] && echo "$user_input" | grep -Evq "^$rg$"; then
 					print w 'Invalid input, try again!';
 					user_input='';
+				else
+					user_input_correct='true'
 				fi;
 			done;
 			;;
@@ -58,7 +61,8 @@ print() {
 			rg="$1";
 			shift;
 			user_input=''
-			while [ -z "$user_input" ]; do
+			user_input_correct='false'
+			while [ "$user_input_correct" != 'true' ]; do
 				printf "%s" "${sb}${cc}==> $* ${sn}";
 				stty -echo
 				read;
@@ -68,6 +72,8 @@ print() {
 				if [ -n "$rg" ] && echo "$user_input" | grep -Evq "^$rg$"; then
 					print w 'Invalid input, try again!';
 					user_input='';
+				else
+					user_input_correct='true'
 				fi;
 			done;
 			;;
@@ -111,21 +117,22 @@ print() {
 
 check_environment() {
 
-	# Initialization
 	print t 'Checking installation environment'
 
-	# Check hostname
 	print s 'Verifying installation environment'
-	[ "$(hostname)" = 'archiso' ] || \
-	print w 'Not in the default installation environment,'
-	print w 'proceed with caution!'
+	[ "$(hostname)" = 'archiso' ] || {
+		print w 'Not in the default installation environment,'
+		print w 'proceed with caution!'
+	}
 
-	# Check internet
+	print s 'Check root privileges'
+	[ "$(whoami)" = 'root' ] || \
+	print e 'Insufficient privileges!'
+
 	print s 'Checking internet connection'
 	ping -q -W 20 -c 1 1.1.1.1 1>/dev/null 2>/dev/null || \
 	print e 'Not connected to the internet!'
 
-	# Check EFI vars
 	print s 'Checking boot mode'
 	[ -n "$(ls -A /sys/firmware/efi/efivars)" ] || \
 	print e 'Not booted in UEFI mode!'
@@ -166,9 +173,60 @@ configure_host() {
 		conf_disk_encryption='no'
 	fi
 
+	if print c 'Y' 'Enable swap file'; then
+		conf_swapfile='yes'
+		swapfile_default="$(free --mega | awk '$1 == "Mem:" {print 2**int(log(int($2)/2)/log(2))}')"
+		print i '$|^([1-9][0-9]*)' "Swap file size in megabytes [$swapfile_default]:"
+		if [ -z "$user_input" ]; then
+			conf_swapfile_size="$swapfile_default"
+		else
+			conf_swapfile_size="$user_input"
+		fi
+	else
+		conf_swapfile='no'
+		conf_swapfile_size='no'
+	fi
+
+	if print c 'N' 'Include supplementary LTS kernel'; then
+		conf_lts_kernel='no'
+	else
+		conf_lts_kernel='yes'
+		conf_lts='linux-lts'
+	fi
+
+	repo_countries='AU|AT|BD|BY|BE|BA|BR|BG|CA|CL|CN|CO|HR|CZ|DK|EC|FI|FR|GE|DE|GR|HK|HU|IS|IN|ID|IR|IE|IL|IT|JP|KZ|KE|LV|LT|LU|MD|NL|NC|NZ|MK|NO|PK|PY|PH|PL|PT|RO|RU|RS|SG|SK|SI|ZA|KR|ES|SE|CH|TW|TH|TR|UA|GB|US|VN'
+	repo_countries_default='DE GB'
+	print i "$|( *(($repo_countries) +)*(($repo_countries) *))" "Repository mirror countrues [$repo_countries_default]:"
+	if [ -z "$user_input" ]; then
+		conf_mirrors="$repo_countries_default"
+	else
+		conf_mirrors="$(echo "$user_input" | sed 's/^ *//g; s/ \+/ /g; s/ *$//g')"
+	fi
+
+	if print c 'Y' 'Enable Arch User Repository'; then
+		conf_aur='yes'
+	else
+		conf_aur='no'
+	fi
+
+	if print c 'Y' 'Add primary user'; then
+		conf_add_user='yes'
+	else
+		conf_add_user='no'
+		print p '.+' 'Enter root password:'
+		conf_pass_root="$user_input"
+		print p '.+' 'Repeat root password:'
+		repeat_pass_root="$user_input"
+		[ "$conf_pass_root" = "$repeat_pass_root" ] || \
+		print e 'Password mismatch!'
+	fi
+
 }
 
 configure_user() {
+
+	[ "$conf_add_user" = 'no' ] && \
+	return
 
 	print t 'User configuration'
 
@@ -192,14 +250,17 @@ configure_user() {
 	print c 'Y' 'Passwordless sudo?' && \
 	conf_passwordless='yes'
 
-	conf_shell='bash'
-	print c 'Y' 'Set default shell to fish?' && \
-	conf_shell='fish'
-	true
+	shell_default='fish'
+	print i '$|(bash)|(fish)|(zsh)|(ksh)|(tcsh)|(xonsh)' "Default shell [$shell_default]:"
+	if [ -z "$user_input" ]; then
+		conf_shell="$shell_default"
+	else
+		conf_shell="$user_input"
+	fi
 
 }
 
-installation_summary() {
+configuration_summary() {
 
 	print t 'Configuration summary'
 
@@ -208,11 +269,19 @@ installation_summary() {
 	print l 'Timezone:' "${sn}${sb}$conf_timezone"
 	print l 'Installation disk:' "${sn}${sb}$conf_disk"
 	print l 'Encryption:' "${sn}${sb}$conf_disk_encryption"
+	print l 'Swap file:' "${sn}${sb}$conf_swapfile_size"
+	print l 'Include LTS kernel:' "${sn}${sb}$conf_lts_kernel"
+	print l 'Pacman mirror countries:' "${sn}${sb}$conf_mirrors"
+	print l 'Arch User Repository:' "${sn}${sb}$conf_aur"
 
-	print s 'User settings'
-	print l 'Username:' "${sn}${sb}$conf_user"
-	print l 'Passwordless sudo:' "${sn}${sb}$conf_passwordless"
-	print l 'Shell:' "${sn}${sb}$conf_shell"
+	if [ "$conf_add_user" = 'yes' ]; then
+		print s 'User settings'
+		print l 'Username:' "${sn}${sb}$conf_user"
+		print l 'Passwordless sudo:' "${sn}${sb}$conf_passwordless"
+		print l 'Shell:' "${sn}${sb}$conf_shell"
+	else
+		print l 'Add primary user:' "${sn}${sb}$conf_add_user"
+	fi
 
 	print w 'Warning: proceeding with the installation'
 	print w 'will wipe all data from the installation disk!'
@@ -231,8 +300,9 @@ pre_installation() {
 	print s 'Update the system clock' && \
 	timedatectl set-ntp true && \
 
-	print s 'Update repository mirrors' && \
-	curl -L 'https://www.archlinux.org/mirrorlist/?country=DE&protocol=https&ip_version=4&ip_version=6&use_mirror_status=on' | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
+	print s 'Update installer repository mirrors' && \
+	mirror_country_url="$(echo "$conf_mirrors" | awk '{for (i=1;i<NF;i++) {query=query "&country=" $i}} END {print query}')" && \
+	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
 
 	print s 'Prepare required packages' && \
 	pacman -Sy --noconfirm --needed lvm2 && \
@@ -284,7 +354,7 @@ installation() {
 	print t 'Installing system' && \
 
 	print s 'Install Arch Linux base system' && \
-	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo "$conf_shell" && \
+	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo $conf_shell $conf_lts && \
 
 	print s 'Enable NetworkManager service' && \
 	arch-chroot /mnt systemctl enable NetworkManager && \
@@ -323,6 +393,11 @@ END
 		arch-chroot /mnt mkinitcpio -P
 	fi && \
 
+	print s 'Configure pacman and makepkg' && \
+	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" | sed 's/^#//' > /mnt/etc/pacman.d/mirrorlist && \
+	sed 's/[ \t#]*MAKEFLAGS.*$/MAKEFLAGS="-j$(nproc)"/' -i /mnt/etc/makepkg.conf && \
+	sed 's/^#Color$/Color/; s/^#TotalDownload$/TotalDownload/; s/^#VerbosePkgLists$/VerbosePkgLists/;' -i /mnt/etc/pacman.conf && \
+
 	print s 'Detect CPU vendor and install microcode' && {
 	grep -qi 'vendor.*intel' /proc/cpuinfo && cpu_vendor='intel'
 	grep -qi 'vendor.*amd' /proc/cpuinfo && cpu_vendor='amd'
@@ -349,14 +424,54 @@ initrd   /initramfs-linux.img
 options  $root_volume rw add_efi_memmap
 END
 	} && \
+	if [ "$conf_lts_kernel" = 'yes' ]; then
+		tee /mnt/boot/loader/entries/arch-lts.conf << END
+title    Arch Linux (LTS)
+linux    /vmlinuz-linux-lts
+$([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
+initrd   /initramfs-linux-lts.img
+options  $root_volume rw add_efi_memmap
+END
+	fi && \
 
-	print s 'Create user account' && \
-	arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" && \
-	arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd" && \
-	if [ "$conf_passwordless" = 'yes' ]; then
-		echo "$conf_user ALL=(ALL) NOPASSWD: ALL" > "/mnt/etc/sudoers.d/$conf_user"
+	if [ "$conf_add_user" = 'yes' ]; then
+		print s 'Create user account' && \
+		arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" && \
+		arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd" && \
+		if [ "$conf_passwordless" = 'yes' ]; then
+			echo "$conf_user ALL=(ALL) NOPASSWD: ALL" > "/mnt/etc/sudoers.d/$conf_user"
+		else
+			echo "$conf_user ALL=(ALL) ALL" > "/mnt/etc/sudoers.d/$conf_user"
+		fi
 	else
-		echo "$conf_user ALL=(ALL) ALL" > "/mnt/etc/sudoers.d/$conf_user"
+		print s 'Set root password' && \
+		arch-chroot /mnt su -c "echo 'root:$conf_pass_root' | chpasswd"
+	fi && \
+
+	if [ "$conf_swapfile" = 'yes' ]; then
+		print s 'Enable swap file' && \
+		dd if=/dev/zero of=/mnt/swapfile bs=1M count="$conf_swapfile_size" status=progress && \
+		chmod 600 /mnt/swapfile && \
+		mkswap /mnt/swapfile && \
+		echo '/swapfile none swap defaults 0 0' >> /mnt/etc/fstab
+	fi && \
+
+	if [ "$conf_aur" = 'yes' ]; then
+		print s 'Enable Arch User Repository' && \
+		pacman -Sy --noconfirm --needed fakeroot binutils git && \
+		useradd -m builder && \
+		su builder -c '
+			cd ~ &&
+			git clone https://aur.archlinux.org/yay-bin.git &&
+			cd yay-bin &&
+			makepkg
+		' && \
+		yay_package="$(find /home/builder/yay-bin -name '*.zst' -printf '%P')" && \
+		mkdir -p /mnt/var/cache/pacman/pkg && \
+		mv "/home/builder/yay-bin/$yay_package" "/mnt/var/cache/pacman/pkg/$yay_package" && \
+		arch-chroot /mnt pacman -U "/var/cache/pacman/pkg/$yay_package" --noconfirm && \
+		rm -f "/mnt/var/cache/pacman/pkg/$yay_package" && \
+		print w 'Use yay to install packages from Arch User Repository'
 	fi
 
 }
@@ -379,7 +494,7 @@ post_installation() {
 	fi && \
 
 	print s 'Installation complete' && \
-	print w 'Run reboot command and eject your installation media'
+	print w 'Reboot and eject your installation media'
 
 }
 
@@ -387,16 +502,16 @@ dotfiles_installer() {
 
 	print s 'Downloading latest dotfiles snapshot' && \
 	arch-chroot /mnt pacman -Sy --needed --noconfirm git && \
-	arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /opt/dotfiles && \
+	arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /usr/share/dotfiles && \
 
 	print s 'Linking installer script' && \
-	arch-chroot /mnt ln -s /opt/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install && \
+	arch-chroot /mnt ln -s /usr/share/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install && \
 
 	print w 'To install dotfiles, run dotfiles-install when you log in'
 
 }
 
-check_environment && configure_host && configure_user && installation_summary && \
+check_environment && configure_host && configure_user && configuration_summary && \
 pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
 
 exit
