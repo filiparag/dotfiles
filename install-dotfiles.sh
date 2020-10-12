@@ -78,10 +78,10 @@ install_packages() {
 	{
 		if ! command -v yay 1>/dev/null 2>/dev/null; then
 			print s 'Install yay package manager' && \
-			mkdir -p "$TMPDIR/yay" && \
-			cd "$TMPDIR/yay" && \
-			curl -L 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=yay' > "$TMPDIR/yay/PKGBUILD" && \
-			makepkg -si
+			mkdir -p "$TMPDIR/yay-bin" && \
+			cd "$TMPDIR/yay-bin" && \
+			curl -L 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=yay-bin' > "$TMPDIR/yay-bin/PKGBUILD" && \
+			makepkg -si --noconfirm
 		fi
 	} && \
 
