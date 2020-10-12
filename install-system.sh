@@ -482,7 +482,7 @@ pre_installation() {
 	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
 
 	print s 'Prepare required packages' && \
-	pacman -Sy --noconfirm --needed lvm2 && \
+	pacman -Sy --noconfirm --needed arch-install-scripts dosfstools e2fsprogs cryptsetup lvm2 gptfdisk curl awk && \
 
 	print s 'Format disk' && \
 	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t 2:8309 && \
