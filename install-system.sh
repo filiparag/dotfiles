@@ -139,86 +139,231 @@ check_environment() {
 
 }
 
+parse_options() {
+	WARN_PARAMS='false'
+	CONF_PASS_PROMPT='p'
+	while getopts H:T:D:E:S:KR:AUu:p:xs:Yih o; do
+		case $o in
+			# Hostname
+			(H) CONF_HOSTNAME="$OPTARG";
+				WARN_PARAMS='true';;
+			# Timezone
+			(T) CONF_TIMEZONE="$OPTARG";
+				WARN_PARAMS='true';;
+			# Installation disk
+			(D) CONF_DISK="$OPTARG";
+				WARN_PARAMS='true';;
+			# Disk encryption password
+			(E) if [ "$OPTARG" = '' ]; then
+					CONF_DISK_ENCRYPTION='no'
+				else
+					CONF_DISK_ENCRYPTION='yes'
+					CONF_DISK_PASS="$OPTARG"
+				fi;
+				WARN_PARAMS='true';;
+			# Swap file size
+			(S) if [ "$OPTARG" = '0' ]; then
+					CONF_SWAPFILE='no'
+					CONF_SWAPFILE_SIZE='no'
+				else
+					CONF_SWAPFILE='yes'
+					CONF_SWAPFILE_SIZE="$OPTARG"
+				fi;
+				WARN_PARAMS='true';;
+			# Enable LTS kernel
+			(K) CONF_LTS_KERNEL='yes';
+				CONF_LTS='linux-lts';
+				WARN_PARAMS='true';;
+			# Repository mirror countries
+			(R) CONF_MIRRORS="$OPTARG";
+				WARN_PARAMS='true';;
+			# Disable Arch User Repository
+			(A) CONF_AUR='no';
+				WARN_PARAMS='true';;
+			# Disable primary user
+			(U) CONF_ADD_USER='no';
+				WARN_PARAMS='true';;
+			# Username
+			(u) CONF_USER="$OPTARG";
+				WARN_PARAMS='true';;
+			# Password
+			(p) CONF_PASS="$OPTARG";
+				CONF_PASS_ROOT="$OPTARG";
+				CONF_PASS_PROVIDED='true'
+				WARN_PARAMS='true';;
+			# Disable passwordless sudo
+			(x) CONF_PASSWORDLESS='no';
+				WARN_PARAMS='true';;
+			# Default user shell
+			(s) CONF_SHELL="$OPTARG";
+				WARN_PARAMS='true';;
+			# Skip configuration confirmation
+			(Y) CONF_SKIP_CONFIRMATION='true';
+				print w 'Configuration confirmation will be skipped!';;
+			# Insecure - show passwords in summary
+			(i) CONF_INSECURE='true';
+				CONF_PASS_PROMPT='i';
+				print w 'Insecure mode: passwords will be visible!';;
+			# Show usage help and exit
+			(h) print t 'Usage help – arguments';
+				print s 'Host configuration';
+				print l 'H' "${sn}${sb}${cc}HOSTNAME     " "${sn}Hostname";
+				print l 'T' "${sn}${sb}${cc}TIMEZONE     " "${sn}Timezone";
+				print l 'D' "${sn}${sb}${cc}DISK         " "${sn}Installation disk";
+				print l 'E' "${sn}${sb}${cc}DISK_PASS    " "${sn}Disk encryption password (${sb}empty${sn} to disable)";
+				print l 'S' "${sn}${sb}${cc}SWAPFILE_SIZE" "${sn}Swap file size (${sb}0${sn} to disable)";
+				print l 'K' "${sn}${sb}${cc}             " "${sn}Enable LTS kernel";
+				print l 'R' "${sn}${sb}${cc}MIRRORS      " "${sn}Repository mirror countries";
+				print l 'A' "${sn}${sb}${cc}             " "${sn}Disable Arch User Repository";
+				print l 'U' "${sn}${sb}${cc}             " "${sn}Disable primary user";
+				print s 'User configuration';
+				print l 'u' "${sn}${sb}${cc}USER         " "${sn}Username";
+				print l 'p' "${sn}${sb}${cc}PASS         " "${sn}Password (for root if user is disabled)";
+				print l 'x' "${sn}${sb}${cc}             " "${sn}Disable passwordless sudo";
+				print l 's' "${sn}${sb}${cc}SHELL        " "${sn}Default user shell";
+				print s 'Other';
+				print l 'Y' "${sn}${sb}${cc}             " "${sn}Skip configuration confirmation ${sb}${cr}(dangerous)";
+				print l 'i' "${sn}${sb}${cc}             " "${sn}Insecure mode – show passwords ${sb}${cy}(not recommended)";
+				print l 'h' "${sn}${sb}${cc}             " "${sn}Show usage help and exit";
+				exit;;
+			(*) print e 'Invalid argument';;
+		esac
+	done
+	shift "$((OPTIND - 1))"
+	if [ "$WARN_PARAMS" = 'true' ]; then
+		print s 'Using passed arguments'
+		print w 'Warning: passed arguments are not validated!'
+		print w 'If they are invalid, installation will fail.'
+	fi
+}
+
 configure_host() {
 
 	print t 'Host configuration'
 
-	print i '[a-zA-Z0-9-]+' 'Hostname:'
-	conf_hostname="$user_input"
-
-	while [ -z "$conf_timezone" ]; do
-		print i '.+' 'Timezone:'
-		if [ -f "/usr/share/zoneinfo/$user_input" ]; then
-			conf_timezone="$user_input"
-		else
-			print w 'Invalid timezone!'
-		fi
-	done
-
-	print s 'Select installation disk'
-	lsblk -no NAME,SIZE,TYPE,FSTYPE
-	avail_disks="$(lsblk -rno NAME,TYPE | awk '$2 == "disk" {d=sprintf("%s%s%s",d,(NR==1)?"":"|","("$1")")} END {print "("d")"}')"
-	print i "$avail_disks" 'Install to:'
-	conf_disk="$user_input"
-
-	if print c 'Y' 'Enable full disk encryption'; then
-		conf_disk_encryption='yes'
-		print p '.+' 'Enter disk password:'
-		conf_disk_pass="$user_input"
-		print p '.+' 'Repeat disk password:'
-		repeat_disk_pass="$user_input"
-		[ "$conf_disk_pass" = "$repeat_disk_pass" ] || \
-		print e 'Disk password mismatch!'
+	if [ -z "$CONF_HOSTNAME" ]; then
+		print i '[a-zA-Z0-9-]+' 'Hostname:'
+		conf_hostname="$user_input"
 	else
-		conf_disk_encryption='no'
+		conf_hostname="$CONF_HOSTNAME"
 	fi
 
-	if print c 'Y' 'Enable swap file'; then
-		conf_swapfile='yes'
-		swapfile_default="$(free --mega | awk '$1 == "Mem:" {print 2**int(log(int($2)/2)/log(2))}')"
-		print i '$|^([1-9][0-9]*)' "Swap file size in megabytes [$swapfile_default]:"
+	if [ -z "$CONF_TIMEZONE" ]; then
+		while [ -z "$conf_timezone" ]; do
+			print i '.+' 'Timezone:'
+			if [ -f "/usr/share/zoneinfo/$user_input" ]; then
+				conf_timezone="$user_input"
+			else
+				print w 'Invalid timezone!'
+			fi
+		done
+	else
+		conf_timezone="$CONF_TIMEZONE"
+	fi
+
+	if [ -z "$CONF_DISK" ]; then
+		print s 'Select installation disk'
+		lsblk -no NAME,SIZE,TYPE,FSTYPE
+		avail_disks="$(lsblk -rno NAME,TYPE | awk '$2 == "disk" {d=sprintf("%s%s%s",d,(NR==1)?"":"|","("$1")")} END {print "("d")"}')"
+		print i "$avail_disks" 'Install to:'
+		conf_disk="$user_input"
+	else
+		conf_disk="$CONF_DISK"
+	fi
+
+	if [ -z "$CONF_DISK" ]; then
+		if print c 'Y' 'Enable full disk encryption'; then
+			conf_disk_encryption='yes'
+			print "$CONF_PASS_PROMPT" '.+' 'Enter disk password:'
+			conf_disk_pass="$user_input"
+			print "$CONF_PASS_PROMPT" '.+' 'Repeat disk password:'
+			repeat_disk_pass="$user_input"
+			[ "$conf_disk_pass" = "$repeat_disk_pass" ] || \
+			print e 'Disk password mismatch!'
+		else
+			conf_disk_encryption='no'
+		fi
+	else
+		conf_disk_encryption="$CONF_DISK_ENCRYPTION"
+		conf_disk_pass="$CONF_DISK_PASS"
+	fi
+
+	if [ -z "$CONF_SWAPFILE" ]; then
+		if print c 'Y' 'Enable swap file'; then
+			conf_swapfile='yes'
+			swapfile_default="$(free --mega | awk '$1 == "Mem:" {print 2**int(log(int($2)/2)/log(2))}')"
+			print i '$|^([1-9][0-9]*)' "Swap file size in megabytes [$swapfile_default]:"
+			if [ -z "$user_input" ]; then
+				conf_swapfile_size="$swapfile_default"
+			else
+				conf_swapfile_size="$user_input"
+			fi
+		else
+			conf_swapfile='no'
+			conf_swapfile_size='no'
+		fi
+	else
+		conf_swapfile="$CONF_SWAPFILE"
+		conf_swapfile_size="$CONF_SWAPFILE_SIZE"
+	fi
+
+	if [ -z "$CONF_LTS_KERNEL" ]; then
+		if print c 'N' 'Include supplementary LTS kernel'; then
+			conf_lts_kernel='no'
+		else
+			conf_lts_kernel='yes'
+			conf_lts='linux-lts'
+		fi
+	else
+		conf_lts_kernel="$CONF_LTS_KERNEL"
+		conf_lts="$CONF_LTS"
+	fi
+
+	if [ -z "$CONF_MIRRORS" ]; then
+		repo_countries='AU|AT|BD|BY|BE|BA|BR|BG|CA|CL|CN|CO|HR|CZ|DK|EC|FI|FR|GE|DE|GR|HK|HU|IS|IN|ID|IR|IE|IL|IT|JP|KZ|KE|LV|LT|LU|MD|NL|NC|NZ|MK|NO|PK|PY|PH|PL|PT|RO|RU|RS|SG|SK|SI|ZA|KR|ES|SE|CH|TW|TH|TR|UA|GB|US|VN'
+		repo_countries_default='DE GB'
+		print i "$|( *(($repo_countries) +)*(($repo_countries) *))" "Repository mirror countries [$repo_countries_default]:"
 		if [ -z "$user_input" ]; then
-			conf_swapfile_size="$swapfile_default"
+			conf_mirrors="$repo_countries_default"
 		else
-			conf_swapfile_size="$user_input"
+			conf_mirrors="$(echo "$user_input" | sed 's/^ *//g; s/ \+/ /g; s/ *$//g')"
 		fi
 	else
-		conf_swapfile='no'
-		conf_swapfile_size='no'
+		conf_mirrors="$CONF_MIRRORS"
 	fi
 
-	if print c 'N' 'Include supplementary LTS kernel'; then
-		conf_lts_kernel='no'
+	if [ -z "$CONF_AUR" ]; then
+		if print c 'Y' 'Enable Arch User Repository'; then
+			conf_aur='yes'
+		else
+			conf_aur='no'
+		fi
 	else
-		conf_lts_kernel='yes'
-		conf_lts='linux-lts'
+		conf_aur="$CONF_AUR"
 	fi
 
-	repo_countries='AU|AT|BD|BY|BE|BA|BR|BG|CA|CL|CN|CO|HR|CZ|DK|EC|FI|FR|GE|DE|GR|HK|HU|IS|IN|ID|IR|IE|IL|IT|JP|KZ|KE|LV|LT|LU|MD|NL|NC|NZ|MK|NO|PK|PY|PH|PL|PT|RO|RU|RS|SG|SK|SI|ZA|KR|ES|SE|CH|TW|TH|TR|UA|GB|US|VN'
-	repo_countries_default='DE GB'
-	print i "$|( *(($repo_countries) +)*(($repo_countries) *))" "Repository mirror countries [$repo_countries_default]:"
-	if [ -z "$user_input" ]; then
-		conf_mirrors="$repo_countries_default"
+	if [ -z "$CONF_ADD_USER" ] && [ -z "$CONF_USER" ]; then
+		if print c 'Y' 'Add primary user'; then
+			conf_add_user='yes'
+		else
+			conf_add_user='no'
+		fi
 	else
-		conf_mirrors="$(echo "$user_input" | sed 's/^ *//g; s/ \+/ /g; s/ *$//g')"
+		conf_add_user="$CONF_ADD_USER"
 	fi
 
-	if print c 'Y' 'Enable Arch User Repository'; then
-		conf_aur='yes'
-	else
-		conf_aur='no'
-	fi
-
-	if print c 'Y' 'Add primary user'; then
-		conf_add_user='yes'
-	else
-		conf_add_user='no'
-		print p '.+' 'Enter root password:'
-		conf_pass_root="$user_input"
-		print p '.+' 'Repeat root password:'
-		repeat_pass_root="$user_input"
-		[ "$conf_pass_root" = "$repeat_pass_root" ] || \
-		print e 'Password mismatch!'
+	if [ "$conf_add_user" = 'no' ]; then
+		if [ "$CONF_PASS_PROVIDED" != 'true' ]; then
+			print "$CONF_PASS_PROMPT" '.*' 'Enter root password:'
+			conf_pass_root="$user_input"
+			print "$CONF_PASS_PROMPT" '.*' 'Repeat root password:'
+			repeat_pass_root="$user_input"
+			[ "$conf_pass_root" = "$repeat_pass_root" ] || \
+			print e 'Password mismatch!'
+			CONF_PASS_PROVIDED='true'
+		else
+			conf_pass_root="$CONF_PASS_ROOT"
+		fi
 	fi
 
 }
@@ -230,32 +375,50 @@ configure_user() {
 
 	print t 'User configuration'
 
-	while [ -z "$conf_user" ]; do
-		print i '[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30})' 'Username:'
-		if id -u "$user_input" >/dev/null 2>/dev/null; then
-			print w 'User already exists!'
-		else
-			conf_user="$user_input"
-		fi
-	done
-
-	print p '.+' 'Enter password:'
-	conf_pass="$user_input"
-	print p '.+' 'Repeat password:'
-	repeat_pass="$user_input"
-	[ "$conf_pass" = "$repeat_pass" ] || \
-	print e 'Password mismatch!'
-
-	conf_passwordless='no'
-	print c 'Y' 'Passwordless sudo?' && \
-	conf_passwordless='yes'
-
-	shell_default='fish'
-	print i '$|(bash)|(fish)|(zsh)|(ksh)|(tcsh)|(xonsh)' "Default shell [$shell_default]:"
-	if [ -z "$user_input" ]; then
-		conf_shell="$shell_default"
+	if [ -z "$CONF_USER" ]; then
+		while [ -z "$conf_user" ]; do
+			print i '[a-z_]([a-z0-9_-]{0,31}|[a-z0-9_-]{0,30})' 'Username:'
+			if id -u "$user_input" >/dev/null 2>/dev/null; then
+				print w 'User already exists!'
+			else
+				conf_user="$user_input"
+			fi
+		done
 	else
-		conf_shell="$user_input"
+		conf_add_user='yes'
+		conf_user="$CONF_USER"
+	fi
+
+	if [ -z "$CONF_PASS" ] && [ "$CONF_PASS_PROVIDED" != 'true' ]; then
+		print "$CONF_PASS_PROMPT" '.*' 'Enter password:'
+		conf_pass="$user_input"
+		print "$CONF_PASS_PROMPT" '.*' 'Repeat password:'
+		repeat_pass="$user_input"
+		[ "$conf_pass" = "$repeat_pass" ] || \
+		print e 'Password mismatch!'
+		CONF_PASS_PROVIDED='true'
+	else
+		conf_pass="$CONF_PASS"
+	fi
+
+	if [ -z "$CONF_PASSWORDLESS" ]; then
+		conf_passwordless='no'
+		print c 'Y' 'Passwordless sudo?' && \
+		conf_passwordless='yes'
+	else
+		conf_passwordless="$CONF_PASSWORDLESS"
+	fi
+
+	if [ -z "$CONF_SHELL" ]; then
+		shell_default='fish'
+		print i '$|(bash)|(fish)|(zsh)|(ksh)|(tcsh)|(xonsh)' "Default shell [$shell_default]:"
+		if [ -z "$user_input" ]; then
+			conf_shell="$shell_default"
+		else
+			conf_shell="$user_input"
+		fi
+	else
+		conf_shell="$CONF_SHELL"
 	fi
 
 }
@@ -269,27 +432,34 @@ configuration_summary() {
 	print l 'Timezone:' "${sn}${sb}$conf_timezone"
 	print l 'Installation disk:' "${sn}${sb}$conf_disk"
 	print l 'Encryption:' "${sn}${sb}$conf_disk_encryption"
+	[ "$CONF_INSECURE" = 'true' ] && [ "$conf_disk_encryption" = 'yes' ] && \
+	print l 'Disk password:' "${sn}${sb}$conf_disk_pass"
 	print l 'Swap file:' "${sn}${sb}$conf_swapfile_size"
 	print l 'Include LTS kernel:' "${sn}${sb}$conf_lts_kernel"
 	print l 'Pacman mirror countries:' "${sn}${sb}$conf_mirrors"
 	print l 'Arch User Repository:' "${sn}${sb}$conf_aur"
+	[ "$CONF_INSECURE" = 'true' ] && [ "$conf_add_user" = 'no' ] && \
+	print l 'Root password:' "${sn}${sb}${conf_pass_root:-${cy}empty}"
 
 	if [ "$conf_add_user" = 'yes' ]; then
 		print s 'User settings'
 		print l 'Username:' "${sn}${sb}$conf_user"
+		[ "$CONF_INSECURE" = 'true' ] && \
+		print l 'Password:' "${sn}${sb}${conf_pass:-${cy}empty}"
 		print l 'Passwordless sudo:' "${sn}${sb}$conf_passwordless"
 		print l 'Shell:' "${sn}${sb}$conf_shell"
 	else
 		print l 'Add primary user:' "${sn}${sb}$conf_add_user"
 	fi
 
-	print w 'Warning: proceeding with the installation'
-	print w 'will wipe all data from the installation disk!'
-	print w 'Type YES to continue.'
-
-	print i '.*' 'Continue?'
-	[ "$user_input" = 'YES' ] || \
-	print e 'Aborting installation!'
+	if [ "$CONF_SKIP_CONFIRMATION" = 'true' ]; then
+		print w 'Warning: proceeding with the installation'
+		print w 'will wipe all data from the installation disk!'
+		print w 'Type YES to continue.'
+		print i '.*' 'Continue?'
+		[ "$user_input" = 'YES' ] || \
+		print e 'Aborting installation!'
+	fi
 
 }
 
@@ -511,7 +681,9 @@ dotfiles_installer() {
 
 }
 
-check_environment && configure_host && configure_user && configuration_summary && \
-pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
+# check_environment && configure_host && configure_user && configuration_summary && \
+# pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
+
+check_environment && parse_options "$@" && configure_host && configure_user && configuration_summary 
 
 exit
