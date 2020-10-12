@@ -612,7 +612,11 @@ END
 	if [ "$conf_add_user" = 'yes' ]; then
 		print s 'Create user account' && \
 		arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" && \
-		arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd" && \
+		if [ -z "$conf_pass" ]; then
+			arch-chroot /mnt passwd -d "$conf_user"
+		else
+			arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd"
+		fi && \
 		if [ "$conf_passwordless" = 'yes' ]; then
 			echo "$conf_user ALL=(ALL) NOPASSWD: ALL" > "/mnt/etc/sudoers.d/$conf_user"
 		else
@@ -620,7 +624,11 @@ END
 		fi
 	else
 		print s 'Set root password' && \
-		arch-chroot /mnt su -c "echo 'root:$conf_pass_root' | chpasswd"
+		if [ -z "$conf_pass_root" ]; then
+			arch-chroot /mnt passwd -d root
+		else
+			arch-chroot /mnt su -c "echo 'root:$conf_pass_root' | chpasswd"
+		fi
 	fi && \
 
 	if [ "$conf_swapfile" = 'yes' ]; then
