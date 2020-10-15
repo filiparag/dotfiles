@@ -36,9 +36,10 @@ super + BackSpace
 super + b
 	$BROWSER
 
-# Firefox fix (ignore)
+# Disable Firefox quit shortcut (ignore)
 ctrl + q
-	true
+	xprop -id "$(bspc query -N -n)" | grep -q 'WM_CLASS.*firefox' || \
+	xdotool keydown ctrl key q keyup ctrl
 
 # Launch Firefox in private mode
 super + shift + b

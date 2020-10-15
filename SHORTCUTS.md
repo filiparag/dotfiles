@@ -20,7 +20,7 @@ Launch scratchpad terminal `super + BackSpace`
 
 Launch Firefox `super + b`
 
-Firefox fix (ignore) `ctrl + q`
+Disable Firefox quit shortcut (ignore) `ctrl + q`
 
 Launch Firefox in private mode `super + shift + b`
 
@@ -75,7 +75,7 @@ Toggle fullscreen mode for focused window `super + shift + f `
 
 Swap places of current and last focused window `super + w`
 
-Bring last focused window to current subnode node `super + shift + w`
+Bring last focused window to current subnode `super + shift + w`
 
 
 ### Window size and rotation
