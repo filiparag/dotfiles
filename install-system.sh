@@ -713,7 +713,7 @@ post_installation() {
 
 	print t 'Post installation'
 
-	print c 'Y' 'Download dotfile installer?' && \
+	print c 'Y' 'Add dotfiles installer?' && \
 	dotfiles_installer
 
 	print c 'N' 'Chroot into system for manual modifications?' || \
@@ -733,12 +733,18 @@ post_installation() {
 
 dotfiles_installer() {
 
-	print s 'Downloading latest dotfiles snapshot' && \
-	arch-chroot /mnt pacman -Sy --needed --noconfirm git &>> "$CONF_LOGFILE" && \
-	arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /usr/share/dotfiles &>> "$CONF_LOGFILE" && \
-
-	print s 'Linking installer script' && \
-	arch-chroot /mnt ln -s /usr/share/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install &>> "$CONF_LOGFILE" && \
+	print s 'Adding dotfiles installer script' && \
+	arch-chroot /mnt pacman -Sy --needed --noconfirm git &>> "$CONF_LOGFILE" && {
+		tee /mnt/usr/bin/dotfiles-install &>> "$CONF_LOGFILE" << END
+#!/bin/sh
+[ -d /tmp/dotfiles ] && \
+git clone https://github.com/filiparag/dotfiles /tmp/dotfiles
+chmod +x /tmp/dotfiles/install-dotfiles.sh && \
+/tmp/dotfiles/install-dotfiles.sh && \
+rm -rf /tmp/dotfiles
+END
+	} && \
+	chmod +x /mnt/usr/bin/dotfiles-install && \
 
 	print w 'To install dotfiles, run dotfiles-install when you log in'
 
