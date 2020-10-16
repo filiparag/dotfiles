@@ -144,7 +144,7 @@ check_environment() {
 parse_options() {
 	WARN_PARAMS='false'
 	CONF_PASS_PROMPT='p'
-	while getopts H:T:D:E:S:K:R:AUu:p:xs:Yih o; do
+	while getopts H:T:D:E:S:K:R:A:U:u:p:x:s:Yih o; do
 		case $o in
 			# Hostname
 			(H) CONF_HOSTNAME="$OPTARG";
@@ -174,7 +174,7 @@ parse_options() {
 				WARN_PARAMS='true';;
 			# Enable LTS kernel
 			(K) if [ "$OPTARG" = 'yes' ]; then
-					CONF_LTS_KERNEL="$OPTARG";
+					CONF_LTS_KERNEL='yes';
 					CONF_LTS='linux-lts';
 				else
 					CONF_LTS_KERNEL='no';
@@ -184,11 +184,19 @@ parse_options() {
 			# Repository mirror countries
 			(R) CONF_MIRRORS="$OPTARG";
 				WARN_PARAMS='true';;
-			# Disable Arch User Repository
-			(A) CONF_AUR='no';
+			# Enable Arch User Repository
+			(A) if [ "$OPTARG" = 'no' ]; then
+					CONF_AUR='no';
+				else
+					CONF_AUR='yes';
+				fi;
 				WARN_PARAMS='true';;
-			# Disable primary user
-			(U) CONF_ADD_USER='no';
+			# Create primary user
+			(U) if [ "$OPTARG" = 'no' ]; then
+					CONF_ADD_USER='no';
+				else
+					CONF_ADD_USER='yes';
+				fi;
 				WARN_PARAMS='true';;
 			# Username
 			(u) CONF_USER="$OPTARG";
@@ -198,8 +206,12 @@ parse_options() {
 				CONF_PASS_ROOT="$OPTARG";
 				CONF_PASS_PROVIDED='true'
 				WARN_PARAMS='true';;
-			# Disable passwordless sudo
-			(x) CONF_PASSWORDLESS='no';
+			# Enable passwordless sudo
+			(x) if [ "$OPTARG" = 'no' ]; then
+					CONF_PASSWORDLESS='no';
+				else
+					CONF_PASSWORDLESS='yes';
+				fi;
 				WARN_PARAMS='true';;
 			# Default user shell
 			(s) CONF_SHELL="$OPTARG";
@@ -221,12 +233,12 @@ parse_options() {
 				print l 'S' "${sn}${sb}${cc}SWAPFILE_SIZE" "${sn}Swap file size (${sb}0${sn} to disable)";
 				print l 'K' "${sn}${sb}${cc}yes/no       " "${sn}Enable LTS kernel";
 				print l 'R' "${sn}${sb}${cc}MIRRORS      " "${sn}Repository mirror countries";
-				print l 'A' "${sn}${sb}${cc}             " "${sn}Disable Arch User Repository";
-				print l 'U' "${sn}${sb}${cc}             " "${sn}Disable primary user";
+				print l 'A' "${sn}${sb}${cc}yes/no       " "${sn}Enable Arch User Repository";
+				print l 'U' "${sn}${sb}${cc}yes/no       " "${sn}Create primary user";
 				print s 'User configuration';
 				print l 'u' "${sn}${sb}${cc}USER         " "${sn}Username";
 				print l 'p' "${sn}${sb}${cc}PASS         " "${sn}Password (for root if user is disabled)";
-				print l 'x' "${sn}${sb}${cc}             " "${sn}Disable passwordless sudo";
+				print l 'x' "${sn}${sb}${cc}yes/no       " "${sn}Enable passwordless sudo";
 				print l 's' "${sn}${sb}${cc}SHELL        " "${sn}Default user shell";
 				print s 'Other';
 				print l 'Y' "${sn}${sb}${cc}             " "${sn}Skip configuration confirmation ${sb}${cr}(dangerous)";
