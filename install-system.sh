@@ -120,8 +120,14 @@ check_environment() {
 	print t 'Checking installation environment'
 
 	print s 'Verifying installation environment'
-	[ "$(hostname)" = 'archiso' ] || {
-		print w 'Not in the default installation environment,'
+	grep -q '^ID=arch$' /etc/os-release || {
+		command -v pacman 1>/dev/null 2>/dev/null && \
+		print w 'This script is intended for Arch Linux!' && \
+		print w 'Derivative distributions are not officially supported.' || \
+		print e 'This script is intended for Arch Linux!'
+	}
+	grep -q 'archiso' /etc/hostname || {
+		print w 'Not in the default installation environment!'
 		print w 'proceed with caution!'
 	}
 
