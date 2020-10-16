@@ -508,30 +508,30 @@ pre_installation() {
         part_type='8e00'
     fi && \
 
-	# print s 'Deactivate and remove all previous LVM volume groups' && \
-	# for vg in $(vgdisplay | awk '/VG Name/ {print $3}'); do
-	# 	lvchange -an "$vg" &>> "$CONF_LOGFILE" && \
-	# 	vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
-	# 	lvremove "$vg" &>> "$CONF_LOGFILE" && \
-	# 	vgremove "$vg" &>> "$CONF_LOGFILE"
-	# done
-
 	print s 'Unmount all partitions on disk' && {
 		umount -R /mnt &>> "$CONF_LOGFILE" || \
 		umount -Rv "/dev/$conf_disk"?* &>> "$CONF_LOGFILE" || \
 		true
 	} && \
 
+	print s 'Remove existing LVM volume groups' && \
+	for vg in $(vgdisplay -C --noheadings -o name 2>"$CONF_LOGFILE"); do
+		yes | vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
+		yes | vgremove "$vg" &>> "$CONF_LOGFILE"
+	done && \
+
+	print s 'Close open LUKS containers' && \
+	for lv in $(dmsetup info --target crypt -C --noheadings -o name 2>"$CONF_LOGFILE" | grep -v 'No devices found'); do
+		cryptsetup close "$lv" &>> "$CONF_LOGFILE"
+	done && \
+
+	print s 'Remove existing LVM physical volumes' && \
+	for vg in $(pvdisplay -C --noheadings -o name 2>"$CONF_LOGFILE"); do
+		yes | pvremove "$vg" &>> "$CONF_LOGFILE"
+	done && \
+
 	print s 'Format disk' && \
 	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t "2:$part_type" &>> "$CONF_LOGFILE" && \
-
-	print s 'Deactivate and remove all previous LVM volume groups' && \
-	for vg in $(vgdisplay | awk '/VG Name/ {print $3}'); do
-		lvchange -an "$vg" &>> "$CONF_LOGFILE" && \
-		vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
-		lvremove "$vg" &>> "$CONF_LOGFILE" && \
-		vgremove "$vg" &>> "$CONF_LOGFILE"
-	done
 
 	print s 'Format boot partition' && \
 	yes | mkfs.fat -F32 "/dev/${conf_disk}1" &>> "$CONF_LOGFILE" && \
