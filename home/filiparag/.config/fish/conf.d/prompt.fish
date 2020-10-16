@@ -4,7 +4,7 @@ function fish_prompt
 
   # Just calculate these once, to save a few cycles when displaying the prompt
   if not set -q __fish_prompt_hostname
-    set -g __fish_prompt_hostname (hostname|cut -d . -f 1)
+    set -g __fish_prompt_hostname (cat /etc/hostname|cut -d . -f 1)
   end
   if not set -q __fish_prompt_char
     switch (id -u)
@@ -24,8 +24,10 @@ function fish_prompt
   set -l red (set_color red)
   set -l cyan (set_color cyan)
   set -l white (set_color white)
+  set -l yellow (set_color yellow)
   set -l gray (set_color normal)
   set -l brwhite (set_color -o white)
+  set -l blue (set_color blue)
 
   # Configure __fish_git_prompt
   set -g __fish_git_prompt_showdirtystate true
@@ -48,11 +50,15 @@ function fish_prompt
   # Line 1
   echo -n $red'┌'$cyan$USER$white'@'$cyan$__fish_prompt_hostname $var_last_status$gray(prompt_pwd)$normal
   __fish_git_prompt
-  # Check for gwip; does last commit log contain --wip--?
-  if begin; git log -n 1 2> /dev/null | grep -qc "\-\-wip\-\-"; end
-    echo -n $brwhite' WIP!'$normal
+  # Check if ahtead / behind origin
+  if begin; git status -sb 2> /dev/null | grep -q 'ahead\|behind'; end
+    echo -n $blue' ('(git status -sb | grep -Eo '(ahead|behind)( [0-9]+)?')')'$normal
   end
-  echo
+  # Check if last commit is work in progress
+  if begin; git log -n 1 2> /dev/null | grep -qic 'wip'; end
+    echo -n $yellow' [wip]'$normal
+  end
+  echo 
 
   # Line 2
   echo -n $red'└'$pcolor$__fish_prompt_char $normal
