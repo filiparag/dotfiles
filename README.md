@@ -12,7 +12,7 @@ To install these dotfiles using [`install-dotfiles.sh`](./install-dotfiles.sh), 
 Opinionated automatic [install script](./install-system.sh) for base Arch Linux is also provided.
 To use it, boot into [live installation system](https://www.archlinux.org/download/) using UEFI and run following commands:
 ```bash
-curl -LO 'https://raw.githubusercontent.com/filiparag/dotfiles/master/install-system.sh'
+curl -LO 'https://dotfiles.filiparag.com/install-system.sh'
 sh install-system.sh
 ```
 Follow colored instructions from the script and skip to [Hardware-specific modifications](#hardware-specific-modifications).
