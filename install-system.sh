@@ -298,7 +298,7 @@ configure_host() {
 	if [ -z "$CONF_SWAPFILE" ]; then
 		if print c 'Y' 'Enable swap file'; then
 			conf_swapfile='yes'
-			swapfile_default="$(free --mega | awk '$1 == "Mem:" {print 2**int(log(int($2)/2)/log(2))}')"
+			swapfile_default="$(free --mega | awk '$1 == "Mem:" {m=2**int(log(int($2)/2)/log(2)); print (m>=1024)?m:1024;}')"
 			print i '$|^([1-9][0-9]*)' "Swap file size in megabytes [$swapfile_default]:"
 			if [ -z "$user_input" ]; then
 				conf_swapfile_size="$swapfile_default"
@@ -470,59 +470,92 @@ configuration_summary() {
 
 }
 
+logfile() {
+
+	CONF_LOGFILE=$(mktemp /tmp/install-system.XXX.log)
+
+}
+
 pre_installation() {
 
 	print t 'Preparing installation' && \
 
 	print s 'Update the system clock' && \
-	timedatectl set-ntp true && \
+	timedatectl set-ntp true &>> "$CONF_LOGFILE" && \
 
 	print s 'Update installer repository mirrors' && \
 	mirror_country_url="$(echo "$conf_mirrors" | awk '{for (i=1;i<NF;i++) {query=query "&country=" $i}} END {print query}')" && \
-	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
+	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" 2>> "$CONF_LOGFILE" | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
 
 	print s 'Prepare required packages' && \
-	pacman -Sy --noconfirm --needed arch-install-scripts dosfstools e2fsprogs cryptsetup lvm2 gptfdisk curl awk && \
+	pacman -Sy --noconfirm --needed arch-install-scripts dosfstools e2fsprogs cryptsetup lvm2 gptfdisk curl awk &>> "$CONF_LOGFILE" && \
+
+    if [ "$conf_disk_encryption" = 'yes' ]; then
+        part_type='8309'
+    else
+        part_type='8e00'
+    fi && \
+
+	# print s 'Deactivate and remove all previous LVM volume groups' && \
+	# for vg in $(vgdisplay | awk '/VG Name/ {print $3}'); do
+	# 	lvchange -an "$vg" &>> "$CONF_LOGFILE" && \
+	# 	vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
+	# 	lvremove "$vg" &>> "$CONF_LOGFILE" && \
+	# 	vgremove "$vg" &>> "$CONF_LOGFILE"
+	# done
+
+	print s 'Unmount all partitions on disk' && {
+		umount -R /mnt &>> "$CONF_LOGFILE" || \
+		umount -Rv "/dev/$conf_disk"?* &>> "$CONF_LOGFILE" || \
+		true
+	} && \
 
 	print s 'Format disk' && \
-	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t 2:8309 && \
+	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t "2:$part_type" &>> "$CONF_LOGFILE" && \
+
+	print s 'Deactivate and remove all previous LVM volume groups' && \
+	for vg in $(vgdisplay | awk '/VG Name/ {print $3}'); do
+		lvchange -an "$vg" &>> "$CONF_LOGFILE" && \
+		vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
+		lvremove "$vg" &>> "$CONF_LOGFILE" && \
+		vgremove "$vg" &>> "$CONF_LOGFILE"
+	done
 
 	print s 'Format boot partition' && \
-	mkfs.fat -F32 "/dev/${conf_disk}1" && \
+	yes | mkfs.fat -F32 "/dev/${conf_disk}1" &>> "$CONF_LOGFILE" && \
 
 	if [ "$conf_disk_encryption" = 'yes' ]; then
 
 		print s 'Setup LUKS blockdevice on system partition' && \
-		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}2" && \
+		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}2" &>> "$CONF_LOGFILE" && \
 
 		print s 'Mount the LUKS container' && \
-		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}2" cryptlvm && \
+		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}2" cryptlvm &>> "$CONF_LOGFILE" && \
 
 		print s 'Create a physical volume on top of the opened LUKS container' && \
-		pvcreate /dev/mapper/cryptlvm && \
+		yes | pvcreate /dev/mapper/cryptlvm &>> "$CONF_LOGFILE" && \
 
-		print s 'Create ArchLinux volume group' && \
-		vgcreate ArchLinux /dev/mapper/cryptlvm && \
-
-		print s 'Create root filesystem volume' && \
-		lvcreate -l 100%FREE ArchLinux -n root && \
-		mkfs.ext4 /dev/ArchLinux/root
+		print s 'Create archlinux volume group' && \
+		yes | vgcreate archlinux /dev/mapper/cryptlvm &>> "$CONF_LOGFILE"
 
 	else
 
-		print s 'Format root partition' && \
-		mkfs.ext4 -F "/dev/${conf_disk}2"
+        print s 'Create a physical volume on top of system partition' && \
+        yes | pvcreate "/dev/${conf_disk}2" &>> "$CONF_LOGFILE" && \
+
+		print s 'Create archlinux volume group' && \
+		yes | vgcreate archlinux "/dev/${conf_disk}2" &>> "$CONF_LOGFILE"
 
 	fi && \
+	
+	print s 'Create root filesystem volume' && \
+	yes | lvcreate -l 100%FREE archlinux -n root &>> "$CONF_LOGFILE" && \
+	yes | mkfs.ext4 -F /dev/archlinux/root &>> "$CONF_LOGFILE" && \
 
 	print s 'Mount partitions' && \
-	if [ "$conf_disk_encryption" = 'yes' ]; then
-		mount /dev/ArchLinux/root /mnt
-	else
-		mount "/dev/${conf_disk}2" /mnt
-	fi && \
-	mkdir -p /mnt/boot && \
-	mount "/dev/${conf_disk}1" /mnt/boot
+	mount /dev/archlinux/root /mnt &>> "$CONF_LOGFILE" && \
+	mkdir -p /mnt/boot &>> "$CONF_LOGFILE" && \
+	mount "/dev/${conf_disk}1" /mnt/boot &>> "$CONF_LOGFILE"
 
 }
 
@@ -531,25 +564,25 @@ installation() {
 	print t 'Installing system' && \
 
 	print s 'Install Arch Linux base system' && \
-	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo $conf_shell $conf_lts && \
+	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo $conf_shell $conf_lts &>> "$CONF_LOGFILE" && \
 
 	print s 'Enable NetworkManager service' && \
-	arch-chroot /mnt systemctl enable NetworkManager && \
+	arch-chroot /mnt systemctl enable NetworkManager &>> "$CONF_LOGFILE" && \
 
 	print s 'Generate fstab entries' && \
 	genfstab -U /mnt >> /mnt/etc/fstab && \
 
 	print s 'Set timezone' && \
-	ln -sf "/usr/share/zoneinfo/$conf_timezone" /mnt/etc/localtime && \
-	arch-chroot /mnt hwclock --systohc && \
+	ln -sf "/usr/share/zoneinfo/$conf_timezone" /mnt/etc/localtime &>> "$CONF_LOGFILE" && \
+	arch-chroot /mnt hwclock --systohc &>> "$CONF_LOGFILE" && \
 
 	print s 'Configure localization' && \
 	echo 'en_US.UTF-8 UTF-8' >> /mnt/etc/locale.gen && \
-	arch-chroot /mnt locale-gen && \
+	arch-chroot /mnt locale-gen &>> "$CONF_LOGFILE" && \
 	echo 'LANG=en_US.UTF-8' > /mnt/etc/locale.conf && \
 
 	print s 'Set default console font' && {
-	tee -a /mnt/etc/vconsole.conf << END
+	tee -a /mnt/etc/vconsole.conf &>> "$CONF_LOGFILE" << END
 KEYMAP=us
 FONT=default8x16
 END
@@ -557,7 +590,7 @@ END
 
 	print s 'Set hostname and populate hosts file' && \
 	echo "$conf_hostname" > /mnt/etc/hostname && {
-	tee -a /mnt/etc/hosts << END
+	tee -a /mnt/etc/hosts &>> "$CONF_LOGFILE" << END
 127.0.0.1   localhost
 ::1         localhost
 127.0.1.1   $conf_hostname.localdomain $conf_hostname
@@ -566,34 +599,37 @@ END
 
 	if [ "$conf_disk_encryption" = 'yes' ]; then
 		print s 'Create initial ramdisk with LUKS and LVM support' && \
-		sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf && \
-		arch-chroot /mnt mkinitcpio -P
+		sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
+	else
+		print s 'Create initial ramdisk with LVM support' && \
+		sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
 	fi && \
+	arch-chroot /mnt mkinitcpio -P &>> "$CONF_LOGFILE" && \
 
 	print s 'Configure pacman and makepkg' && \
-	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" | sed 's/^#//' > /mnt/etc/pacman.d/mirrorlist && \
+	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" 2>> "$CONF_LOGFILE" | sed 's/^#//' > /mnt/etc/pacman.d/mirrorlist && \
 	sed 's/[ \t#]*MAKEFLAGS.*$/MAKEFLAGS="-j$(nproc)"/' -i /mnt/etc/makepkg.conf && \
 	sed 's/^#Color$/Color/; s/^#TotalDownload$/TotalDownload/; s/^#VerbosePkgLists$/VerbosePkgLists/;' -i /mnt/etc/pacman.conf && \
 
 	print s 'Detect CPU vendor and install microcode' && {
 	grep -qi 'vendor.*intel' /proc/cpuinfo && cpu_vendor='intel'
 	grep -qi 'vendor.*amd' /proc/cpuinfo && cpu_vendor='amd'
-	[ -n "$cpu_vendor" ] && arch-chroot /mnt pacman -Sy --noconfirm --needed "${cpu_vendor}-ucode"
+	[ -n "$cpu_vendor" ] && arch-chroot /mnt pacman -Sy --noconfirm --needed "${cpu_vendor}-ucode" &>> "$CONF_LOGFILE"
 	true
 	} && \
 	print s 'Setup bootloader' && \
-	arch-chroot /mnt bootctl install && {
-	tee /mnt/boot/loader/loader.conf << END
+	arch-chroot /mnt bootctl install &>> "$CONF_LOGFILE" && {
+	tee /mnt/boot/loader/loader.conf &>> "$CONF_LOGFILE" << END
 timeout 1
 default arch
 END
 	} && 
 	if [ "$conf_disk_encryption" = 'yes' ]; then
-		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/ArchLinux/root"
+		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
 	else
-		root_volume="root=UUID=$(lsblk "/dev/${conf_disk}2" -r -n -o UUID | head -n 1)"
+		root_volume="root=/dev/archlinux/root"
 	fi && {
-	tee /mnt/boot/loader/entries/arch.conf << END
+	tee /mnt/boot/loader/entries/arch.conf &>> "$CONF_LOGFILE" << END
 title    Arch Linux
 linux    /vmlinuz-linux
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
@@ -602,7 +638,7 @@ options  $root_volume rw add_efi_memmap
 END
 	} && \
 	if [ "$conf_lts_kernel" = 'yes' ]; then
-		tee /mnt/boot/loader/entries/arch-lts.conf << END
+		tee /mnt/boot/loader/entries/arch-lts.conf &>> "$CONF_LOGFILE" << END
 title    Arch Linux (LTS)
 linux    /vmlinuz-linux-lts
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
@@ -613,11 +649,11 @@ END
 
 	if [ "$conf_add_user" = 'yes' ]; then
 		print s 'Create user account' && \
-		arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" && \
+		arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" &>> "$CONF_LOGFILE" && \
 		if [ -z "$conf_pass" ]; then
-			arch-chroot /mnt passwd -d "$conf_user"
+			arch-chroot /mnt passwd -d "$conf_user" &>> "$CONF_LOGFILE"
 		else
-			arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd"
+			arch-chroot /mnt su -c "echo '$conf_user:$conf_pass' | chpasswd" &>> "$CONF_LOGFILE"
 		fi && \
 		if [ "$conf_passwordless" = 'yes' ]; then
 			echo "$conf_user ALL=(ALL) NOPASSWD: ALL" > "/mnt/etc/sudoers.d/$conf_user"
@@ -627,35 +663,35 @@ END
 	else
 		print s 'Set root password' && \
 		if [ -z "$conf_pass_root" ]; then
-			arch-chroot /mnt passwd -d root
+			arch-chroot /mnt passwd -d root &>> "$CONF_LOGFILE"
 		else
-			arch-chroot /mnt su -c "echo 'root:$conf_pass_root' | chpasswd"
+			arch-chroot /mnt su -c "echo 'root:$conf_pass_root' | chpasswd" &>> "$CONF_LOGFILE"
 		fi
 	fi && \
 
 	if [ "$conf_swapfile" = 'yes' ]; then
-		print s 'Enable swap file' && \
-		dd if=/dev/zero of=/mnt/swapfile bs=1M count="$conf_swapfile_size" status=progress && \
-		chmod 600 /mnt/swapfile && \
-		mkswap /mnt/swapfile && \
+		print s 'Create swap file' && \
+		dd if=/dev/zero of=/mnt/swapfile bs=1M count="$conf_swapfile_size" status=progress &>> "$CONF_LOGFILE" && \
+		chmod 600 /mnt/swapfile &>> "$CONF_LOGFILE" && \
+		mkswap /mnt/swapfile &>> "$CONF_LOGFILE" && \
 		echo '/swapfile none swap defaults 0 0' >> /mnt/etc/fstab
 	fi && \
 
 	if [ "$conf_aur" = 'yes' ]; then
 		print s 'Enable Arch User Repository' && \
-		pacman -Sy --noconfirm --needed fakeroot binutils git && \
-		useradd -m builder && \
+		pacman -Sy --noconfirm --needed fakeroot binutils git &>> "$CONF_LOGFILE" && \
+		useradd -m builder &>> "$CONF_LOGFILE" && \
 		su builder -c '
 			cd ~ &&
 			git clone https://aur.archlinux.org/yay-bin.git &&
 			cd yay-bin &&
 			makepkg
-		' && \
+		' &>> "$CONF_LOGFILE" && \
 		yay_package="$(find /home/builder/yay-bin -name '*.zst' -printf '%P')" && \
-		mkdir -p /mnt/var/cache/pacman/pkg && \
-		mv "/home/builder/yay-bin/$yay_package" "/mnt/var/cache/pacman/pkg/$yay_package" && \
-		arch-chroot /mnt pacman -U "/var/cache/pacman/pkg/$yay_package" --noconfirm && \
-		rm -f "/mnt/var/cache/pacman/pkg/$yay_package" && \
+		mkdir -p /mnt/var/cache/pacman/pkg &>> "$CONF_LOGFILE" && \
+		mv "/home/builder/yay-bin/$yay_package" "/mnt/var/cache/pacman/pkg/$yay_package" &>> "$CONF_LOGFILE" && \
+		arch-chroot /mnt pacman -U "/var/cache/pacman/pkg/$yay_package" --noconfirm &>> "$CONF_LOGFILE" && \
+		rm -f "/mnt/var/cache/pacman/pkg/$yay_package" &>> "$CONF_LOGFILE" && \
 		print w 'Use yay to install packages from Arch User Repository'
 	fi
 
@@ -665,17 +701,17 @@ post_installation() {
 
 	print t 'Post installation'
 
-	print c 'Y' 'Download dotfile installer?'
+	print c 'Y' 'Download dotfile installer?' && \
 	dotfiles_installer
 
-	print c 'N' 'Chroot into system for manual modifications?' ||
-	arch-chroot /mnt "/usr/bin/$conf_shell"
+	print c 'N' 'Chroot into system for manual modifications?' || \
+	arch-chroot /mnt "/usr/bin/${conf_shell:-bash}"
 
 	print s 'Unmount filesystem'
 	umount -R /mnt && \
 	if [ "$conf_disk_encryption" = 'yes' ]; then
-		lvchange -an /dev/ArchLinux && \
-		cryptsetup close cryptlvm
+		lvchange -an /dev/archlinux &>> "$CONF_LOGFILE" && \
+		cryptsetup close cryptlvm &>> "$CONF_LOGFILE"
 	fi && \
 
 	print s 'Installation complete' && \
@@ -686,17 +722,20 @@ post_installation() {
 dotfiles_installer() {
 
 	print s 'Downloading latest dotfiles snapshot' && \
-	arch-chroot /mnt pacman -Sy --needed --noconfirm git && \
-	arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /usr/share/dotfiles && \
+	arch-chroot /mnt pacman -Sy --needed --noconfirm git &>> "$CONF_LOGFILE" && \
+	arch-chroot /mnt git clone https://github.com/filiparag/dotfiles /usr/share/dotfiles &>> "$CONF_LOGFILE" && \
 
 	print s 'Linking installer script' && \
-	arch-chroot /mnt ln -s /usr/share/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install && \
+	arch-chroot /mnt ln -s /usr/share/dotfiles/install-dotfiles.sh /usr/bin/dotfiles-install &>> "$CONF_LOGFILE" && \
 
 	print w 'To install dotfiles, run dotfiles-install when you log in'
 
 }
 
 parse_options "$@" && check_environment && configure_host && configure_user && configuration_summary && \
-pre_installation && installation && post_installation || print e 'Fatal error, halting installation!'
+logfile && pre_installation && installation && post_installation || {
+	print w "Log file: ${sn}${sb}$CONF_LOGFILE"
+	print e 'Fatal error, halting installation!'
+}
 
 exit
