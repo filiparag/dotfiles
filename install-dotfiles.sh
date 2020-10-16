@@ -63,7 +63,7 @@ build_tools() {
 
 	# Install build tools
 	print s 'Install build tools' && \
-	sudo pacman -Sy --needed --noconfirm curl base-devel git &>> "$LOGFILE" && \
+	sudo pacman -Sy --needed --noconfirm curl base-devel git git-lfs &>> "$LOGFILE" && \
 
 	# Generate new mirrorlist
 	print s 'Generate new mirrorlist' && \
@@ -116,6 +116,8 @@ install_dotfiles() {
 	git reset --hard origin/master &>> "$LOGFILE" && \
 	print s 'Initialize git submodules' && \
 	git submodule update --init --recursive &>> "$LOGFILE" && \
+	print s 'Download files from git LFS' && \
+	git lfs fetch &>> "$LOGFILE" && \
 	print s 'Configure sydf' && \
 	mkdir -p "$HOME/.config" &>> "$LOGFILE" && \
 	echo "$HOME/.sydf" > "$HOME/.config/sydf.conf" && \
@@ -131,13 +133,6 @@ install_dotfiles() {
 				-l "$HOME/.sydf" | xargs sed -i "s|filiparag|$USER|g" &>> "$LOGFILE"
 		fi
 	} && \
-
-	# Download wallpaper
-	print s 'Download wallpaper and lockscreen' && \
-	mkdir -p "$HOME/.sydf/home/$USER/Pictures" &>> "$LOGFILE" && \
-	curl -L 'http://ftp.parag.rs/wallpaper-day.png' 2>> "$LOGFILE" > "$HOME/.sydf/home/$USER/Pictures/wallpaper-day.png" && \
-	curl -L 'http://ftp.parag.rs/wallpaper-night.png' 2>> "$LOGFILE" > "$HOME/.sydf/home/$USER/Pictures/wallpaper-night.png" && \
-	cp -p "$HOME/.sydf/home/$USER/Pictures/wallpaper-night.png" "$HOME/.sydf/home/$USER/Pictures/lockscreen.png" &>> "$LOGFILE" && \
 
 	# Replace provided mirrorlist with generated one
 	print s 'Replace provided mirrorlist with generated one' && \

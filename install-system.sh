@@ -743,7 +743,7 @@ dotfiles_installer() {
 	arch-chroot /mnt pacman -Sy --needed --noconfirm git &>> "$CONF_LOGFILE" && {
 		tee /mnt/usr/bin/dotfiles-install &>> "$CONF_LOGFILE" << END
 #!/bin/sh
-[ -d /tmp/dotfiles ] && \
+[ -d /tmp/dotfiles ] || \
 git clone https://github.com/filiparag/dotfiles /tmp/dotfiles
 chmod +x /tmp/dotfiles/install-dotfiles.sh && \
 /tmp/dotfiles/install-dotfiles.sh && \
