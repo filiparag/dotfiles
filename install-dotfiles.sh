@@ -102,6 +102,11 @@ install_dotfiles() {
 
 	# Prepare dotfiles
 	print t 'Prepare dotfiles' && \
+	if [ -e "$HOME/.sydf" ]; then
+		yes | sydf unhook && \
+		print s 'Remove old dotfiles' && \
+		rm -rf "$HOME/.sydf"
+	fi && \
 	print s 'Copy dotfiles to home directory' && \
 	cp -rp "$DOTFILEDIR" "$HOME/.sydf" &>> "$LOGFILE" && \
 	sudo chown -R "$USER:$USER" "$HOME/.sydf" &>> "$LOGFILE" && \
@@ -187,10 +192,10 @@ cleanup_finish() {
 	# Remove unwanted hardware-specific configuration
 	print s 'Remove unwanted hardware-specific configuration' && \
 	if ! lspci | grep -qi 'vga.*amd'; then
-		rm -f /etc/X11/xorg.conf.d/20-amdgpu.conf &>> "$LOGFILE"
+		sudo rm -f /etc/X11/xorg.conf.d/20-amdgpu.conf &>> "$LOGFILE"
 	fi && \
 	if ! lspci | grep -qi 'vga.*intel'; then
-		rm -f /etc/X11/xorg.conf.d/20-intel.conf &>> "$LOGFILE"
+		sudo rm -f /etc/X11/xorg.conf.d/20-intel.conf &>> "$LOGFILE"
 	fi && \
 
 	# Remove temporary files

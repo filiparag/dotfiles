@@ -576,7 +576,7 @@ installation() {
 	print t 'Installing system' && \
 
 	print s 'Install Arch Linux base system' && \
-	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo $conf_shell $conf_lts &>> "$CONF_LOGFILE" && \
+	pacstrap /mnt base linux linux-firmware lvm2 networkmanager sudo vim $conf_shell $conf_lts &>> "$CONF_LOGFILE" && \
 
 	print s 'Enable NetworkManager service' && \
 	arch-chroot /mnt systemctl enable NetworkManager &>> "$CONF_LOGFILE" && \
