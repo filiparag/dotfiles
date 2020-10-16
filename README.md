@@ -1,3 +1,5 @@
+# Dotfiles for Arch Linux
+
 ## Prerequisites
 
 To install these dotfiles using [`install-dotfiles.sh`](./install-dotfiles.sh), you should have:
