@@ -112,12 +112,10 @@ install_dotfiles() {
 	sudo chown -R "$USER:$USER" "$HOME/.sydf" &>> "$LOGFILE" && \
 	cd "$HOME/.sydf" && \
 	print s 'Pull updates from upstream' && \
-	git fetch --all &>> "$LOGFILE" && \
 	git reset --hard origin/master &>> "$LOGFILE" && \
+	git pull --rebase &>> "$LOGFILE" && \
 	print s 'Initialize git submodules' && \
-	git submodule update --init --recursive &>> "$LOGFILE" && \
-	print s 'Download files from git LFS' && \
-	git lfs fetch &>> "$LOGFILE" && \
+	git submodule update --init --recursive --depth 1 &>> "$LOGFILE" && \
 	print s 'Configure sydf' && \
 	mkdir -p "$HOME/.config" &>> "$LOGFILE" && \
 	echo "$HOME/.sydf" > "$HOME/.config/sydf.conf" && \
