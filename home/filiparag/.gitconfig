@@ -9,3 +9,5 @@
 	required = true
 [init]
 	defaultBranch = master
+[pull]
+	ff = only

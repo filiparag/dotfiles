@@ -28,6 +28,9 @@ git-lfs
 gnome-keyring
 gnome-system-monitor
 gst-plugin-viper4linux-git
+gvfs
+gvfs-mtp
+gvfs-nfs
 htop
 i3lock
 imagemagick

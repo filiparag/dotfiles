@@ -1,7 +1,8 @@
 &8f1539c4e57471c64190b2d99eddc27ba4489aa9#
-!archlinux.sh#
+!CNAME#
 %/etc/systemd/system/getty@tty1.service.d:/etc/systemd/system;/getty@tty1.service.d#
 !.git#
+!.gitattributes#
 !.gitignore#
 !.gitmodules#
 %/home/filiparag/.config/alacritty:/home/filiparag/.config;/alacritty#
@@ -32,11 +33,12 @@
 >/home/filiparag/.screen#
 >/home/filiparag/.vim#
 >/home/filiparag/.vim_runtime#
+!install-dotfiles.sh#
+!install-system.sh#
 !LICENSE#
 !pkglist#
 !README.md#
 !SHORTCUTS.md#
-!CNAME#
 !.stfolder#
 !.stignore#
 !.stversions#
