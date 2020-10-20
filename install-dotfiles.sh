@@ -114,6 +114,7 @@ install_dotfiles() {
 	print s 'Pull updates from upstream' && \
 	git reset --hard origin/master &>> "$LOGFILE" && \
 	git pull --rebase &>> "$LOGFILE" && \
+	git lfs pull &>> "$LOGFILE" && \
 	print s 'Initialize git submodules' && \
 	git submodule update --init --recursive --depth 1 &>> "$LOGFILE" && \
 	print s 'Configure sydf' && \
