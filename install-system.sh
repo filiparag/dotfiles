@@ -150,10 +150,10 @@ check_environment() {
 parse_options() {
 	WARN_PARAMS='false'
 	CONF_PASS_PROMPT='p'
-	while getopts H:T:D:E:S:K:R:A:U:u:p:x:s:Yih o; do
+	while getopts M:T:D:E:S:H:K:R:A:U:u:p:x:s:Yih o; do
 		case $o in
 			# Hostname
-			(H) CONF_HOSTNAME="$OPTARG";
+			(M) CONF_HOSTNAME="$OPTARG";
 				WARN_PARAMS='true';;
 			# Timezone
 			(T) CONF_TIMEZONE="$OPTARG";
@@ -176,6 +176,15 @@ parse_options() {
 				else
 					CONF_SWAPFILE='yes'
 					CONF_SWAPFILE_SIZE="$OPTARG"
+				fi;
+				WARN_PARAMS='true';;
+            # Home partition size
+			(H) if [ "$OPTARG" = '0' ]; then
+					CONF_HOME='no'
+					CONF_HOME_SIZE='no'
+				else
+					CONF_HOME='yes'
+					CONF_HOME_SIZE="$OPTARG"
 				fi;
 				WARN_PARAMS='true';;
 			# Enable LTS kernel
@@ -232,11 +241,12 @@ parse_options() {
 			# Show usage help and exit
 			(h) print t 'Usage help – arguments';
 				print s 'Host configuration';
-				print l 'H' "${sn}${sb}${cc}HOSTNAME     " "${sn}Hostname";
+				print l 'M' "${sn}${sb}${cc}HOSTNAME     " "${sn}Hostname";
 				print l 'T' "${sn}${sb}${cc}TIMEZONE     " "${sn}Timezone";
 				print l 'D' "${sn}${sb}${cc}DISK         " "${sn}Installation disk";
 				print l 'E' "${sn}${sb}${cc}DISK_PASS    " "${sn}Disk encryption password (${sb}empty${sn} to disable)";
 				print l 'S' "${sn}${sb}${cc}SWAPFILE_SIZE" "${sn}Swap file size (${sb}0${sn} to disable)";
+				print l 'H' "${sn}${sb}${cc}HOME_SIZE    " "${sn}Separate home partition size (${sb}0${sn} to disable)";
 				print l 'K' "${sn}${sb}${cc}yes/no       " "${sn}Enable LTS kernel";
 				print l 'R' "${sn}${sb}${cc}MIRRORS      " "${sn}Repository mirror countries";
 				print l 'A' "${sn}${sb}${cc}yes/no       " "${sn}Enable Arch User Repository";
@@ -332,6 +342,26 @@ configure_host() {
 		conf_swapfile_size="$CONF_SWAPFILE_SIZE"
 	fi
 
+    if [ -z "$CONF_HOME_SIZE" ]; then
+        conf_home='no'
+		conf_home_size='no'
+        home_size_default="$(lsblk -o NAME,SIZE -b -r -n "/dev/$conf_disk" | awk "\$1 == \"$conf_disk\" {gb=int(\$2)/10**9} END {if(gb>40) print int(gb*0.625); else print 0}")"
+		if [ "$home_size_default" != '0' ]; then
+            if ! print c 'N' 'Enable separate home partition'; then
+                conf_home='yes'
+                print i '$|^([1-9][0-9]*)' "Home partition size in gigabytes [$home_size_default]:"
+                if [ -z "$user_input" ]; then
+                    conf_home_size="$home_size_default"
+                else
+                    conf_home_size="$user_input"
+                fi
+            fi
+        fi
+	else
+		conf_home="$CONF_SWAPFILE"
+		conf_home_size="$CONF_SWAPFILE_SIZE"
+	fi
+
 	if [ -z "$CONF_LTS_KERNEL" ]; then
 		if print c 'N' 'Include supplementary LTS kernel'; then
 			conf_lts_kernel='no'
@@ -379,9 +409,9 @@ configure_host() {
 
 	if [ "$conf_add_user" = 'no' ]; then
 		if [ "$CONF_PASS_PROVIDED" != 'true' ]; then
-			print "$CONF_PASS_PROMPT" '.*' 'Enter root password:'
+			print "$CONF_PASS_PROMPT" '.+' 'Enter root password:'
 			conf_pass_root="$user_input"
-			print "$CONF_PASS_PROMPT" '.*' 'Repeat root password:'
+			print "$CONF_PASS_PROMPT" '.+' 'Repeat root password:'
 			repeat_pass_root="$user_input"
 			[ "$conf_pass_root" = "$repeat_pass_root" ] || \
 			print e 'Password mismatch!'
@@ -460,6 +490,7 @@ configuration_summary() {
 	[ "$CONF_INSECURE" = 'true' ] && [ "$conf_disk_encryption" = 'yes' ] && \
 	print l 'Disk password:' "${sn}${sb}$conf_disk_pass"
 	print l 'Swap file:' "${sn}${sb}$conf_swapfile_size"
+    print l 'Home partition:' "${sn}${sb}$conf_home_size"
 	print l 'Include LTS kernel:' "${sn}${sb}$conf_lts_kernel"
 	print l 'Pacman mirror countries:' "${sn}${sb}$conf_mirrors"
 	print l 'Arch User Repository:' "${sn}${sb}$conf_aur"
@@ -566,6 +597,12 @@ pre_installation() {
 
 	fi && \
 	
+    if [ "$conf_home" = 'yes' ]; then
+        print s 'Create home filesystem volume' && \
+        yes | lvcreate -L "${conf_home_size}G" archlinux -n home &>> "$CONF_LOGFILE" && \
+        yes | mkfs.ext4 -F /dev/archlinux/home &>> "$CONF_LOGFILE"
+    fi && \
+
 	print s 'Create root filesystem volume' && \
 	yes | lvcreate -l 100%FREE archlinux -n root &>> "$CONF_LOGFILE" && \
 	yes | mkfs.ext4 -F /dev/archlinux/root &>> "$CONF_LOGFILE" && \
@@ -573,7 +610,11 @@ pre_installation() {
 	print s 'Mount partitions' && \
 	mount /dev/archlinux/root /mnt &>> "$CONF_LOGFILE" && \
 	mkdir -p /mnt/boot &>> "$CONF_LOGFILE" && \
-	mount "/dev/${conf_disk}1" /mnt/boot &>> "$CONF_LOGFILE"
+	mount "/dev/${conf_disk}1" /mnt/boot &>> "$CONF_LOGFILE" && \
+    if [ "$conf_home" = 'yes' ]; then
+        mkdir -p /mnt/home &>> "$CONF_LOGFILE" && \
+        mount /dev/archlinux/home /mnt/home &>> "$CONF_LOGFILE"
+    fi
 
 }
 
