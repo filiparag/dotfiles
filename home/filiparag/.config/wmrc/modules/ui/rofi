@@ -61,25 +61,21 @@ character() {
 
   CHARACTER_FILE="$HOME/.cache/characters.txt"
 
-  [ -f "$CHARACTER_FILE" ] && \
-    TXT="$(cat "$CHARACTER_FILE")" || \
+  [ -f "$CHARACTER_FILE" ] || \
     error "Character list file '$CHARACTER_FILE' is missing!" fatal 2
 
-  RG="\[(.+)\]"
-  LIST="$(echo "$TXT" | perl -n -e"/^$RG$RG$RG/ && print \"\$1  \$3 (\$2)\n\"")"
-
-  SEL="$(echo "$LIST" |
+  SEL="$(
     rofi -dmenu -p 'character' -i \
     -columns 3 \
-		-icon-theme -font "Twitter Color Emoji 11")"
+		-icon-theme -font "Twitter Color Emoji 11" < "$CHARACTER_FILE"
+  )"
 
   if [ -n "$SEL" ]; then
 
-    LINE="$(echo "$LIST" | grep -n "$SEL" | cut -f1 -d:)p"
-    CHAR="$(echo "$TXT" | sed -n "$LINE" | sed "s/\[//; s/\]\[.*//")"
+    CHAR="$(echo "$SEL" | cut -f1)"
 
-    printf "$CHAR" | xclip -in -selection clipboard
-    # xdotool type "$CHAR"
+    printf '%s' "$CHAR" | xdotool type "$CHAR"
+    printf '%s' "$CHAR" | xclip -selection clipboard
 
   fi
 
