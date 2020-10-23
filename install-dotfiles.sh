@@ -149,7 +149,7 @@ wmrc_deps_and_services() {
 
 	# Install missing wmrc dependencies
 	print s 'Install missing wmrc dependencies' && \
-	wmrc -m | yay -S --needed --noconfirm - &>> "$LOGFILE" && \
+	wmrc -m | yay -S --needed --noconfirm --asdeps - &>> "$LOGFILE" && \
 
 	# Enable services
 	print s 'Enable systemd services' && \

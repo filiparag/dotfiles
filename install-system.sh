@@ -702,7 +702,7 @@ title    Arch Linux (LTS)
 linux    /vmlinuz-linux-lts
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
 initrd   /initramfs-linux-lts.img
-options  $root_volume rw add_efi_memmap
+options  $root_volume rw add_efi_memmap apparmor=1 lsm=lockdown,yama,apparmor
 END
 	fi && \
 
