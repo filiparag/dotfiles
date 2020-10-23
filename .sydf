@@ -10,12 +10,9 @@
 %/home/filiparag/.config/Dharkael:/home/filiparag/.config;/Dharkael#
 %/home/filiparag/.config/dunst:/home/filiparag/.config;/dunst#
 %/home/filiparag/.config/fish/conf.d:/home/filiparag/.config/fish;/conf.d#
->/home/filiparag/.config/fisher#
-%/home/filiparag/.config/fish:/home/filiparag/.config;/fish#
 %/home/filiparag/.config/gtk-2.0:/home/filiparag/.config;/gtk-2.0#
 %/home/filiparag/.config/gtk-3.0:/home/filiparag/.config;/gtk-3.0#
 >/home/filiparag/.config/i3#
->/home/filiparag/.config/omf#
 %/home/filiparag/.config/pcmanfm/default:/home/filiparag/.config;/pcmanfm/default#
 %/home/filiparag/.config/picom:/home/filiparag/.config;/picom#
 >/home/filiparag/.config/polybar#
@@ -26,7 +23,6 @@
 %/home/filiparag/.config/sxhkd:/home/filiparag/.config;/sxhkd#
 >/home/filiparag/.config/viper4linux#
 >/home/filiparag/.config/wmrc#
->/home/filiparag/.local/share/omf#
 %/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag/.mozilla/firefox/ruelumrt.default;/chrome#
 %/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag/.mozilla/firefox;/ruelumrt.default/chrome#
 %/home/filiparag/.mozilla/firefox/ruelumrt.default/chrome:/home/filiparag;/.mozilla/firefox/ruelumrt.default/chrome#

@@ -1,15 +1,6 @@
-[submodule "home/filiparag/.local/share/omf"]
-	path = home/filiparag/.local/share/omf
-	url = https://github.com/oh-my-fish/oh-my-fish.git
 [submodule "home/filiparag/.vim_runtime"]
 	path = home/filiparag/.vim_runtime
 	url = https://github.com/amix/vimrc.git
-[submodule "home/filiparag/.config/fisher/github.com/jethrokuan/z"]
-	path = home/filiparag/.config/fisher/github.com/jethrokuan/z
-	url = https://github.com/jethrokuan/z.git
-[submodule "home/filiparag/.config/fisher/github.com/jethrokuan/fzf"]
-	path = home/filiparag/.config/fisher/github.com/jethrokuan/fzf
-	url = https://github.com/jethrokuan/z.git
 [submodule "home/filiparag/.vim/vim-monokai"]
 	path = home/filiparag/.vim/vim-monokai
 	url = https://github.com/sickill/vim-monokai
