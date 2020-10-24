@@ -8,7 +8,7 @@ APPS='unclutter -idle 1
       flameshot
       keepassxc
       signal-desktop --start-in-tray
-      gajim
+      dino --gapplication-service
       wire-desktop --startup
       mail-notification
       '

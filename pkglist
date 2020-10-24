@@ -11,6 +11,7 @@ bspwm
 code
 cronie
 dash
+dino
 dunst
 eog
 ethtool
@@ -23,7 +24,6 @@ firejail
 fish
 flameshot
 fzf
-gajim
 git
 git-lfs
 gnome-keyring
@@ -46,6 +46,7 @@ lxappearance
 make
 man-db
 man-pages
+mail-notification
 matcha-gtk-theme
 mpv
 mpv-mpris
@@ -135,5 +136,6 @@ xorg-xmodmap
 xorg-xprop
 xorg-xrandr
 xorg-xset
+xorg-xwininfo
 yay-bin
 youtube-dl
