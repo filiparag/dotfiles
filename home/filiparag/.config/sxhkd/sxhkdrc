@@ -218,6 +218,7 @@ super + shift + r
 
 # Change desktop on current monitor
 super + {0-9}
+	bspc monitor -f "$(bspc query -M -m)"; \
 	bspc desktop -f {0-9}.local
 
 # Change desktop on all monitors

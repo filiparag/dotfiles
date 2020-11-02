@@ -3760,6 +3760,7 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ	kaomoji/yolo
 𝄫	symbols/music/doubleflat
 𝄪	symbols/music/doublesharp
 ♫	symbols/music/sing
+—	symbols/other-symbol/dash
 ↓	symbols/other-symbol/down
 «	symbols/other-symbol/emphasis-begin-quote
 »	symbols/other-symbol/emphasis-end-quote
