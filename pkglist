@@ -48,6 +48,7 @@ man-db
 man-pages
 mail-notification
 matcha-gtk-theme
+moreutils
 mpv
 mpv-mpris
 neofetch
@@ -110,7 +111,6 @@ vlc
 wget
 which
 wikiman
-wireguard-dkms
 wireguard-tools
 wmrc
 wpa_supplicant

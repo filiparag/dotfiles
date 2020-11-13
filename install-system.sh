@@ -306,6 +306,12 @@ configure_host() {
 		conf_disk="$CONF_DISK"
 	fi
 
+	if echo "$conf_disk" | grep -q '^nvme'; then
+		part_prefix="p"
+	else
+		part_prefix=""
+	fi
+
 	if [ -z "$CONF_DISK" ]; then
 		if print c 'Y' 'Enable full disk encryption'; then
 			conf_disk_encryption='yes'
@@ -568,18 +574,19 @@ pre_installation() {
 	done && \
 
 	print s 'Format disk' && \
+	sgdisk --zap-all "/dev/$conf_disk" &&\
 	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t "2:$part_type" &>> "$CONF_LOGFILE" && \
 
 	print s 'Format boot partition' && \
-	yes | mkfs.fat -F32 "/dev/${conf_disk}1" &>> "$CONF_LOGFILE" && \
+	yes | mkfs.fat -F32 "/dev/${conf_disk}${part_prefix}1" &>> "$CONF_LOGFILE" && \
 
 	if [ "$conf_disk_encryption" = 'yes' ]; then
 
 		print s 'Setup LUKS blockdevice on system partition' && \
-		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}2" &>> "$CONF_LOGFILE" && \
+		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE" && \
 
 		print s 'Mount the LUKS container' && \
-		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}2" cryptlvm &>> "$CONF_LOGFILE" && \
+		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}${part_prefix}2" cryptlvm &>> "$CONF_LOGFILE" && \
 
 		print s 'Create a physical volume on top of the opened LUKS container' && \
 		yes | pvcreate /dev/mapper/cryptlvm &>> "$CONF_LOGFILE" && \
@@ -590,10 +597,10 @@ pre_installation() {
 	else
 
         print s 'Create a physical volume on top of system partition' && \
-        yes | pvcreate "/dev/${conf_disk}2" &>> "$CONF_LOGFILE" && \
+        yes | pvcreate "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE" && \
 
 		print s 'Create archlinux volume group' && \
-		yes | vgcreate archlinux "/dev/${conf_disk}2" &>> "$CONF_LOGFILE"
+		yes | vgcreate archlinux "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE"
 
 	fi && \
 	
@@ -610,7 +617,7 @@ pre_installation() {
 	print s 'Mount partitions' && \
 	mount /dev/archlinux/root /mnt &>> "$CONF_LOGFILE" && \
 	mkdir -p /mnt/boot &>> "$CONF_LOGFILE" && \
-	mount "/dev/${conf_disk}1" /mnt/boot &>> "$CONF_LOGFILE" && \
+	mount "/dev/${conf_disk}${part_prefix}1" /mnt/boot &>> "$CONF_LOGFILE" && \
     if [ "$conf_home" = 'yes' ]; then
         mkdir -p /mnt/home &>> "$CONF_LOGFILE" && \
         mount /dev/archlinux/home /mnt/home &>> "$CONF_LOGFILE"
@@ -684,7 +691,7 @@ default arch
 END
 	} && 
 	if [ "$conf_disk_encryption" = 'yes' ]; then
-		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
+		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}${part_prefix}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
 	else
 		root_volume="root=/dev/archlinux/root"
 	fi && {
