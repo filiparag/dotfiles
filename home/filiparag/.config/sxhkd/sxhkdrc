@@ -214,6 +214,10 @@ super + r
 super + shift + r
 	bspc node @/ -R 90
 
+# Balance nodes on current desktop
+super + F5
+	bspc node @/ -B
+
 ## Desktop and monitor
 
 # Change desktop on current monitor

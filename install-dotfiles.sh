@@ -128,7 +128,7 @@ install_dotfiles() {
 			mv "$HOME/.sydf/home/filiparag" "$HOME/.sydf/home/$USER" &>> "$LOGFILE" && \
 			rg --hidden -i filiparag \
 				-g '!.git' -g '!install-dotfiles.sh' -g '!install-system.sh' \
-				-g '!README.md' -g '!LICENSE' -g '!pkglist' \
+				-g '!README.md' -g '!LICENSE' -g '!pkglist' -g '!etc/pacman.d/mirrorlist' \
 				-l "$HOME/.sydf" | xargs sed -i "s|filiparag|$USER|g" &>> "$LOGFILE"
 		fi
 	} && \

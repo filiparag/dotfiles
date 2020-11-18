@@ -92,6 +92,8 @@ Rotate current leaf `super + r`
 
 Rotate current display `super + shift + r`
 
+Balance nodes on current desktop `super + F5`
+
 
 ### Desktop and monitor
 
