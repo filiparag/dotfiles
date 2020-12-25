@@ -3762,6 +3762,10 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ	kaomoji/yolo
 ♫	symbols/music/sing
 —	symbols/other-symbol/dash
 ↓	symbols/other-symbol/down
+„	symbols/other-symbol/double-begin-quote
+”	symbols/other-symbol/double-end-quote
+,	symbols/other-symbol/signle-begin-quote
+’	symbols/other-symbol/single-end-quote
 «	symbols/other-symbol/emphasis-begin-quote
 »	symbols/other-symbol/emphasis-end-quote
 ☆	symbols/other-symbol/emptystar

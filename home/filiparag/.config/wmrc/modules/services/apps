@@ -11,6 +11,7 @@ APPS='unclutter -idle 1
       dino --gapplication-service
       wire-desktop --startup
       mail-notification
+      safeeyes
       '
 
 app_list() {
