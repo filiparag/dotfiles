@@ -1,5 +1,9 @@
 # Dotfiles for Arch Linux
 
+## Preview
+
+![screenshot](./screenshot.gif "Screenshot showcase made on 2021-01-08")
+
 ## Prerequisites
 
 To install these dotfiles using [`install-dotfiles.sh`](./install-dotfiles.sh), you should have:
