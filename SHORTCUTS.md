@@ -1,5 +1,7 @@
+# Keyboard shortcuts
 
-### Launchers
+
+## Launchers
 
 Show application launcher `super + d`
 
@@ -10,7 +12,7 @@ Show character menu `super + z`
 Show calculator `super + @less`
 
 
-### Applications
+## Applications
 
 Launch terminal `super + Return`
 
@@ -41,14 +43,14 @@ Launch Signal Messenger `super + s`
 Print screen `{super + p, Print}`
 
 
-### Window control
+## Window control
 
 Close application `super + shift + q`
 
 Kill application `super + ctrl + shift + q`
 
 
-### Window selection
+## Window selection
 
 Switch to last node / desktop `{alt, super} + @Tab`
 
@@ -61,7 +63,7 @@ Move window if tiled `super + shift + {@Up,@Down,@Left,@Right}`
 Move window if floating `super + {Up,Down,Left,Right}`
 
 
-### Window manipulation
+## Window manipulation
 
 Move focused window to desktop on current monitor `super + shift + {0-9}`
 
@@ -78,7 +80,7 @@ Swap places of current and last focused window `super + w`
 Bring last focused window to current subnode `super + shift + w`
 
 
-### Window size and rotation
+## Window size and rotation
 
 Resize window (Up) `super + alt + @Up`
 
@@ -95,7 +97,7 @@ Rotate current display `super + shift + r`
 Balance nodes on current desktop `super + F5`
 
 
-### Desktop and monitor
+## Desktop and monitor
 
 Change desktop on current monitor `super + {0-9}`
 
@@ -106,7 +108,7 @@ Move through neighbouring desktops on current monitor `super + {@Home,@End}`
 Move through neighbouring desktops on all monitors `super + alt + {@Home,@End}`
 
 
-### Node tree manipulation
+## Node tree manipulation
 
 Select parent node `super + @F1`
 
@@ -117,14 +119,14 @@ Swap desktops `super + @F3`
 Swap monitors `super + @F4`
 
 
-### Bspwm
+## Bspwm
 
 Quit bspwm `super + shift + e : Return`
 
 Reload config `super + alt + r`
 
 
-### System lock and power
+## System lock and power
 
 Sleep `super + @Delete`
 
@@ -137,7 +139,7 @@ Lock the device using physlock `XF86Launch1`
 Lock screen and turn off screen `super + l`
 
 
-### Multimedia keys
+## Multimedia keys
 
 Change volume using standard keys for default sink `super + {Prior, Next}`
 
@@ -164,7 +166,7 @@ Playerctl next track in playlist `{super + @F11, XF86AudioNext}`
 Playerctl toggle pause playback `{super + @F12, XF86AudioPlay}`
 
 
-### Appearance
+## Appearance
 
 Turn on gaps for current desktop `super + bracketright`
 

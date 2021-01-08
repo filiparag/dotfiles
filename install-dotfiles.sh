@@ -206,9 +206,13 @@ cleanup_finish() {
 shortcuts_manual() {
 
 	print s 'Regenerate shortcuts manual' && \
-	cat "$DOTFILEDIR/home/filiparag/.config/sxhkd/sxhkdrc" | awk 'NR > 1 {
+	cat "$DOTFILEDIR/home/filiparag/.config/sxhkd/sxhkdrc" | awk \
+	'BEGIN {
+		print "# Keyboard shortcuts\n"
+	}
+	NR > 1 {
 		if ($0 ~ /^## /) {
-			gsub(/^## */,"",$0); printf("\n### %s\n\n",$0)
+			gsub(/^## */,"",$0); printf("\n## %s\n\n",$0)
 		} else if ($0 ~ /^# /) {
 			gsub(/^# */,"",$0); printf("%s ",$0); c=1
 		} else if (c==1) {
