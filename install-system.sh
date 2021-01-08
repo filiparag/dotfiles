@@ -2,6 +2,8 @@
 
 # System installation script for Arch Linux
 
+CONF_VERSION="1.1.0"
+
 cb="$(tput setaf 0)"
 cr="$(tput setaf 1)"
 cg="$(tput setaf 2)"
@@ -150,7 +152,7 @@ check_environment() {
 parse_options() {
 	WARN_PARAMS='false'
 	CONF_PASS_PROMPT='p'
-	while getopts M:T:D:E:S:H:K:B:R:A:U:u:p:x:s:d:c:Yih o; do
+	while getopts M:T:D:E:S:H:K:B:R:A:U:u:p:x:s:d:c:F:f:Yih o; do
 		case $o in
 			# Hostname
 			(M) CONF_HOSTNAME="$OPTARG";
@@ -252,6 +254,11 @@ parse_options() {
 					CONF_CHROOT='no';
 				fi;
 				WARN_PARAMS='true';;
+			# Read configuration from file
+			(F) CONF_PREFSRFILE="$OPTARG";
+				WARN_PARAMS='true';;
+			# Save configuration to file
+			(f) CONF_PREFSWFILE="$OPTARG";;
 			# Skip configuration confirmation
 			(Y) CONF_SKIP_CONFIRMATION='true';
 				print w 'Configuration confirmation will be skipped!';;
@@ -260,7 +267,7 @@ parse_options() {
 				CONF_PASS_PROMPT='i';
 				print w 'Insecure mode: passwords will be visible!';;
 			# Show usage help and exit
-			(h) print t 'Usage help – arguments';
+			(h) print t "System installer $CONF_VERSION";
 				print s 'Host configuration';
 				print l 'M' "${sn}${sb}${cc}HOSTNAME     " "${sn}Hostname";
 				print l 'T' "${sn}${sb}${cc}TIMEZONE     " "${sn}Timezone";
@@ -282,6 +289,8 @@ parse_options() {
 				print l 'd' "${sn}${sb}${cc}yes/no       " "${sn}Add dotfiles installer";
 				print l 'c' "${sn}${sb}${cc}yes/no       " "${sn}Chroot into system for manual modifications";
 				print s 'Miscellaneous';
+				print l 'F' "${sn}${sb}${cc}CONFIG_TOML  " "${sn}Read configuration from file";
+				print l 'f' "${sn}${sb}${cc}CONFIG_TOML  " "${sn}Save configuration to file ${sb}${cw}(/mnt prefix for new system)";
 				print l 'Y' "${sn}${sb}${cc}             " "${sn}Skip configuration confirmation ${sb}${cr}(dangerous)";
 				print l 'i' "${sn}${sb}${cc}             " "${sn}Insecure mode – show passwords ${sb}${cy}(not recommended)";
 				print l 'h' "${sn}${sb}${cc}             " "${sn}Show usage help and exit";
@@ -389,8 +398,8 @@ configure_host() {
             fi
         fi
 	else
-		conf_home="$CONF_SWAPFILE"
-		conf_home_size="$CONF_SWAPFILE_SIZE"
+		conf_home="$CONF_HOME"
+		conf_home_size="$CONF_HOME_SIZE"
 	fi
 
 	if [ -z "$CONF_LTS_KERNEL" ]; then
@@ -841,6 +850,9 @@ post_installation() {
 		arch-chroot /mnt "/usr/bin/${conf_shell:-bash}"
 	fi
 
+	preferences_write || \
+	print w 'Warning: Unable to save configuration to file'
+
 	print s 'Unmount filesystem'
 	umount -R /mnt && \
 	if [ "$conf_disk_encryption" = 'yes' ]; then
@@ -872,8 +884,51 @@ END
 
 }
 
-parse_options "$@" && check_environment && configure_host && configure_user && configuration_summary && \
-logfile && pre_installation && installation && post_installation || {
+preferences_write() {
+
+	if [ -n "$CONF_PREFSWFILE" ] && touch "$CONF_PREFSWFILE"; then
+
+		print s 'Exporting configuration to file'
+
+		mkdir -p "$(dirname "$CONF_PREFSWFILE")" && \
+		tee "$CONF_PREFSWFILE" &>> "$CONF_LOGFILE" << END
+[installer]
+version =		"$CONF_VERSION"
+
+[host]
+hostname =		"$conf_hostname"
+timezone =		"$conf_timezone"
+disk =			"$conf_disk"
+disk_encryption =	"$conf_disk_encryption"
+disk_pass =		"$conf_disk_pass"
+swapfile =		"$conf_swapfile"
+swapfile_size =		"$conf_swapfile_size"
+home =			"$conf_home"
+home_size =		"$conf_home_size"
+lts_kernel = 		"$conf_lts_kernel"
+lts =			"$conf_lts"
+uefi_entry = 		"$conf_uefi_entry"
+mirrors =		"$conf_mirrors"
+aur = 			"$conf_aur"
+add_user = 		"$conf_add_user"
+
+[user]
+user = 			"$conf_user"
+pass = 			"$conf_pass"
+pass_root = 		"$conf_pass_root"
+pass_provided =		"$CONF_PASS_PROVIDED"
+passwordless = 		"$conf_passwordless"
+shell = 		"$conf_shell"
+
+[misc]
+dotfiles = 		"$CONF_DOTFILES"
+skip_confirmation = 	"$CONF_SKIP_CONFIRMATION"
+END
+
+fi
+
+}
+parse_options "$@" && check_environment && logfile && preferences_read && \
 	print w "Log file: ${sn}${sb}$CONF_LOGFILE"
 	print e 'Fatal error, halting installation!'
 }
