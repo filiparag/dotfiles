@@ -150,7 +150,7 @@ check_environment() {
 parse_options() {
 	WARN_PARAMS='false'
 	CONF_PASS_PROMPT='p'
-	while getopts M:T:D:E:S:H:K:R:A:U:u:p:x:s:Yih o; do
+	while getopts M:T:D:E:S:H:K:B:R:A:U:u:p:x:s:d:c:Yih o; do
 		case $o in
 			# Hostname
 			(M) CONF_HOSTNAME="$OPTARG";
@@ -196,6 +196,13 @@ parse_options() {
 					CONF_LTS='';
 				fi;
 				WARN_PARAMS='true';;
+			# Add direct UEFI boot entry
+			(B) if [ "$OPTARG" = 'yes' ]; then
+					CONF_UEFI_ENRTY='yes';
+				else
+					CONF_UEFI_ENRTY='no';
+				fi;
+				WARN_PARAMS='true';;
 			# Repository mirror countries
 			(R) CONF_MIRRORS="$OPTARG";
 				WARN_PARAMS='true';;
@@ -231,6 +238,20 @@ parse_options() {
 			# Default user shell
 			(s) CONF_SHELL="$OPTARG";
 				WARN_PARAMS='true';;
+			# Add dotfiles installer
+			(d) if [ "$OPTARG" = 'yes' ]; then
+					CONF_DOTFILES='yes';
+				else
+					CONF_DOTFILES='no';
+				fi;
+				WARN_PARAMS='true';;
+			# Chroot into system for manual modifications
+			(c) if [ "$OPTARG" = 'yes' ]; then
+					CONF_CHROOT='yes';
+				else
+					CONF_CHROOT='no';
+				fi;
+				WARN_PARAMS='true';;
 			# Skip configuration confirmation
 			(Y) CONF_SKIP_CONFIRMATION='true';
 				print w 'Configuration confirmation will be skipped!';;
@@ -248,6 +269,7 @@ parse_options() {
 				print l 'S' "${sn}${sb}${cc}SWAPFILE_SIZE" "${sn}Swap file size (${sb}0${sn} to disable)";
 				print l 'H' "${sn}${sb}${cc}HOME_SIZE    " "${sn}Separate home partition size (${sb}0${sn} to disable)";
 				print l 'K' "${sn}${sb}${cc}yes/no       " "${sn}Enable LTS kernel";
+				print l 'B' "${sn}${sb}${cc}yes/no       " "${sn}Add direct UEFI boot entry";
 				print l 'R' "${sn}${sb}${cc}MIRRORS      " "${sn}Repository mirror countries";
 				print l 'A' "${sn}${sb}${cc}yes/no       " "${sn}Enable Arch User Repository";
 				print l 'U' "${sn}${sb}${cc}yes/no       " "${sn}Create primary user";
@@ -256,7 +278,10 @@ parse_options() {
 				print l 'p' "${sn}${sb}${cc}PASS         " "${sn}Password (for root if user is disabled)";
 				print l 'x' "${sn}${sb}${cc}yes/no       " "${sn}Enable passwordless sudo";
 				print l 's' "${sn}${sb}${cc}SHELL        " "${sn}Default user shell";
-				print s 'Other';
+				print s 'Post installation';
+				print l 'd' "${sn}${sb}${cc}yes/no       " "${sn}Add dotfiles installer";
+				print l 'c' "${sn}${sb}${cc}yes/no       " "${sn}Chroot into system for manual modifications";
+				print s 'Miscellaneous';
 				print l 'Y' "${sn}${sb}${cc}             " "${sn}Skip configuration confirmation ${sb}${cr}(dangerous)";
 				print l 'i' "${sn}${sb}${cc}             " "${sn}Insecure mode – show passwords ${sb}${cy}(not recommended)";
 				print l 'h' "${sn}${sb}${cc}             " "${sn}Show usage help and exit";
@@ -380,6 +405,16 @@ configure_host() {
 		conf_lts="$CONF_LTS"
 	fi
 
+	if [ -z "$CONF_UEFI_ENRTY" ]; then
+		if print c 'Y' 'Add direct UEFI boot entry'; then
+			conf_uefi_entry='yes'
+		else
+			conf_uefi_entry='no'
+		fi
+	else
+		conf_uefi_entry="$CONF_UEFI_ENRTY"
+	fi
+
 	if [ -z "$CONF_MIRRORS" ]; then
 		repo_countries='AU|AT|BD|BY|BE|BA|BR|BG|CA|CL|CN|CO|HR|CZ|DK|EC|FI|FR|GE|DE|GR|HK|HU|IS|IN|ID|IR|IE|IL|IT|JP|KZ|KE|LV|LT|LU|MD|NL|NC|NZ|MK|NO|PK|PY|PH|PL|PT|RO|RU|RS|SG|SK|SI|ZA|KR|ES|SE|CH|TW|TH|TR|UA|GB|US|VN'
 		repo_countries_default='DE GB'
@@ -498,6 +533,7 @@ configuration_summary() {
 	print l 'Swap file:' "${sn}${sb}$conf_swapfile_size"
     print l 'Home partition:' "${sn}${sb}$conf_home_size"
 	print l 'Include LTS kernel:' "${sn}${sb}$conf_lts_kernel"
+	print l 'Direct UEFI boot entry:' "${sn}${sb}$conf_uefi_entry"
 	print l 'Pacman mirror countries:' "${sn}${sb}$conf_mirrors"
 	print l 'Arch User Repository:' "${sn}${sb}$conf_aur"
 	[ "$CONF_INSECURE" = 'true' ] && [ "$conf_add_user" = 'no' ] && \
@@ -512,6 +548,16 @@ configuration_summary() {
 		print l 'Shell:' "${sn}${sb}$conf_shell"
 	else
 		print l 'Add primary user:' "${sn}${sb}$conf_add_user"
+	fi
+
+	if [ -n "$CONF_DOTFILES" ] || [ -n "$CONF_CHROOT" ]; then
+		print s 'Post installation'
+		if [ -n "$CONF_DOTFILES" ]; then
+			print l 'Dotfiles installer:' "${sn}${sb}$CONF_DOTFILES"
+		fi
+		if [ -n "$CONF_CHROOT" ]; then
+			print l 'Chroot into system:' "${sn}${sb}$CONF_CHROOT"
+		fi
 	fi
 
 	if [ "$CONF_SKIP_CONFIRMATION" != 'true' ]; then
@@ -543,7 +589,7 @@ pre_installation() {
 	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" 2>> "$CONF_LOGFILE" | sed 's/^#//' > /etc/pacman.d/mirrorlist && \
 
 	print s 'Prepare required packages' && \
-	pacman -Sy --noconfirm --needed arch-install-scripts dosfstools e2fsprogs cryptsetup lvm2 gptfdisk curl awk &>> "$CONF_LOGFILE" && \
+	pacman -Sy --noconfirm --needed arch-install-scripts dosfstools e2fsprogs cryptsetup lvm2 gptfdisk curl awk efibootmgr &>> "$CONF_LOGFILE" && \
 
     if [ "$conf_disk_encryption" = 'yes' ]; then
         part_type='8309'
@@ -574,7 +620,7 @@ pre_installation() {
 	done && \
 
 	print s 'Format disk' && \
-	sgdisk --zap-all "/dev/$conf_disk" &&\
+	sgdisk --zap-all "/dev/$conf_disk" &>> "$CONF_LOGFILE" &&\
 	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t "2:$part_type" &>> "$CONF_LOGFILE" && \
 
 	print s 'Format boot partition' && \
@@ -713,6 +759,20 @@ options  $root_volume rw add_efi_memmap
 END
 	fi && \
 
+	if [ "$conf_uefi_entry" = 'yes' ]; then
+		print s 'Create direct UEFI boot entry' && \
+		if [ "$conf_disk_encryption" = 'yes' ]; then
+			root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}${part_prefix}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
+		else
+			root_volume="root=/dev/archlinux/root"
+		fi && {
+			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux' --loader '/vmlinuz-linux' --unicode "${root_volume} rw add_efi_memmap initrd=\initramfs-linux.img initrd=\\${cpu_vendor}-ucode.img" --verbose  &>> "$CONF_LOGFILE"
+		} && \
+		if [ "$conf_lts_kernel" = 'yes' ]; then
+			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux (LTS)' --loader '/vmlinuz-linux-lts' --unicode "${root_volume} rw add_efi_memmap initrd=\initramfs-linux-lts.img initrd=\\${cpu_vendor}-ucode.img" --verbose  &>> "$CONF_LOGFILE"
+		fi
+	fi && \
+
 	if [ "$conf_add_user" = 'yes' ]; then
 		print s 'Create user account' && \
 		arch-chroot /mnt useradd -m -u 1000 -U -s "/usr/bin/$conf_shell" "$conf_user" &>> "$CONF_LOGFILE" && \
@@ -767,11 +827,19 @@ post_installation() {
 
 	print t 'Post installation'
 
-	print c 'Y' 'Add dotfiles installer?' && \
-	dotfiles_installer
+	if [ -z "$CONF_DOTFILES" ]; then
+		print c 'Y' 'Add dotfiles installer?' && \
+		dotfiles_installer
+	elif [ "$CONF_DOTFILES" = 'yes' ]; then
+		dotfiles_installer
+	fi
 
-	print c 'N' 'Chroot into system for manual modifications?' || \
-	arch-chroot /mnt "/usr/bin/${conf_shell:-bash}"
+	if [ -z "$CONF_CHROOT" ]; then
+		print c 'N' 'Chroot into system for manual modifications?' || \
+		arch-chroot /mnt "/usr/bin/${conf_shell:-bash}"
+	elif [ "$CONF_CHROOT" = 'yes' ]; then
+		arch-chroot /mnt "/usr/bin/${conf_shell:-bash}"
+	fi
 
 	print s 'Unmount filesystem'
 	umount -R /mnt && \
