@@ -838,6 +838,7 @@ post_installation() {
 
 	if [ -z "$CONF_DOTFILES" ]; then
 		print c 'Y' 'Add dotfiles installer?' && \
+		CONF_DOTFILES='yes' && \
 		dotfiles_installer
 	elif [ "$CONF_DOTFILES" = 'yes' ]; then
 		dotfiles_installer
@@ -928,7 +929,93 @@ END
 fi
 
 }
+
+preferences_read() {
+
+	if [ -n "$CONF_PREFSRFILE" ]; then
+
+		print s 'Importing configuration from file'
+		if test -f "$CONF_PREFSRFILE"; then
+			conf_prefsrfile="$CONF_PREFSRFILE"
+		else
+			conf_prefsrfile="$(mktemp /tmp/install-system-preferences.XXX.toml)"
+			if ! curl -L "$CONF_PREFSRFILE" > "$conf_prefsrfile" 2> "$CONF_LOGFILE"; then
+				print e "Unable to fetch configuration file: '$CONF_PREFSRFILE'"
+			fi
+		fi
+
+		if test -f "$conf_prefsrfile" && head -n1 "$conf_prefsrfile" | grep -qz '^\[installer\]'; then
+
+			regex_match='[ \t]*=[ \t]*"\(.*\)"$/\1/p'
+
+			CONV_PREFSVER="$(sed -n "s/^version$regex_match" "$conf_prefsrfile")"
+
+			if [ "$CONV_PREFSVER" = "$(printf "%s\n%s" "$CONV_PREFSVER" "$CONF_VERSION" | sort -V | head -n1)" ]; then
+				[ "$CONV_PREFSVER" != "$CONF_VERSION" ] && \
+				print w 'Caution: Compatibility mode with older version.'
+			else
+				print e "Newer configuration file: $CONV_PREFSVER > $CONF_VERSION"
+			fi
+
+			[ -z "$CONF_HOSTNAME" ] && \
+				CONF_HOSTNAME="$(sed -n "s/^hostname$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_TIMEZONE" ] && \
+				CONF_TIMEZONE="$(sed -n "s/^timezone$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_DISK" ] && \
+				CONF_DISK="$(sed -n "s/^disk$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_DISK_ENCRYPTION" ] && \
+				CONF_DISK_ENCRYPTION="$(sed -n "s/^disk_encryption$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_DISK_PASS" ] && \
+				CONF_DISK_PASS="$(sed -n "s/^disk_pass$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_SWAPFILE" ] && \
+				CONF_SWAPFILE="$(sed -n "s/^swapfile$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_SWAPFILE_SIZE" ] && \
+				CONF_SWAPFILE_SIZE="$(sed -n "s/^swapfile_size$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_HOME" ] && \
+				CONF_HOME="$(sed -n "s/^home$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_HOME_SIZE" ] && \
+				CONF_HOME_SIZE="$(sed -n "s/^home_size$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_LTS_KERNEL" ] && \
+				CONF_LTS_KERNEL="$(sed -n "s/^lts_kernel$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_LTS" ] && \
+				CONF_LTS="$(sed -n "s/^lts$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_UEFI_ENRTY" ] && \
+				CONF_UEFI_ENRTY="$(sed -n "s/^uefi_entry$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_MIRRORS" ] && \
+				CONF_MIRRORS="$(sed -n "s/^mirrors$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_AUR" ] && \
+				CONF_AUR="$(sed -n "s/^aur$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_ADD_USER" ] && \
+				CONF_ADD_USER="$(sed -n "s/^add_user$regex_match" "$conf_prefsrfile")"
+			
+			[ -z "$CONF_USER" ] && \
+				CONF_USER="$(sed -n "s/^user$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_PASS" ] && \
+				CONF_PASS="$(sed -n "s/^pass$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_PASS_ROOT" ] && \
+				CONF_PASS_ROOT="$(sed -n "s/^pass_root$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_PASS_PROVIDED" ] && \
+				CONF_PASS_PROVIDED="$(sed -n "s/^pass_provided$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_PASSWORDLESS" ] && \
+				CONF_PASSWORDLESS="$(sed -n "s/^passwordless$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_SHELL" ] && \
+				CONF_SHELL="$(sed -n "s/^shell$regex_match" "$conf_prefsrfile")"
+
+			[ -z "$CONF_DOTFILES" ] && \
+				CONF_DOTFILES="$(sed -n "s/^dotfiles$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_SKIP_CONFIRMATION" ] && \
+				CONF_SKIP_CONFIRMATION="$(sed -n "s/^skip_confirmation$regex_match" "$conf_prefsrfile")"
+
+		else
+			print e "Invalid configuration file: '$CONF_PREFSRFILE'"
+		fi
+	fi
+
+}
+
 parse_options "$@" && check_environment && logfile && preferences_read && \
+configure_host && configure_user && configuration_summary && \
+pre_installation && installation && post_installation || {
 	print w "Log file: ${sn}${sb}$CONF_LOGFILE"
 	print e 'Fatal error, halting installation!'
 }
