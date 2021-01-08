@@ -1,5 +1,6 @@
 &7e1da306b06223f777cdb44d0844a613b0ecfc80#
 !CNAME#
+!_config.yml#
 %/etc/systemd/system/getty@tty1.service.d:/etc/systemd/system;/getty@tty1.service.d#
 !.git#
 !.gitattributes#
