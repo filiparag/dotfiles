@@ -766,10 +766,10 @@ END
 		else
 			root_volume="root=/dev/archlinux/root"
 		fi && {
-			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux' --loader '/vmlinuz-linux' --unicode "${root_volume} rw add_efi_memmap initrd=\initramfs-linux.img initrd=\\${cpu_vendor}-ucode.img" --verbose  &>> "$CONF_LOGFILE"
+			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux' --loader '/vmlinuz-linux' --unicode "${root_volume} rw add_efi_memmap initrd=\\${cpu_vendor}-ucode.img initrd=\initramfs-linux.img" --verbose  &>> "$CONF_LOGFILE"
 		} && \
 		if [ "$conf_lts_kernel" = 'yes' ]; then
-			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux (LTS)' --loader '/vmlinuz-linux-lts' --unicode "${root_volume} rw add_efi_memmap initrd=\initramfs-linux-lts.img initrd=\\${cpu_vendor}-ucode.img" --verbose  &>> "$CONF_LOGFILE"
+			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux (LTS)' --loader '/vmlinuz-linux-lts' --unicode "${root_volume} rw add_efi_memmap initrd=\\${cpu_vendor}-ucode.img initrd=\initramfs-linux-lts.img" --verbose  &>> "$CONF_LOGFILE"
 		fi
 	fi && \
 
