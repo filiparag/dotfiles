@@ -69,10 +69,6 @@ super + k
 super + e
 	$VISUAL
 
-# Launch Signal Messenger
-super + s
-	signal-desktop
-
 # Print screen
 {super + p, Print}
 	mkdir -p "$HOME/Pictures/Screenshots"; \
@@ -167,6 +163,9 @@ super + shift + w
 	bspc node -n "$rec"; \
 	bspc node -f "$last"
 
+# Toggle node attributes: marked, locked, sticky, private, hidden
+super + alt + {m,l,s,p,h}
+	bspc node -g {marked,locked,sticky,private,hidden}
 
 ## Window size and rotation
 

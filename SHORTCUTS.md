@@ -38,8 +38,6 @@ Launch KeePassXC `super + k`
 
 Launch default visual text editor `super + e`
 
-Launch Signal Messenger `super + s`
-
 Print screen `{super + p, Print}`
 
 
@@ -78,6 +76,8 @@ Toggle fullscreen mode for focused window `super + shift + f `
 Swap places of current and last focused window `super + w`
 
 Bring last focused window to current subnode `super + shift + w`
+
+Toggle node attributes: marked, locked, sticky, private, hidden `super + alt + {m,l,s,p,h}`
 
 
 ## Window size and rotation

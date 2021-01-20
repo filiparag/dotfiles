@@ -222,6 +222,18 @@ shortcuts_manual() {
 
 }
 
+if [ "$#" -ge 0 ]; then
+	args=""
+	for arg in $@; do
+		args="${args:+$args && } $arg"
+	done
+	check_sudo && workdir && logfile && eval "$args" && cleanup_finish || {
+		print w "Log file: ${sn}${sb}$LOGFILE"
+		print e 'Fatal error, halting installation!'
+	}
+	exit
+fi
+
 check_sudo && workdir && logfile && build_tools && install_packages && \
 install_dotfiles && wmrc_deps_and_services && \
 shortcuts_manual && cleanup_finish || {
