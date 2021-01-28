@@ -74,7 +74,19 @@ if bind -M insert > /dev/null 2>&1
   bind -M insert \cn nnn
 end
 
-# History bind
+# History sync bind
+
+function _history_sync -d 'Synchronise fish history'
+    history merge
+    # commandline -f repaint
+end
+
+bind \ch _history_sync
+if bind -M insert > /dev/null 2>&1
+  bind -M insert \ch _history_sync
+end
+
+# History search widget bind
 
 function _history_widget -d 'Show interactive fish history'
     history merge
