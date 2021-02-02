@@ -1,6 +1,7 @@
-&7e1da306b06223f777cdb44d0844a613b0ecfc80#
+&c8aae6a543172bdab4794cc776329d84c2c4a23e#
 !CNAME#
 !_config.yml#
+%/etc/apparmor:/etc;/apparmor#
 %/etc/systemd/system/getty@tty1.service.d:/etc/systemd/system;/getty@tty1.service.d#
 !.git#
 !.gitattributes#
@@ -15,6 +16,7 @@
 %/home/filiparag/.config/gtk-2.0:/home/filiparag/.config;/gtk-2.0#
 %/home/filiparag/.config/gtk-3.0:/home/filiparag/.config;/gtk-3.0#
 >/home/filiparag/.config/i3#
+>/home/filiparag/.config/mpv#
 %/home/filiparag/.config/pcmanfm/default:/home/filiparag/.config;/pcmanfm/default#
 %/home/filiparag/.config/picom:/home/filiparag/.config;/picom#
 >/home/filiparag/.config/polybar#
@@ -41,4 +43,3 @@
 !.stfolder#
 !.stignore#
 !.stversions#
->/home/filiparag/.config/mpv#

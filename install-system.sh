@@ -901,16 +901,16 @@ END
 		useradd -m builder &>> "$CONF_LOGFILE" && \
 		su builder -c '
 			cd ~ &&
-			git clone https://aur.archlinux.org/yay-bin.git &&
-			cd yay-bin &&
+			git clone https://aur.archlinux.org/paru-bin.git &&
+			cd paru-bin &&
 			makepkg
 		' &>> "$CONF_LOGFILE" && \
-		yay_package="$(find /home/builder/yay-bin -name '*.zst' -printf '%P')" && \
+		aur_helper_package="$(find /home/builder/paru-bin -name '*.pkg.*' -printf '%P')" && \
 		mkdir -p /mnt/var/cache/pacman/pkg &>> "$CONF_LOGFILE" && \
-		mv "/home/builder/yay-bin/$yay_package" "/mnt/var/cache/pacman/pkg/$yay_package" &>> "$CONF_LOGFILE" && \
-		arch-chroot /mnt pacman -U "/var/cache/pacman/pkg/$yay_package" --noconfirm &>> "$CONF_LOGFILE" && \
-		rm -f "/mnt/var/cache/pacman/pkg/$yay_package" &>> "$CONF_LOGFILE" && \
-		print w 'Use yay to install packages from Arch User Repository'
+		mv "/home/builder/paru-bin/$aur_helper_package" "/mnt/var/cache/pacman/pkg/$aur_helper_package" &>> "$CONF_LOGFILE" && \
+		arch-chroot /mnt pacman -U "/var/cache/pacman/pkg/$aur_helper_package" --noconfirm &>> "$CONF_LOGFILE" && \
+		rm -f "/mnt/var/cache/pacman/pkg/$aur_helper_package" &>> "$CONF_LOGFILE" && \
+		print w "Use ${cw}paru${cy} to install packages from Arch User Repository"
 	fi
 
 }

@@ -73,6 +73,7 @@ build_tools() {
 	# Use all cores in makepkg.conf 
 	print s 'Use all cores in makepkg.conf' && \
 	sudo sed 's/[ \t#]*MAKEFLAGS.*$/MAKEFLAGS="-j$(nproc)"/' -i /etc/makepkg.conf &>> "$LOGFILE"
+
 }
 
 install_packages() {
@@ -81,20 +82,20 @@ install_packages() {
 	print s 'Update system' && \
 	sudo pacman -Syu --noconfirm &>> "$LOGFILE" && \
 
-	# Install yay
+	# Install AUR helper
 	{
-		if ! command -v yay 1>/dev/null 2>/dev/null; then
-			print s 'Install yay package manager' && \
-			mkdir -p "$TMPDIR/yay-bin" &>> "$LOGFILE" && \
-			cd "$TMPDIR/yay-bin" && \
-			curl -L 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=yay-bin' 2>> "$LOGFILE" > "$TMPDIR/yay-bin/PKGBUILD" && \
+		if ! command -v paru 1>/dev/null 2>/dev/null; then
+			print s 'Install paru package manager' && \
+			mkdir -p "$TMPDIR/paru-bin" &>> "$LOGFILE" && \
+			cd "$TMPDIR/paru-bin" && \
+			curl -L 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=paru-bin' 2>> "$LOGFILE" > "$TMPDIR/paru-bin/PKGBUILD" && \
 			makepkg -si --noconfirm &>> "$LOGFILE"
 		fi
 	} && \
 
 	# Install all required packages
 	print s 'Install all required packages' && \
-	yay -S --needed --noconfirm - < "$DOTFILEDIR/pkglist" &>> "$LOGFILE"
+	paru -S --needed --noconfirm - < "$DOTFILEDIR/pkglist" &>> "$LOGFILE"
 
 }
 
@@ -149,7 +150,7 @@ wmrc_deps_and_services() {
 
 	# Install missing wmrc dependencies
 	print s 'Install missing wmrc dependencies' && \
-	wmrc -m | yay -S --needed --noconfirm --asdeps - &>> "$LOGFILE" && \
+	wmrc -m | paru -S --needed --noconfirm --asdeps - &>> "$LOGFILE" && \
 
 	# Enable services
 	print s 'Enable systemd services' && \
