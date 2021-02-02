@@ -2,7 +2,7 @@
 
 # System installation script for Arch Linux
 
-CONF_VERSION="1.1.0"
+CONF_VERSION="1.2.0"
 
 cb="$(tput setaf 0)"
 cr="$(tput setaf 1)"
@@ -152,7 +152,7 @@ check_environment() {
 parse_options() {
 	WARN_PARAMS='false'
 	CONF_PASS_PROMPT='p'
-	while getopts M:T:D:E:S:H:K:B:R:A:U:u:p:x:s:d:c:F:f:Yih o; do
+	while getopts M:T:D:E:L:S:H:K:B:R:A:U:u:p:x:s:d:c:F:f:Yih o; do
 		case $o in
 			# Hostname
 			(M) CONF_HOSTNAME="$OPTARG";
@@ -169,6 +169,13 @@ parse_options() {
 				else
 					CONF_DISK_ENCRYPTION='yes'
 					CONF_DISK_PASS="$OPTARG"
+				fi;
+				WARN_PARAMS='true';;
+			# Logical Volume Manager
+			(L) if [ "$OPTARG" = 'no' ]; then
+					CONF_LVM='no';
+				else
+					CONF_LVM='yes';
 				fi;
 				WARN_PARAMS='true';;
 			# Swap file size
@@ -273,6 +280,7 @@ parse_options() {
 				print l 'T' "${sn}${sb}${cc}TIMEZONE     " "${sn}Timezone";
 				print l 'D' "${sn}${sb}${cc}DISK         " "${sn}Installation disk";
 				print l 'E' "${sn}${sb}${cc}DISK_PASS    " "${sn}Disk encryption password (${sb}empty${sn} to disable)";
+				print l 'L' "${sn}${sb}${cc}yes/no       " "${sn}Logical Volume Manager";
 				print l 'S' "${sn}${sb}${cc}SWAPFILE_SIZE" "${sn}Swap file size (${sb}0${sn} to disable)";
 				print l 'H' "${sn}${sb}${cc}HOME_SIZE    " "${sn}Separate home partition size (${sb}0${sn} to disable)";
 				print l 'K' "${sn}${sb}${cc}yes/no       " "${sn}Enable LTS kernel";
@@ -346,9 +354,10 @@ configure_host() {
 		part_prefix=""
 	fi
 
-	if [ -z "$CONF_DISK" ]; then
+	if [ -z "$CONF_DISK_ENCRYPTION" ]; then
 		if print c 'Y' 'Enable full disk encryption'; then
 			conf_disk_encryption='yes'
+			CONF_LVM='yes'
 			print "$CONF_PASS_PROMPT" '.+' 'Enter disk password:'
 			conf_disk_pass="$user_input"
 			print "$CONF_PASS_PROMPT" '.+' 'Repeat disk password:'
@@ -361,6 +370,17 @@ configure_host() {
 	else
 		conf_disk_encryption="$CONF_DISK_ENCRYPTION"
 		conf_disk_pass="$CONF_DISK_PASS"
+		CONF_LVM='yes'
+	fi
+
+	if [ -z "$CONF_LVM" ]; then
+		if print c 'N' 'Use Logical Volume Manager'; then
+			conf_lvm='no'
+		else
+			conf_lvm='yes'
+		fi
+	else
+		conf_lvm="$CONF_LVM"
 	fi
 
 	if [ -z "$CONF_SWAPFILE" ]; then
@@ -539,6 +559,7 @@ configuration_summary() {
 	print l 'Encryption:' "${sn}${sb}$conf_disk_encryption"
 	[ "$CONF_INSECURE" = 'true' ] && [ "$conf_disk_encryption" = 'yes' ] && \
 	print l 'Disk password:' "${sn}${sb}$conf_disk_pass"
+	print l 'Logical Volume Manager:' "${sn}${sb}$conf_lvm"
 	print l 'Swap file:' "${sn}${sb}$conf_swapfile_size"
     print l 'Home partition:' "${sn}${sb}$conf_home_size"
 	print l 'Include LTS kernel:' "${sn}${sb}$conf_lts_kernel"
@@ -601,9 +622,13 @@ pre_installation() {
 	pacman -Sy --noconfirm --needed arch-install-scripts dosfstools e2fsprogs cryptsetup lvm2 gptfdisk curl awk efibootmgr &>> "$CONF_LOGFILE" && \
 
     if [ "$conf_disk_encryption" = 'yes' ]; then
-        part_type='8309'
+        part_type='8309' # Linux LUKS 
     else
-        part_type='8e00'
+		if [ "$conf_lvm" = 'yes' ]; then
+        	part_type='8e00' # Linux LVM 
+		else
+			part_type='8304' # Linux x86-64 root
+		fi
     fi && \
 
 	print s 'Unmount all partitions on disk' && {
@@ -612,25 +637,40 @@ pre_installation() {
 		true
 	} && \
 
-	print s 'Remove existing LVM volume groups' && \
-	for vg in $(vgdisplay -C --noheadings -o name 2>"$CONF_LOGFILE"); do
-		yes | vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
-		yes | vgremove "$vg" &>> "$CONF_LOGFILE"
-	done && \
+	if [ "$conf_lvm" = 'yes' ]; then
 
-	print s 'Close open LUKS containers' && \
-	for lv in $(dmsetup info --target crypt -C --noheadings -o name 2>"$CONF_LOGFILE" | grep -v 'No devices found'); do
-		cryptsetup close "$lv" &>> "$CONF_LOGFILE"
-	done && \
+		print s 'Remove existing LVM volume groups' && \
+		for vg in $(vgdisplay -C --noheadings -o name 2>"$CONF_LOGFILE"); do
+			yes | vgchange -an "$vg" &>> "$CONF_LOGFILE" && \
+			yes | vgremove "$vg" &>> "$CONF_LOGFILE"
+		done && \
 
-	print s 'Remove existing LVM physical volumes' && \
-	for vg in $(pvdisplay -C --noheadings -o name 2>"$CONF_LOGFILE"); do
-		yes | pvremove "$vg" &>> "$CONF_LOGFILE"
-	done && \
+		print s 'Close open LUKS containers' && \
+		for lv in $(dmsetup info --target crypt -C --noheadings -o name 2>"$CONF_LOGFILE" | grep -v 'No devices found'); do
+			cryptsetup close "$lv" &>> "$CONF_LOGFILE"
+		done && \
 
-	print s 'Format disk' && \
+		print s 'Remove existing LVM physical volumes' && \
+		for vg in $(pvdisplay -C --noheadings -o name 2>"$CONF_LOGFILE"); do
+			yes | pvremove "$vg" &>> "$CONF_LOGFILE"
+		done
+
+	fi && \
+
+	print s 'Format and partition disk' && \
 	sgdisk --zap-all "/dev/$conf_disk" &>> "$CONF_LOGFILE" &&\
-	sgdisk "/dev/$conf_disk" -o -n 1:0:512M -t 1:ef00 -N 2 -t "2:$part_type" &>> "$CONF_LOGFILE" && \
+	if [ "$conf_lvm" = 'no' ] &&  [ "$conf_home" = 'yes' ]; then
+		part_number=3 && \
+		sgdisk "/dev/$conf_disk" -o \
+			-n 1:0:512M -t 1:ef00 \
+			-n "2:0:${conf_home_size}G" -t 2:8302 \
+			-N 3 -t "3:$part_type" &>> "$CONF_LOGFILE"
+	else
+		part_number=2 && \
+		sgdisk "/dev/$conf_disk" -o \
+			-n 1:0:512M -t 1:ef00 \
+			-N 2 -t "2:$part_type" &>> "$CONF_LOGFILE"
+	fi && \
 
 	print s 'Format boot partition' && \
 	yes | mkfs.fat -F32 "/dev/${conf_disk}${part_prefix}1" &>> "$CONF_LOGFILE" && \
@@ -638,44 +678,85 @@ pre_installation() {
 	if [ "$conf_disk_encryption" = 'yes' ]; then
 
 		print s 'Setup LUKS blockdevice on system partition' && \
-		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE" && \
+		echo "$conf_disk_pass" | cryptsetup -q luksFormat "/dev/${conf_disk}${part_prefix}${part_number}" &>> "$CONF_LOGFILE" && \
 
 		print s 'Mount the LUKS container' && \
-		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}${part_prefix}2" cryptlvm &>> "$CONF_LOGFILE" && \
+		echo "$conf_disk_pass" | cryptsetup open "/dev/${conf_disk}${part_prefix}${part_number}" cryptlvm &>> "$CONF_LOGFILE" && \
 
-		print s 'Create a physical volume on top of the opened LUKS container' && \
-		yes | pvcreate /dev/mapper/cryptlvm &>> "$CONF_LOGFILE" && \
+		if [ "$conf_lvm" = 'yes' ]; then
 
-		print s 'Create archlinux volume group' && \
-		yes | vgcreate archlinux /dev/mapper/cryptlvm &>> "$CONF_LOGFILE"
+			print s 'Create a physical volume on top of the opened LUKS container' && \
+			yes | pvcreate /dev/mapper/cryptlvm &>> "$CONF_LOGFILE" && \
+
+			print s 'Create archlinux volume group' && \
+			yes | vgcreate archlinux /dev/mapper/cryptlvm &>> "$CONF_LOGFILE"
+
+		else
+
+			print e 'Not implemented: create LUKS root without LVM'
+
+		fi
 
 	else
 
-        print s 'Create a physical volume on top of system partition' && \
-        yes | pvcreate "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE" && \
+		if [ "$conf_lvm" = 'yes' ]; then
 
-		print s 'Create archlinux volume group' && \
-		yes | vgcreate archlinux "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE"
+			print s 'Create a physical volume on top of system partition' && \
+			yes | pvcreate "/dev/${conf_disk}${part_prefix}${part_number}" &>> "$CONF_LOGFILE" && \
+
+			print s 'Create archlinux volume group' && \
+			yes | vgcreate archlinux "/dev/${conf_disk}${part_prefix}${part_number}" &>> "$CONF_LOGFILE"
+
+		fi
 
 	fi && \
 	
     if [ "$conf_home" = 'yes' ]; then
-        print s 'Create home filesystem volume' && \
-        yes | lvcreate -L "${conf_home_size}G" archlinux -n home &>> "$CONF_LOGFILE" && \
-        yes | mkfs.ext4 -F /dev/archlinux/home &>> "$CONF_LOGFILE"
+
+		if [ "$conf_lvm" = 'yes' ]; then
+
+			print s 'Create home filesystem volume' && \
+			yes | lvcreate -L "${conf_home_size}G" archlinux -n home &>> "$CONF_LOGFILE" && \
+			yes | mkfs.ext4 -F /dev/archlinux/home &>> "$CONF_LOGFILE"
+
+		else
+
+			print s 'Format home partition' && \
+			yes | mkfs.ext4 -F "/dev/${conf_disk}${part_prefix}2" &>> "$CONF_LOGFILE"
+
+		fi
+
     fi && \
 
-	print s 'Create root filesystem volume' && \
-	yes | lvcreate -l 100%FREE archlinux -n root &>> "$CONF_LOGFILE" && \
-	yes | mkfs.ext4 -F /dev/archlinux/root &>> "$CONF_LOGFILE" && \
+	if [ "$conf_lvm" = 'yes' ]; then
+
+		print s 'Create root filesystem volume' && \
+		yes | lvcreate -l 100%FREE archlinux -n root &>> "$CONF_LOGFILE" && \
+		yes | mkfs.ext4 -F /dev/archlinux/root &>> "$CONF_LOGFILE"
+
+	else
+
+		print s 'Format root filesystem partition' && \
+		yes | mkfs.ext4 -F "/dev/${conf_disk}${part_prefix}${part_number}" &>> "$CONF_LOGFILE"
+
+	fi && \
 
 	print s 'Mount partitions' && \
-	mount /dev/archlinux/root /mnt &>> "$CONF_LOGFILE" && \
+
+	if [ "$conf_lvm" = 'yes' ]; then
+		mount /dev/archlinux/root /mnt &>> "$CONF_LOGFILE"
+	else
+		mount "/dev/${conf_disk}${part_prefix}${part_number}" /mnt &>> "$CONF_LOGFILE"
+	fi && \
 	mkdir -p /mnt/boot &>> "$CONF_LOGFILE" && \
 	mount "/dev/${conf_disk}${part_prefix}1" /mnt/boot &>> "$CONF_LOGFILE" && \
     if [ "$conf_home" = 'yes' ]; then
-        mkdir -p /mnt/home &>> "$CONF_LOGFILE" && \
-        mount /dev/archlinux/home /mnt/home &>> "$CONF_LOGFILE"
+		mkdir -p /mnt/home &>> "$CONF_LOGFILE" && \
+		if [ "$conf_lvm" = 'yes' ]; then
+			mount /dev/archlinux/home /mnt/home &>> "$CONF_LOGFILE"
+		else
+			mount "/dev/${conf_disk}${part_prefix}2" /mnt/home &>> "$CONF_LOGFILE"
+		fi
     fi
 
 }
@@ -718,14 +799,16 @@ END
 END
 	} && \
 
-	if [ "$conf_disk_encryption" = 'yes' ]; then
-		print s 'Create initial ramdisk with LUKS and LVM support' && \
-		sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
-	else
-		print s 'Create initial ramdisk with LVM support' && \
-		sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
+	if [ "$conf_lvm" = 'yes' ]; then
+		if [ "$conf_disk_encryption" = 'yes' ]; then
+			print s 'Create initial ramdisk with LUKS and LVM support' && \
+			sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block encrypt lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
+		else
+			print s 'Create initial ramdisk with LVM support' && \
+			sed -i 's/^HOOKS=(.*)/HOOKS=(base udev autodetect keyboard keymap consolefont modconf block lvm2 filesystems fsck)/' /mnt/etc/mkinitcpio.conf
+		fi && \
+		arch-chroot /mnt mkinitcpio -P &>> "$CONF_LOGFILE"
 	fi && \
-	arch-chroot /mnt mkinitcpio -P &>> "$CONF_LOGFILE" && \
 
 	print s 'Configure pacman and makepkg' && \
 	curl -L "https://www.archlinux.org/mirrorlist/?protocol=https&ip_version=4&ip_version=6&use_mirror_status=on$mirror_country_url" 2>> "$CONF_LOGFILE" | sed 's/^#//' > /mnt/etc/pacman.d/mirrorlist && \
@@ -746,16 +829,20 @@ default arch
 END
 	} && 
 	if [ "$conf_disk_encryption" = 'yes' ]; then
-		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}${part_prefix}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
+		root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}${part_prefix}${part_number}" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
 	else
-		root_volume="root=/dev/archlinux/root"
+		if [ "$conf_lvm" = 'yes' ]; then
+			root_volume='root=/dev/archlinux/root'
+		else
+			root_volume="root=UUID=$(lsblk "/dev/${conf_disk}${part_prefix}${part_number}" -r -n -o UUID | head -n 1)"
+		fi
 	fi && {
 	tee /mnt/boot/loader/entries/arch.conf &>> "$CONF_LOGFILE" << END
 title    Arch Linux
 linux    /vmlinuz-linux
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
 initrd   /initramfs-linux.img
-options  $root_volume rw add_efi_memmap
+options  $root_volume rw
 END
 	} && \
 	if [ "$conf_lts_kernel" = 'yes' ]; then
@@ -764,21 +851,17 @@ title    Arch Linux (LTS)
 linux    /vmlinuz-linux-lts
 $([ -n "$cpu_vendor" ] && echo "initrd   /${cpu_vendor}-ucode.img")
 initrd   /initramfs-linux-lts.img
-options  $root_volume rw add_efi_memmap
+options  $root_volume rw
 END
 	fi && \
 
 	if [ "$conf_uefi_entry" = 'yes' ]; then
 		print s 'Create direct UEFI boot entry' && \
-		if [ "$conf_disk_encryption" = 'yes' ]; then
-			root_volume="cryptdevice=UUID=$(lsblk "/dev/${conf_disk}${part_prefix}2" -r -n -o UUID | head -n 1):cryptlvm root=/dev/archlinux/root"
-		else
-			root_volume="root=/dev/archlinux/root"
-		fi && {
-			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux' --loader '/vmlinuz-linux' --unicode "${root_volume} rw add_efi_memmap initrd=\\${cpu_vendor}-ucode.img initrd=\initramfs-linux.img" --verbose  &>> "$CONF_LOGFILE"
+		{
+			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux' --loader '/vmlinuz-linux' --unicode "${root_volume} rw initrd=\\${cpu_vendor}-ucode.img initrd=\initramfs-linux.img" --verbose  &>> "$CONF_LOGFILE"
 		} && \
 		if [ "$conf_lts_kernel" = 'yes' ]; then
-			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux (LTS)' --loader '/vmlinuz-linux-lts' --unicode "${root_volume} rw add_efi_memmap initrd=\\${cpu_vendor}-ucode.img initrd=\initramfs-linux-lts.img" --verbose  &>> "$CONF_LOGFILE"
+			efibootmgr --disk "/dev/${conf_disk}${part_prefix}" --part 1 --create --label 'Arch Linux (LTS)' --loader '/vmlinuz-linux-lts' --unicode "${root_volume} rw initrd=\\${cpu_vendor}-ucode.img initrd=\initramfs-linux-lts.img" --verbose  &>> "$CONF_LOGFILE"
 		fi
 	fi && \
 
@@ -902,6 +985,7 @@ timezone =		"$conf_timezone"
 disk =			"$conf_disk"
 disk_encryption =	"$conf_disk_encryption"
 disk_pass =		"$conf_disk_pass"
+lvm =			"$conf_lvm"
 swapfile =		"$conf_swapfile"
 swapfile_size =		"$conf_swapfile_size"
 home =			"$conf_home"
@@ -967,6 +1051,8 @@ preferences_read() {
 				CONF_DISK_ENCRYPTION="$(sed -n "s/^disk_encryption$regex_match" "$conf_prefsrfile")"
 			[ -z "$CONF_DISK_PASS" ] && \
 				CONF_DISK_PASS="$(sed -n "s/^disk_pass$regex_match" "$conf_prefsrfile")"
+			[ -z "$CONF_LVM" ] && \
+				CONF_LVM="$(sed -n "s/^lvm$regex_match" "$conf_prefsrfile")"
 			[ -z "$CONF_SWAPFILE" ] && \
 				CONF_SWAPFILE="$(sed -n "s/^swapfile$regex_match" "$conf_prefsrfile")"
 			[ -z "$CONF_SWAPFILE_SIZE" ] && \
