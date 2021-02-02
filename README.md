@@ -118,7 +118,7 @@ is optimized for ThinkPad X230: [`/etc/tlp.conf`](./etc/tlp.conf)
 To enable it, run:
 ```bash
 # Install
-yay -S tlp
+sudo pacman -S tlp
 
 # Run at startup as a service
 sudo systemctl enable tlp.service

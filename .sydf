@@ -17,6 +17,7 @@
 %/home/filiparag/.config/gtk-3.0:/home/filiparag/.config;/gtk-3.0#
 >/home/filiparag/.config/i3#
 >/home/filiparag/.config/mpv#
+>/home/filiparag/.config/paru#
 %/home/filiparag/.config/pcmanfm/default:/home/filiparag/.config;/pcmanfm/default#
 %/home/filiparag/.config/picom:/home/filiparag/.config;/picom#
 >/home/filiparag/.config/polybar#
