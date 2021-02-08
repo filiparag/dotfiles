@@ -158,8 +158,10 @@ wmrc_deps_and_services() {
 	print t 'Post installation' && \
 
 	# Install missing wmrc dependencies
-	print s 'Install missing wmrc dependencies' && \
-	wmrc -m | paru -S --needed --noconfirm --asdeps - &>> "$LOGFILE" && \
+	if [ "$(wmrc -m)" != '' ]; then
+		print s 'Install missing wmrc dependencies' && \
+		wmrc -m | paru -S --needed --noconfirm --asdeps - &>> "$LOGFILE"
+	fi && \
 
 	# Enable services
 	print s 'Enable systemd services' && \

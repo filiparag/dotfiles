@@ -816,7 +816,7 @@ END
 	sed 's/^#Color$/Color/; s/^#TotalDownload$/TotalDownload/; s/^#VerbosePkgLists$/VerbosePkgLists/;' -i /mnt/etc/pacman.conf && \
 
 		print s 'Enable multilib packages' && \
-	tee -a /etc/pacman.conf &>> "$CONF_LOGFILE" << END
+	tee -a /mnt/etc/pacman.conf &>> "$CONF_LOGFILE" << END
 
 [multilib]
 Include = /etc/pacman.d/mirrorlist
