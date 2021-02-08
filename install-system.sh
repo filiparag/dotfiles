@@ -815,6 +815,13 @@ END
 	sed 's/[ \t#]*MAKEFLAGS.*$/MAKEFLAGS="-j$(nproc)"/' -i /mnt/etc/makepkg.conf && \
 	sed 's/^#Color$/Color/; s/^#TotalDownload$/TotalDownload/; s/^#VerbosePkgLists$/VerbosePkgLists/;' -i /mnt/etc/pacman.conf && \
 
+		print s 'Enable multilib packages' && \
+	tee -a /etc/pacman.conf &>> "$CONF_LOGFILE" << END
+
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+END
+
 	print s 'Detect CPU vendor and install microcode' && {
 	grep -qi 'vendor.*intel' /proc/cpuinfo && cpu_vendor='intel'
 	grep -qi 'vendor.*amd' /proc/cpuinfo && cpu_vendor='amd'

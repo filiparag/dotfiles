@@ -78,6 +78,15 @@ build_tools() {
 
 install_packages() {
 
+	# Add additional repositories
+	print s 'Add additional repositories' && \
+	sudo tee -a /etc/pacman.conf &>> "$LOGFILE" << END
+
+[filiparag]
+SigLevel = Optional TrustAll
+Server = https://pkg.filiparag.com/archlinux/
+END
+
 	# Update system
 	print s 'Update system' && \
 	sudo pacman -Syu --noconfirm &>> "$LOGFILE" && \
