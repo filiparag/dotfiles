@@ -1,4 +1,5 @@
 # Colored terminal in tty
+
 if [ "$TERM" = "linux" ]
     set SEDCMD 's/.*\*color\([0-9]\{1,\}\).*#\([0-9a-fA-F]\{6\}\).*/\1 \2/p'
     for i in (sed -n "$_SEDCMD" $HOME/.Xresources | awk '$1 < 16 {printf "\\e]P%X%s", $1, $2}')
@@ -7,7 +8,71 @@ if [ "$TERM" = "linux" ]
     clear
 end
 
+# OS-specific abbrevations
+
+function __abbr_os_arch -d 'Package manager abbrevations for Arch Linux'
+
+    if command -v 'paru' &>/dev/null;
+        set pkgmgr 'paru'
+    else if command -v 'yay' &>/dev/null;
+        set pkgmgr 'yay'
+    else
+        set pkgmgr "$su_cmd"'pacman'
+    end
+
+    abbr --add ys   "$pkgmgr -S"    # Install package
+    abbr --add yss  "$pkgmgr -Ss"   # Search repository
+    abbr --add yqs  "$pkgmgr -Ss"   # Search local
+    abbr --add yi   "$pkgmgr -Syu"  # Package info
+    abbr --add y    "$pkgmgr -Syu"  # Update and upgrade
+    abbr --add ya   "$pkgmgr -Sua"  # Upgrade AUR packages
+    abbr --add yr   "$pkgmgr -Rcsn" # Remove package
+    abbr --add yc   "$pkgmgr -Sc"   # Clean cache
+
+end
+
+function __abbr_os_alpine -d 'Package manager abbrevations for Alpine Linux'
+
+    set pkgmgr "$su_cmd"'apk'
+
+    abbr --add ys   "$pkgmgr add"                       # Install package
+    abbr --add yss  "$pkgmgr search"                    # Search repository
+    abbr --add yi   "$pkgmgr info"                      # Package info
+    abbr --add y    "$pkgmgr update && $pkgmgr upgrade" # Update and upgrade
+    abbr --add yr   "$pkgmgr del"                       # Remove package
+    abbr --add yc   "$pkgmgr cache clean"               # Clean cache
+
+end
+
+function __abbr_os_freebsd -d 'Package manager abbrevations for FreeBSD'
+
+    set pkgmgr "$su_cmd"'pkg'
+
+    abbr --add ys   "$pkgmgr install"                   # Install package
+    abbr --add yss  "$pkgmgr search"                    # Search repository
+    abbr --add yi   "$pkgmgr info"                      # Package info
+    abbr --add y    "$pkgmgr update && $pkgmgr upgrade" # Update and upgrade
+    abbr --add ya   "$sucmd"'portsnap auto'             # Update ports tree
+    abbr --add yr   "$pkgmgr remove"                    # Remove package
+    abbr --add yc   "$pkgmgr clean"                     # Clean cache
+
+end
+
+function __abbr_os_debian -d 'Package manager abbrevations for Debian'
+
+    set pkgmgr "$su_cmd"'apt'
+
+    abbr --add ys   "$pkgmgr install"                       # Install package
+    abbr --add yss  "$pkgmgr search"                        # Search repository
+    abbr --add yi   "$pkgmgr info"                          # Package info
+    abbr --add y    "$pkgmgr update && $pkgmgr upgrade"     # Update and upgrade
+    abbr --add yr   "$pkgmgr purge"                         # Remove package
+    abbr --add yc   "$pkgmgr clean && $pkgmgr autoclean"    # Clean cache
+
+end
+
 # Abbrevations
+
 if status --is-interactive
 
     set -g fish_user_abbreviations
@@ -15,11 +80,18 @@ if status --is-interactive
     alias subl          'subl3'
     alias dmenu         'rofi -dmenu'
 
-    abbr --add y        'yay'
-    abbr --add ys       'yay -S'
-    abbr --add yss      'yay -Ss'
-    abbr --add yr       'yay -Rcsn'
-    abbr --add yc       'yay -Sc'
+    if [ (whoami) != 'root' ];
+        if command -v 'doas' &>/dev/null;
+            set su_cmd 'doas '
+        else if command -v 'sudo' &>/dev/null;
+            set su_cmd 'sudo '
+        end
+    end
+
+    alias __abbr_os_manjaro __abbr_os_arch
+    alias __abbr_os_ubuntu  __abbr_os_arch
+    set os (grep '^ID=' /etc/os-release | cut -d'=' -f2)
+    eval "__abbr_os_$os"
 
     abbr --add gs       'git status'
     abbr --add gsh      'git show'
@@ -45,8 +117,16 @@ if status --is-interactive
     abbr --add s        'ssh'
     abbr --add sr       'ssh root@'
 
-    source '/usr/share/wikiman/widgets/widget.fish' 2>/dev/null
+end
 
+# Wikiman widget
+
+for widget in (
+    find '/usr/share/wikiman/widgets/widget.fish' \
+         '/usr/local/share/wikiman/widgets/widget.fish' -type f 2>/dev/null
+);
+    source "$widget" 2>/dev/null
+    break
 end
 
 # List files
