@@ -24,6 +24,7 @@ firejail
 fish
 flameshot
 fzf
+gettext
 git
 git-lfs
 gnome-keyring
@@ -35,6 +36,7 @@ gvfs-nfs
 htop
 i3lock
 imagemagick
+inetutils
 jq
 keepassxc
 libnotify

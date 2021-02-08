@@ -964,7 +964,7 @@ END
 	} && \
 	chmod +x /mnt/usr/bin/dotfiles-install && \
 
-	print w 'To install dotfiles, run dotfiles-install when you log in'
+	print w "To install dotfiles, run ${cw}dotfiles-install${cy} when you log in"
 
 }
 

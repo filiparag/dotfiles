@@ -223,7 +223,7 @@ shortcuts_manual() {
 
 }
 
-if [ "$#" -ge 0 ]; then
+if [ "$#" -gt 0 ]; then
 	args=""
 	for arg in $@; do
 		args="${args:+$args && } $arg"
