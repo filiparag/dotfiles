@@ -319,7 +319,7 @@ configure_host() {
 	print t 'Host configuration'
 
 	if [ -z "$CONF_HOSTNAME" ]; then
-		print i '[a-zA-Z0-9-]+' 'Hostname:'
+		print i '[\.a-zA-Z0-9-]+' 'Hostname:'
 		conf_hostname="$user_input"
 	else
 		conf_hostname="$CONF_HOSTNAME"

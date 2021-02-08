@@ -1,8 +1,8 @@
-&c8aae6a543172bdab4794cc776329d84c2c4a23e#
 !CNAME#
 !_config.yml#
 %/etc/apparmor:/etc;/apparmor#
 %/etc/systemd/system/getty@tty1.service.d:/etc/systemd/system;/getty@tty1.service.d#
+&2b2fb268adac80215d5dd0e73ca3f6bc5ae9089e#
 !.git#
 !.gitattributes#
 !.gitignore#
@@ -25,6 +25,7 @@
 >/home/filiparag/.config/qt5ct#
 >/home/filiparag/.config/ranger#
 >/home/filiparag/.config/rofi#
+>/home/filiparag/.config/safeeyes#
 %/home/filiparag/.config/sxhkd:/home/filiparag/.config;/sxhkd#
 >/home/filiparag/.config/viper4linux#
 >/home/filiparag/.config/wmrc#

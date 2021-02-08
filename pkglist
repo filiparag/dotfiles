@@ -63,6 +63,7 @@ openssh
 openresolv
 paprefs
 paper-icon-theme-git
+paru-bin
 pavucontrol
 pcmanfm
 perl
@@ -138,5 +139,5 @@ xorg-xprop
 xorg-xrandr
 xorg-xset
 xorg-xwininfo
-paru-bin
+xprintidle
 youtube-dl
