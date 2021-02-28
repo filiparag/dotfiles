@@ -1,6 +1,6 @@
-[submodule "home/filiparag/.vim_runtime"]
-	path = home/filiparag/.vim_runtime
+[submodule "src/HOME/.vim_runtime"]
+	path = src/HOME/.vim_runtime
 	url = https://github.com/amix/vimrc.git
-[submodule "home/filiparag/.vim/vim-monokai"]
-	path = home/filiparag/.vim/vim-monokai
+[submodule "src/HOME/.vim/vim-monokai"]
+	path = src/HOME/.vim/vim-monokai
 	url = https://github.com/sickill/vim-monokai
