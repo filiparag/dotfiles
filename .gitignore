@@ -1,4 +1,9 @@
-.old
+# Workfiles
+plist
+fakeroot
+oldroot
+
+# Syncthing
 .stfolder
 .stignore
 .stversions

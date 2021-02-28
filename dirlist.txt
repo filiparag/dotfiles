@@ -1,0 +1,16 @@
+/HOME/.config/bspwm
+/HOME/.config/fish/conf.d
+/HOME/.config/flameshot
+/HOME/.config/i3
+/HOME/.config/mpv
+/HOME/.config/paru
+/HOME/.config/polybar
+/HOME/.config/qt5ct
+/HOME/.config/ranger
+/HOME/.config/rofi
+/HOME/.config/safeeyes
+/HOME/.config/viper4linux
+/HOME/.config/wmrc
+/HOME/.screen
+/HOME/.vim
+/HOME/.vim_runtime
