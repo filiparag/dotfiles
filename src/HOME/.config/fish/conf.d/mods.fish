@@ -77,7 +77,6 @@ if status --is-interactive
 
     set -g fish_user_abbreviations
     
-    alias subl          'subl3'
     alias dmenu         'rofi -dmenu'
 
     if [ (whoami) != 'root' ];
