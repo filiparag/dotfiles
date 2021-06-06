@@ -6,6 +6,8 @@
 
 ## Installation
 
+**Note:** Installation scripts are broken as of *April 2021*. Fix is impending. 
+
 ### Automated installation from scratch
 
 #### Prerequisites

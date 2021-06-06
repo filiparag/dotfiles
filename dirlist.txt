@@ -12,5 +12,3 @@
 /HOME/.config/viper4linux
 /HOME/.config/wmrc
 /HOME/.screen
-/HOME/.vim
-/HOME/.vim_runtime
