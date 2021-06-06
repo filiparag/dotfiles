@@ -1,3 +1,6 @@
+# Disable fish greeting
+set -x fish_greeting
+
 # Colored terminal in tty
 
 if [ "$TERM" = "linux" ]
