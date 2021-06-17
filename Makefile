@@ -42,7 +42,9 @@ backup: ${WORKDIR}/.targets/prepare
 		xargs -I{} echo \
 		'mkdir -p ${WORKDIR}/.backup/$$(dirname {});' | sh -
 	@cat ${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt | \
-		xargs -I{} cp -frp {} ${WORKDIR}/.backup/{}
+		xargs -I{} echo \
+		'test -e ${PREFIX}/{} && cp -frp ${PREFIX}/{} ${WORKDIR}/.backup/{} || true' | sh -
+	@find ${WORKDIR}/.backup -mindepth 1 -type d -empty -delete
 	@tar -C ${WORKDIR}/.backup \
 		-cJf ${WORKDIR}/.backups/${DATETIME}.tar.xz .
 	@ln -f ${WORKDIR}/.backups/${DATETIME}.tar.xz ${WORKDIR}/backup.tar.gz
@@ -84,7 +86,7 @@ ${WORKDIR}/.targets/package: ${WORKDIR}/.targets/src_copy
 
 symlink: ${WORKDIR}/.targets/soft ${WORKDIR}/.targets/package
 
-${WORKDIR}/dotfiles.tar.xz: ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/package
+${WORKDIR}/dotfiles.tar.xz: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
 
 package: ${WORKDIR}/dotfiles.tar.xz
 	@echo 'Package location: ${WORKDIR}/dotfiles.tar.xz'
