@@ -1,71 +1,93 @@
-ROOT?=		/
-MKFILEREL!=	echo ${.MAKE.MAKEFILES} | sed 's/.* //'
-MKFILEABS!=	readlink -f ${MKFILEREL} 2>/dev/null
-MKFILEABS+=     $(shell readlink -f ${MAKEFILE_LIST})
-MKWORKDIR!=	dirname ${MKFILEABS} 2>/dev/null
-WORKDIR?=	${MKWORKDIR}
-SRCDIR?=	${WORKDIR}/src
-SCRIPTDIR?=	${WORKDIR}/scripts
-PLISTDIR?=	${WORKDIR}/plist
-FAKEROOT?=	${WORKDIR}/fakeroot
-BACKUPROOT?=	${WORKDIR}/oldroot
+SRCDIR		?=	./src
+WORKDIR		?=	./workdir
+USER 		?=	filiparag
+HOME		?=	/home/${USER}
+PREFIX		?=	/
+DATETIME 	:= 	$(shell date +%Y-%m-%d_%H-%M-%S)
+SRCDIRABS	=	$(shell realpath ${SRCDIR})
 
-default: clean soft
+.PHONY: all clean backup package symlink install
+
+all: package
+
+${WORKDIR}/.targets/workdir:
+	@mkdir -p ${WORKDIR} \
+		${WORKDIR}/.fakeroot ${WORKDIR}/.backups \
+		${WORKDIR}/.list ${WORKDIR}/.targets
+	@touch ${WORKDIR}/.list/files.txt ${WORKDIR}/.list/dirs.txt
+	@echo '**' > ${WORKDIR}/.gitignore
+	@touch ${WORKDIR}/.targets/workdir
+
+${WORKDIR}/.targets/prepare: ${WORKDIR}/.targets/workdir
+	@cp -f ${SRCDIR}/../dirlist.txt ${WORKDIR}/.list/dirs.txt
+	@find ${SRCDIR} -not -type d > ${WORKDIR}/.list/files.txt
+	@sed -i "s:^${SRCDIR}::" \
+	 	${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt
+	@grep -vF -f ${WORKDIR}/.list/dirs.txt \
+		${WORKDIR}/.list/files.txt > ${WORKDIR}/.files.txt
+	@mv -f ${WORKDIR}/.files.txt ${WORKDIR}/.list/files.txt
+	@cp ${WORKDIR}/.list/files.txt ${WORKDIR}/.list/files.raw.txt
+	@cp ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/dirs.raw.txt
+	@sed -i "s:^/HOME:${HOME}:" \
+		${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt
+	@touch ${WORKDIR}/.targets/prepare
 
 clean:
-	@rm -rf ${FAKEROOT}
+	@rm -rf ${WORKDIR}/.fakeroot ${WORKDIR}/.list \
+		${WORKDIR}/.targets ${WORKDIR}/dotfiles.tar.xz
 
-reset: clean
-	@rm -rf ${BACKUPROOT} ${PLISTDIR}
+backup: ${WORKDIR}/.targets/prepare
+	@mkdir -p ${WORKDIR}/.backup
+	@cat ${WORKDIR}/.list/files.raw.txt | \
+		xargs -I{} echo \
+		'mkdir -p ${WORKDIR}/.backup/$$(dirname {});' | sh -
+	@cat ${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt | \
+		xargs -I{} cp -frp {} ${WORKDIR}/.backup/{}
+	@tar -C ${WORKDIR}/.backup \
+		-cJf ${WORKDIR}/.backups/${DATETIME}.tar.xz .
+	@ln -f ${WORKDIR}/.backups/${DATETIME}.tar.xz ${WORKDIR}/backup.tar.gz
+	@rm -rf ${WORKDIR}/.backup
 
-hard: ${SRCDIR}
-	@cp -af ${SRCDIR}/. ${FAKEROOT}
-	@dirname ${HOME} | xargs -I{} mkdir -p ${FAKEROOT}{}
-	@mv -f ${FAKEROOT}/HOME ${FAKEROOT}${HOME}
+${WORKDIR}/.targets/fakeroot_dirs: ${WORKDIR}/.targets/prepare
+	@cat ${WORKDIR}/.list/files.txt | \
+		xargs -I{} echo \
+		'mkdir -p ${WORKDIR}/.fakeroot/$$(dirname {});' | sh -
+	@touch ${WORKDIR}/.targets/fakeroot_dirs
 
-sym_%: ${SRCDIR} ${SCRIPTDIR} ${WORKDIR}/dirlist.txt
-	@find ${SRCDIR} -type $$(echo $@ | cut -c5) | \
-		sed 's:^${SRCDIR}::' | \
-		awk -f ${SCRIPTDIR}/filter_$@.awk ${WORKDIR}/dirlist.txt - | \
-		xargs -I{} echo '\
-			path=$$(echo {} | sed "s:^/HOME/:${HOME}/:") && \
-			mkdir -p ${FAKEROOT}$$(dirname $$path) && \
-			ln -s ${SRCDIR}{} ${FAKEROOT}$$path' | \
-		sh -
+${WORKDIR}/.targets/fakeroot_home: ${WORKDIR}/.targets/prepare
+	@mkdir -p ${WORKDIR}/.fakeroot/${HOME}
+	@find ${WORKDIR}/.fakeroot/HOME -maxdepth 1 -mindepth 1 \
+		-exec mv -f {} ${WORKDIR}/.fakeroot/${HOME} \;
+	@rm -rf ${WORKDIR}/.fakeroot/HOME
+	@touch ${WORKDIR}/.targets/fakeroot_home
 
-soft: sym_files sym_dirs
+${WORKDIR}/.targets/src_copy_hard: ${WORKDIR}/.targets/fakeroot_dirs
+	@cat ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt | \
+		xargs -I{} cp -frp ${SRCDIR}/{} ${WORKDIR}/.fakeroot/{}
+	@touch ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/src_copy
 
-plist: ${FAKEROOT}
-	@mkdir -p ${PLISTDIR}
-	@find ${FAKEROOT} -type d -links 2 | sed 's:^${FAKEROOT}::' > ${PLISTDIR}/dirs
-	@find ${FAKEROOT} -type f | sed 's:^${FAKEROOT}::' > ${PLISTDIR}/files
-	@find ${FAKEROOT} -type l | sed 's:^${FAKEROOT}::' > ${PLISTDIR}/links
+${WORKDIR}/.targets/src_copy_soft: ${WORKDIR}/.targets/fakeroot_dirs
+	@cat ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt | \
+		xargs -I{} ln -sf ${SRCDIRABS}{} ${WORKDIR}/.fakeroot/{}
+	@touch ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/src_copy
+	
+${WORKDIR}/.targets/hard: ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/fakeroot_home
+	@touch ${WORKDIR}/.targets/src_copy
 
-backup: ${ROOT} ${PLISTDIR}
-	@mkdir -p ${BACKUPROOT}
-	@cat ${PLISTDIR}/files ${PLISTDIR}/links | \
-		xargs -I{} echo '\
-			test -e ${ROOT}{} && \
-			mkdir -p ${BACKUPROOT}$$(dirname {}) && \
-			mv -f ${ROOT}{} ${BACKUPROOT}$$(dirname {}) || \
-			true' | \
-		sh -
+${WORKDIR}/.targets/soft: ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/fakeroot_home
+	@touch ${WORKDIR}/.targets/src_copy
 
-restore: ${BACKUPROOT} ${ROOT}
-	@(find ${BACKUPROOT} -type d -links 2; find ${BACKUPROOT} -type l,f) | \
-		sed 's:^${BACKUPROOT}::' | \
-		xargs -I{} echo '\
-			test -e ${ROOT}{} && \
-			rm -rf ${ROOT}{}; \
-			uid=$$(ls -lad ${BACKUPROOT}{} | cut -d" " -f3) && \
-			gid=$$(ls -lad ${BACKUPROOT}{} | cut -d" " -f4) && \
-			install -o $$uid -g $$gid -d ${ROOT}$$(dirname {}) && \
-			cp -a ${BACKUPROOT}{} ${ROOT}$$(dirname {})' | \
-		sh -
+${WORKDIR}/.targets/package: ${WORKDIR}/.targets/src_copy
+	@tar -C ${WORKDIR}/.fakeroot \
+		-cJf ${WORKDIR}/dotfiles.tar.xz .
+	@touch ${WORKDIR}/.targets/package
 
-install: ${FAKEROOT} plist backup
-	@cp -a ${FAKEROOT}/. ${ROOT}
+symlink: ${WORKDIR}/.targets/soft ${WORKDIR}/.targets/package
 
-deinstall: ${ROOT} ${FAKEROOT} ${PLISTDIR}/dirs ${PLISTDIR}/files ${PLISTDIR}/links
-	@cat ${PLISTDIR}/files | xargs -I{} rm -f ${ROOT}{}
-	@cat ${PLISTDIR}/dirs | xargs -I{} rmdir -p ${ROOT}{}
+${WORKDIR}/dotfiles.tar.xz: ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/package
+
+package: ${WORKDIR}/dotfiles.tar.xz
+	@echo 'Package location: ${WORKDIR}/dotfiles.tar.xz'
+
+install: ${WORKDIR}/dotfiles.tar.xz backup
+	@tar -C ${PREFIX} -xf ${WORKDIR}/dotfiles.tar.xz

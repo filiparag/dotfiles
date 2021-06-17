@@ -10,6 +10,7 @@ APPS='unclutter -idle 1
       signal-desktop --start-in-tray
       dino --gapplication-service
       wire-desktop --startup
+      element-desktop --hidden
       mail-notification
       safeeyes
       '
