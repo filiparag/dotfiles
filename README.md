@@ -33,20 +33,20 @@ Existing conflicting configuration files will be saved in `~/.dotfiles/workdir/b
 
 Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)
 
-Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./home/filiparag/.config/sxhkd/sxhkdrc)
+Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhkd/sxhkdrc)
 
 ### Configuring the environment
 
 Window manager configuration ([wmrc](https://github.com/filiparag/wmrc/)):
-[`~/.config/wmrc/rc.conf`](./home/filiparag/.config/wmrc/rc.conf)
+[`~/.config/wmrc/rc.conf`](./src/HOME/.config/wmrc/rc.conf)
 
 Startup applications and daemons are listed in `APPS` variable in
-[`~/.config/wmrc/modules/services/apps`](./home/filiparag/.config/wmrc/modules/services/apps)
+[`~/.config/wmrc/modules/services/apps`](./src/HOME/.config/wmrc/modules/services/apps)
 
 User-specific environment variables:
-[`~/.config/fish/conf.d/user.fish`](./home/filiparag/.config/fish/conf.d/user.fish)
+[`~/.config/fish/conf.d/user.fish`](./src/HOME/.config/fish/conf.d/user.fish)
 
-Git configuration: [`~/.gitconfig`](./home/filiparag/.gitconfig)
+Git configuration: [`~/.gitconfig`](./src/HOME/.gitconfig)
 
 Wallpaper and lockscreen images are located in `~/Pictures` directory
 
@@ -78,12 +78,12 @@ wmrc -r 'services/vnc(start)'
 If you are using Nvidia GPU:
 
 - install appropriate [`xf86-video-`](https://wiki.archlinux.org/index.php?title=Xorg#Driver_installation) driver
-- make sure you have proper configuration file in [`/etc/X11/xorg.conf.d/`](./etc/X11/xorg.conf.d/)
+- make sure you have proper configuration file in [`/etc/X11/xorg.conf.d/`](./src/etc/X11/xorg.conf.d/)
 
 #### Battery life optimization
 
 Provided [TLP](https://wiki.archlinux.org/index.php/TLP) configuration file
-is optimized for ThinkPad X230: [`/etc/tlp.conf`](./etc/tlp.conf)
+is optimized for ThinkPad X230: [`/etc/tlp.conf`](./src/etc/tlp.conf)
 
 To enable it, run:
 ```bash
