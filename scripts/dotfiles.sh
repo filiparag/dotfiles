@@ -211,6 +211,12 @@ cleanup_finish() {
 
 	print t 'Installation complete' && \
 
+	# Configure user identity
+	cd "$HOME/.dotfiles" && \
+	print w 'Enter your credentials in the these files:'
+	rg --hidden -i filip -g '!src/etc/pacman.conf' -l "$HOME/.dotfiles/src" | \
+		sed "s:$HOME/.dotfiles/src::; s:/HOME/:~/:"
+
 	# Reboot required
 	print w 'Reboot your system to apply new settings.'
 

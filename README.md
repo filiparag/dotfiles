@@ -25,7 +25,7 @@ git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
 # Reboot your system to apply all modifications (optional)
 reboot
 ```
-Existing conflicting configuration files will be saved in `~/.dotfiles/workdir/dotfiles.tar.xz`.
+Existing conflicting configuration files will be saved in `~/.dotfiles/workdir/backup.tar.gz`.
 
 ## Usage and customization
 
