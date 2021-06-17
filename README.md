@@ -6,64 +6,32 @@
 
 ## Installation
 
-**Note:** Installation scripts are broken as of *April 2021*. Fix is impending. 
-
-### Automated installation from scratch
-
-#### Prerequisites
-- booted into *UEFI*
-[live environment](https://wiki.archlinux.org/index.php/Installation_guide#Boot_the_live_environment)
-- a hard drive ready to be completely wiped
-- access to the internet
-
-#### Steps
-```bash
-# Download standalone base system installer script
-curl -LO 'https://dotfiles.filiparag.com/install-system.sh'
-
-# Run interactive installer with preselected dotfiles option
-sh install-system.sh -d yes
-
-# Reboot the computer and eject installation media
-reboot
-
-# After logging in, install dotfiles using the bootstrapper script
-dotfiles-install
-
-# Make desired hardware-specific modifications outlined below
-
-# Reboot your system once again to ensure changes are applied properly
-reboot
-```
-
-### With an existing system
-
-#### Prerequisites
+### Prerequisites
 - [base Arch Linux](https://wiki.archlinux.org/index.php/Installation_guide) installed
 - at least 8 GiB of free space on root partition
 - user account with [`sudo`](https://wiki.archlinux.org/index.php/Sudo#Example_entries) privileges
 - access to the internet
 
-#### Steps
+### Steps
 ```bash
 # Clone dotfiles repository
 git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
 
 # Run automatic installer
-./install-dotfiles.sh
+./scripts/dotfiles.sh
 
 # Hardware-specific commands go here
 
-# Reboot your system to apply all modifications
+# Reboot your system to apply all modifications (optional)
 reboot
 ```
-Existing conflicting configuration files will be placed into `~/.sydf/.old` directory.
+Existing conflicting configuration files will be saved in `~/.dotfiles/workdir/dotfiles.tar.xz`.
 
 ## Usage and customization
 
 ### Keyboard shortcuts
 
-Shortcuts manual: [`~/.sydf/SHORTCUTS.md`](./SHORTCUTS.md)
+Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)
 
 Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./home/filiparag/.config/sxhkd/sxhkdrc)
 

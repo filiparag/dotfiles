@@ -6,9 +6,9 @@ PREFIX		?=	/
 DATETIME 	:= 	$(shell date +%Y-%m-%d_%H-%M-%S)
 SRCDIRABS	=	$(shell realpath ${SRCDIR})
 
-.PHONY: all clean backup package symlink install
+.PHONY: all clean backup conflicts package symlink install
 
-all: package
+all: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
 
 ${WORKDIR}/.targets/workdir:
 	@mkdir -p ${WORKDIR} \
@@ -50,6 +50,10 @@ backup: ${WORKDIR}/.targets/prepare
 	@ln -f ${WORKDIR}/.backups/${DATETIME}.tar.xz ${WORKDIR}/backup.tar.gz
 	@rm -rf ${WORKDIR}/.backup
 
+conflicts: backup
+	@cat ${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt | \
+		xargs -I{} rm -rf {} \;
+
 ${WORKDIR}/.targets/fakeroot_dirs: ${WORKDIR}/.targets/prepare
 	@cat ${WORKDIR}/.list/files.txt | \
 		xargs -I{} echo \
@@ -74,10 +78,10 @@ ${WORKDIR}/.targets/src_copy_soft: ${WORKDIR}/.targets/fakeroot_dirs
 	@touch ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/src_copy
 	
 ${WORKDIR}/.targets/hard: ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/fakeroot_home
-	@touch ${WORKDIR}/.targets/src_copy
+	@touch ${WORKDIR}/.targets/src_copy ${WORKDIR}/.targets/hard
 
 ${WORKDIR}/.targets/soft: ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/fakeroot_home
-	@touch ${WORKDIR}/.targets/src_copy
+	@touch ${WORKDIR}/.targets/src_copy ${WORKDIR}/.targets/soft
 
 ${WORKDIR}/.targets/package: ${WORKDIR}/.targets/src_copy
 	@tar -C ${WORKDIR}/.fakeroot \
@@ -86,10 +90,8 @@ ${WORKDIR}/.targets/package: ${WORKDIR}/.targets/src_copy
 
 symlink: ${WORKDIR}/.targets/soft ${WORKDIR}/.targets/package
 
-${WORKDIR}/dotfiles.tar.xz: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
-
-package: ${WORKDIR}/dotfiles.tar.xz
+package: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
 	@echo 'Package location: ${WORKDIR}/dotfiles.tar.xz'
 
-install: ${WORKDIR}/dotfiles.tar.xz backup
+install: ${WORKDIR}/dotfiles.tar.xz conflicts
 	@tar -C ${PREFIX} -xf ${WORKDIR}/dotfiles.tar.xz

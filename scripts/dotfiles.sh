@@ -45,7 +45,7 @@ check_sudo() {
 workdir() {
 
 	# Working and scratch directory
-	DOTFILEDIR="$(realpath "$(dirname "$(readlink -f "$0")")")" && \
+	DOTFILEDIR="$(realpath "$(dirname "$(dirname "$(readlink -f "$0")")")")" && \
 	TMPDIR="$(mktemp -d)"
 
 }
@@ -63,7 +63,7 @@ build_tools() {
 
 	# Install build tools
 	print s 'Install build tools' && \
-	sudo pacman -Sy --needed --noconfirm curl base-devel git git-lfs &>> "$LOGFILE" && \
+	sudo pacman -Sy --needed --noconfirm curl base-devel git git-lfs ripgrep &>> "$LOGFILE" && \
 
 	# Generate new mirrorlist
 	print s 'Generate new mirrorlist' && \
@@ -80,31 +80,25 @@ install_packages() {
 
 	# Add additional repositories
 	print s 'Add additional repositories' && \
-	sudo tee -a /etc/pacman.conf &>> "$LOGFILE" << END
+	if ! grep -q filiparag /etc/pacman.conf; then
+		sudo tee -a /etc/pacman.conf &>> "$LOGFILE" << END
 
 [filiparag]
 SigLevel = Optional TrustAll
 Server = https://pkg.filiparag.com/archlinux/
 END
+	fi && \
 
 	# Update system
 	print s 'Update system' && \
 	sudo pacman -Syu --noconfirm &>> "$LOGFILE" && \
 
 	# Install AUR helper
-	{
-		if ! command -v paru 1>/dev/null 2>/dev/null; then
-			print s 'Install paru package manager' && \
-			mkdir -p "$TMPDIR/paru-bin" &>> "$LOGFILE" && \
-			cd "$TMPDIR/paru-bin" && \
-			curl -L 'https://aur.archlinux.org/cgit/aur.git/plain/PKGBUILD?h=paru-bin' 2>> "$LOGFILE" > "$TMPDIR/paru-bin/PKGBUILD" && \
-			makepkg -si --noconfirm &>> "$LOGFILE"
-		fi
-	} && \
+	sudo pacman -S --needed --noconfirm paru-bin &>> "$LOGFILE" && \
 
 	# Install all required packages
 	print s 'Install all required packages' && \
-	paru -S --needed --noconfirm - < "$DOTFILEDIR/pkglist" &>> "$LOGFILE"
+	paru -S --needed --noconfirm - < "$DOTFILEDIR/pkglist.txt" &>> "$LOGFILE"
 
 }
 
@@ -112,44 +106,47 @@ install_dotfiles() {
 
 	# Prepare dotfiles
 	print t 'Prepare dotfiles' && \
-	if [ -e "$HOME/.sydf" ]; then
-		yes | sydf unhook && \
+	if [ -e "$HOME/.dotfiles" ]; then
 		print s 'Remove old dotfiles' && \
-		rm -rf "$HOME/.sydf"
+		rm -rf "$HOME/.dotfiles"
 	fi && \
 	print s 'Copy dotfiles to home directory' && \
-	cp -rp "$DOTFILEDIR" "$HOME/.sydf" &>> "$LOGFILE" && \
-	sudo chown -R "$USER:$USER" "$HOME/.sydf" &>> "$LOGFILE" && \
-	cd "$HOME/.sydf" && \
+	cp -rp "$DOTFILEDIR" "$HOME/.dotfiles" &>> "$LOGFILE" && \
+	sudo chown -R "$USER:$USER" "$HOME/.dotfiles" &>> "$LOGFILE" && \
+	cd "$HOME/.dotfiles" && \
 	print s 'Pull updates from upstream' && \
+	git lfs install &>> "$LOGFILE" && \
 	git reset --hard origin/master &>> "$LOGFILE" && \
 	git pull --rebase &>> "$LOGFILE" && \
 	git lfs pull &>> "$LOGFILE" && \
 	print s 'Initialize git submodules' && \
 	git submodule update --init --recursive --depth 1 &>> "$LOGFILE" && \
-	print s 'Configure sydf' && \
-	mkdir -p "$HOME/.config" &>> "$LOGFILE" && \
-	echo "$HOME/.sydf" > "$HOME/.config/sydf.conf" && \
 
 	# Use current username instead of 'filiparag'
 	{
 		print s 'Replace hard coded username' && \
 		if [ "$USER" != 'filiparag' ]; then
-			mv "$HOME/.sydf/home/filiparag" "$HOME/.sydf/home/$USER" &>> "$LOGFILE" && \
-			rg --hidden -i filiparag \
-				-g '!.git' -g '!install-dotfiles.sh' -g '!install-system.sh' \
-				-g '!README.md' -g '!LICENSE' -g '!pkglist' -g '!etc/pacman.d/mirrorlist' \
-				-l "$HOME/.sydf" | xargs sed -i "s|filiparag|$USER|g" &>> "$LOGFILE"
+			rg --hidden -i filiparag -g '!src/etc/pacman.conf' \
+				-l "$HOME/.dotfiles/src" | xargs sed -i "s|filiparag|$USER|g" &>> "$LOGFILE"
 		fi
 	} && \
 
 	# Replace provided mirrorlist with generated one
 	print s 'Replace provided mirrorlist with generated one' && \
-	sudo cp -f "$TMPDIR/mirrorlist" "$HOME/.sydf/etc/pacman.d/mirrorlist" &>> "$LOGFILE" && \
+	sudo cp -f "$TMPDIR/mirrorlist" "$HOME/.dotfiles/src/etc/pacman.d/mirrorlist" &>> "$LOGFILE" && \
 
-	# Hook dotfiles using sydf
+	# Package dotfiles
+	print s 'Package dotfiles in fakeroot' && \
+	make clean symlink &>> "$LOGFILE"  && \
+
+	# Backup conflicting files
+	print s 'Backup conflicting files' && \
+	make backup &>> "$LOGFILE"
+
+	# Install dotfiles
 	print t 'Install dotfiles' && \
-	yes | sydf hook &>> "$LOGFILE"
+	print s 'Extract dotfiles' && \
+	sudo make install &>> "$LOGFILE"
 
 }
 
@@ -195,6 +192,10 @@ cleanup_finish() {
 
 	print t 'Cleanup' && \
 
+	print s 'Clean up dotfiles working directory' && \
+	cd "$HOME/.dotfiles" && \
+	make clean &>> "$LOGFILE" && \
+
 	# Remove unwanted hardware-specific configuration
 	print s 'Remove unwanted hardware-specific configuration' && \
 	if ! lspci | grep -qi 'vga.*amd'; then
@@ -218,7 +219,7 @@ cleanup_finish() {
 shortcuts_manual() {
 
 	print s 'Regenerate shortcuts manual' && \
-	cat "$DOTFILEDIR/home/filiparag/.config/sxhkd/sxhkdrc" | awk \
+	cat "$DOTFILEDIR/src/HOME/.config/sxhkd/sxhkdrc" | awk \
 	'BEGIN {
 		print "# Keyboard shortcuts\n"
 	}
@@ -230,7 +231,7 @@ shortcuts_manual() {
 		} else if (c==1) {
 			printf("`%s`\n\n", $0); c=0
 		}
-	}' > "$HOME/.sydf/SHORTCUTS.md"
+	}' > "$HOME/.dotfiles/SHORTCUTS.md"
 
 }
 
