@@ -3,6 +3,7 @@ adobe-source-code-pro-fonts
 alacritty
 alsa-utils
 arandr
+auto-cpufreq
 base
 bat
 bc
@@ -45,10 +46,10 @@ linux-firmware
 linux-headers
 lsd
 lxappearance
+mail-notification
 make
 man-db
 man-pages
-mail-notification
 matcha-gtk-theme
 moreutils
 mpv
@@ -61,10 +62,10 @@ noto-fonts-cjk
 noto-fonts-emoji
 ntp
 numlockx
-openssh
 openresolv
-paprefs
+openssh
 paper-icon-theme-git
+paprefs
 paru-bin
 pavucontrol
 pcmanfm
@@ -78,8 +79,8 @@ python-axolotl
 python-axolotl-curve25519
 python-pip
 qbittorrent
-qt5-styleplugins
 qt5ct
+qt5-styleplugins
 redshift-qt
 ripgrep
 rofi
