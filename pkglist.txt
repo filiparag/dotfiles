@@ -119,6 +119,7 @@ wikiman
 wireguard-tools
 wmrc
 wpa_supplicant
+x11-ssh-askpass
 xclip
 xdg-utils
 xdotool
