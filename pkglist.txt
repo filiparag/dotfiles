@@ -88,7 +88,7 @@ rofi-calc
 rsync
 safeeyes
 signal-desktop
-sublime-text-dev
+sublime-text-4
 sudo
 sxhkd
 sydf
