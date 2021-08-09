@@ -1,0 +1,6 @@
+**
+!.gitignore
+!data/
+!data/layout_override
+!config
+!profile

@@ -17,6 +17,9 @@ dunst
 eog
 ethtool
 evince
+fcitx
+fcitx-configtool
+fcitx-googlepinyin
 feh
 ffmpeg
 file-roller
