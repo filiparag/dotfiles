@@ -6,7 +6,6 @@ APPS='unclutter -idle 1
       redshift-qt
       dunst
       flameshot
-      keepassxc
       signal-desktop --start-in-tray
       dino --gapplication-service
       wire-desktop --startup
