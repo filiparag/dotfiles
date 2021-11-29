@@ -174,7 +174,7 @@ wm-name = bspwm
 
 locale = en_US.UTF-8
 
-tray-position = ${env:NOTIF:}
+tray-position = right
 tray-detached = false
 tray-maxsize = 20
 tray-background = ${color.trans}

@@ -57,6 +57,7 @@ matcha-gtk-theme
 moreutils
 mpv
 mpv-mpris
+mypaint
 neofetch
 networkmanager
 nfs-utils

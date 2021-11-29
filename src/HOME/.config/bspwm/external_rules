@@ -38,4 +38,8 @@ case "$class" in
 	Sxiv|feh)
 		echo "state=pseudo_tiled"
 		;;
+	Peek)
+		echo "state=floating"
+		echo "rectangle=640x480+363+144"
+		;;
 esac
