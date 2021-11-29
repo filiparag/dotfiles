@@ -29,6 +29,7 @@ fish
 flameshot
 fzf
 gettext
+gifski
 git
 git-lfs
 gnome-keyring
@@ -73,6 +74,7 @@ paprefs
 paru-bin
 pavucontrol
 pcmanfm
+peek
 perl
 picom
 pkgconf
