@@ -117,6 +117,7 @@ if status --is-interactive
     abbr --add bg       'git branch'
     abbr --add gsw      'git switch'
     abbr --add gr       'git restore'
+    abbr --add grb      'git rebase --interactive -S'
 
     abbr --add r        'cd /'
     abbr --add h        'cd ~'
