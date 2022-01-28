@@ -3803,7 +3803,7 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ	kaomoji/yolo
 ∫	math/integral
 ∩	math/intersection
 𝕀	math/irrational-number-set
-≥	math/less-than-or-equal-to
+≤	math/less-than-or-equal-to
 ∮	math/line-integral
 ≫	math/much-greater-than
 ≪	math/much-less-than
