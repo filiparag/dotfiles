@@ -2,11 +2,6 @@
 	email = filip@parag.rs
 	name = Filip Parag
 	signingkey = A14B0539F97EB0F32E4DB5A6491FDD271C9A4994
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
 [init]
 	defaultBranch = master
 [pull]

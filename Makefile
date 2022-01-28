@@ -63,18 +63,18 @@ ${WORKDIR}/.targets/fakeroot_dirs: ${WORKDIR}/.targets/prepare
 ${WORKDIR}/.targets/fakeroot_home: ${WORKDIR}/.targets/prepare
 	@mkdir -p ${WORKDIR}/.fakeroot/${HOME}
 	@find ${WORKDIR}/.fakeroot/HOME -maxdepth 1 -mindepth 1 \
-		-exec mv -f {} ${WORKDIR}/.fakeroot/${HOME} \;
+		-exec mv -f "{}" ${WORKDIR}/.fakeroot/${HOME} \;
 	@rm -rf ${WORKDIR}/.fakeroot/HOME
 	@touch ${WORKDIR}/.targets/fakeroot_home
 
 ${WORKDIR}/.targets/src_copy_hard: ${WORKDIR}/.targets/fakeroot_dirs
 	@cat ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt | \
-		xargs -I{} cp -frp ${SRCDIR}/{} ${WORKDIR}/.fakeroot/{}
+		xargs -I{} cp -frp "${SRCDIR}/{}" "${WORKDIR}/.fakeroot/{}"
 	@touch ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/src_copy
 
 ${WORKDIR}/.targets/src_copy_soft: ${WORKDIR}/.targets/fakeroot_dirs
 	@cat ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt | \
-		xargs -I{} ln -sf ${SRCDIRABS}{} ${WORKDIR}/.fakeroot/{}
+		xargs -I{} ln -sf "${SRCDIRABS}{}" "${WORKDIR}/.fakeroot{}"
 	@touch ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/src_copy
 	
 ${WORKDIR}/.targets/hard: ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/fakeroot_home
