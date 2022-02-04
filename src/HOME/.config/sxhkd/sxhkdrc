@@ -69,10 +69,13 @@ super + k
 super + e
 	$VISUAL
 
-# Print screen
+# Print screen (capture region)
 {super + p, Print}
-	mkdir -p "$HOME/Pictures/Screenshots"; \
-	flameshot gui -p "$HOME/Pictures/Screenshots"
+	flameshot gui
+
+# Print screen to clipboard (focused monitor)
+{super + shift + p, shift + Print}
+	flameshot screen -c
 
 ## Window control
 

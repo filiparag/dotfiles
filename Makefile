@@ -95,3 +95,18 @@ package: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
 
 install: ${WORKDIR}/dotfiles.tar.xz conflicts
 	@tar -C ${PREFIX} -xf ${WORKDIR}/dotfiles.tar.xz
+
+docs: ${SRCDIRABS}/HOME/.config/sxhkd/sxhkdrc
+	@cat "${SRCDIRABS}/HOME/.config/sxhkd/sxhkdrc" | awk \
+	'BEGIN { \
+		print "# Keyboard shortcuts\n" \
+	} \
+	NR > 1 { \
+		if ($$0 ~ /^## /) { \
+			gsub(/^## */,"",$$0); printf("\n## %s\n\n",$$0) \
+		} else if ($$0 ~ /^# /) { \
+			gsub(/^# */,"",$$0); printf("%s ",$$0); c=1 \
+		} else if (c==1) { \
+			printf("`%s`\n\n", $$0); c=0 \
+		} \
+	}' > ./SHORTCUTS.md

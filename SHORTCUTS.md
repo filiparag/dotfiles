@@ -38,7 +38,9 @@ Launch KeePassXC `super + k`
 
 Launch default visual text editor `super + e`
 
-Print screen `{super + p, Print}`
+Print screen (capture region) `{super + p, Print}`
+
+Print screen to clipboard (focused monitor) `{super + shift + p, shift + Print}`
 
 
 ## Window control
