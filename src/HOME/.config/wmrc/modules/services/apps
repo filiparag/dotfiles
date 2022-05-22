@@ -11,6 +11,7 @@ APPS='unclutter -idle 1
       wire-desktop --startup
       element-desktop --hidden
       mail-notification
+      ayatana-webmail
       safeeyes
       '
 

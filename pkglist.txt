@@ -4,6 +4,7 @@ alacritty
 alsa-utils
 arandr
 auto-cpufreq
+ayatana-webmail
 base
 bat
 bc
