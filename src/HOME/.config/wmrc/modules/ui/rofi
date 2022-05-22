@@ -59,6 +59,25 @@ files() {
 
 character() {
 
+  # Unicode Emoji generation script:
+  # curl https://unicode.org/Public/emoji/15.0/emoji-test.txt | \
+  #   awk '
+  #     /^# group/ {
+  #       g=tolower($3);
+  #     }
+  #     /^# subgroup/ {
+  #       sg=tolower($3);
+  #     }
+  #     /; fully-qualified/ {
+  #       gsub(/^.*fully-qualified\s+#\s+/,"",$0);
+  #       $2="";
+  #       emote=$1;
+  #       $1="";
+  #       gsub(/(^\s*)|:|,|\./,"",$0);
+  #       gsub(/\s+/,"-",$0);
+  #       print emote "\t" g "/" sg "/" tolower($0);
+  #     }'
+
   CHARACTER_FILE="$HOME/.cache/characters.txt"
 
   [ -f "$CHARACTER_FILE" ] || \
