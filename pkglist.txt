@@ -45,13 +45,14 @@ imagemagick
 inetutils
 jq
 keepassxc
+otf-latin-modern
+otf-latinmodern-math
 libnotify
 linux
 linux-firmware
 linux-headers
 lsd
 lxappearance
-mail-notification
 make
 man-db
 man-pages

@@ -16,30 +16,7 @@ reboot() {
 
 suspend() {
 
-	type='mem'
-
-	if [ -n "$2" ]; then
-		case $2 in
-
-			freeze)
-				type='freeze';
-				break;;
-
-			mem)
-				type='mem';
-				break;;
-
-			disk)
-				type='disk';
-				break;;
-
-			*)
-				return 1;;
-
-		esac
-	fi
-
-	sudo su -c "echo -n $type > /sys/power/state"
+	sudo systemctl suspend
 
 }
 
