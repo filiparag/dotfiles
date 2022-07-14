@@ -1,20 +1,43 @@
 #! /usr/bin/env dash
-# WMRC_DEPS: sudo
+# WMRC_DEPS: sudo ddcutil
 # WMRC_FLAGS: 
 
 MAX_FILE="/sys/class/backlight/intel_backlight/max_brightness"
 CUR_FILE="/sys/class/backlight/intel_backlight/brightness"
 
+is_intel() {
+  if [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ]; then
+    return 0 # Intel backlight
+  else
+    return 1 # external monitor
+  fi
+}
+
 read() {
 
-  [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ] || \
-    error "Brightness control is unavailable!" fatal 2
+  if is_intel; then
 
-  sudo -v >/dev/null || \
-    error "User '$(whoami)' is not allowed to run sudo!" fatal 3
+    [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ] || \
+      error "Brightness control is unavailable!" fatal 2
 
-  MAX="$(cat "$MAX_FILE")"
-  CUR="$(cat "$CUR_FILE")"
+    sudo -v >/dev/null || \
+      error "User '$(whoami)' is not allowed to run sudo!" fatal 3
+
+    MAX="$(cat "$MAX_FILE")"
+    CUR="$(cat "$CUR_FILE")"
+
+  else
+
+    sudo modprobe i2c-dev || \
+      error "Unable to load I2C kernel module!" fatal 4
+
+    CUR="$(sudo ddcutil getvcp 10 | grep -Po 'current value *= *\K.*?(?=,)')"
+    MAX="$(sudo ddcutil getvcp 10 | grep -Po 'max value *= *\K.*?(?=$)')"
+
+    [ "$CUR" != '' ] && [ "$MAX" != '' ] || \
+      error "Unable to read brigthness values!" fatal 2
+
+  fi
 
 }
 
@@ -40,7 +63,15 @@ write() {
   [ "$NEW" -lt "0" ] && \
     NEW="0"
 
-  echo "$NEW" | sudo tee "$CUR_FILE"
+  if is_intel; then
+
+    echo "$NEW" | sudo tee "$CUR_FILE"
+
+  else
+
+    sudo ddcutil setvcp 10 "$NEW"
+
+  fi
 
 }
 
