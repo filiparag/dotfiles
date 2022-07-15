@@ -1,5 +1,5 @@
 #! /usr/bin/env dash
-# WMRC_DEPS: sudo ddcutil
+# WMRC_DEPS: sudo, ddcutil
 # WMRC_FLAGS: 
 
 MAX_FILE="/sys/class/backlight/intel_backlight/max_brightness"
