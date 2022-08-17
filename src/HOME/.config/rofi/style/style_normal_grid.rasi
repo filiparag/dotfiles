@@ -29,7 +29,7 @@ inputbar,
 prompt,
 textbox-prompt-colon,
 entry {
-  background-color: @background-light;
+  background-color: @background;
 }
 
 #inputbar {
@@ -50,7 +50,7 @@ entry {
 }
 
 #entry {
-  text-color: @accent;
+  text-color: @foreground;
   padding: @entry-padding;
 }
 
@@ -58,12 +58,22 @@ entry {
   padding: @list-element-padding;
   margin: @list-element-margin;
   border: @list-element-border;
-  background-color: @background-light;
-  border-color: @background-light;
+  background-color: @background;
+  border-color: @background;
 }
 
 #element.selected {
   background-color: @background-focus;
-  text-color: @accent;
+  text-color: @foreground-focus;
   border-color: @accent;
+}
+
+#element-text {
+    background-color: transparent;
+    text-color:       inherit;
+}
+
+#element-icon {
+    background-color: transparent;
+    text-color:       inherit;
 }
