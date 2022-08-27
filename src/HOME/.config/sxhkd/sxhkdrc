@@ -307,19 +307,19 @@ super + l
 
 # Change volume using standard keys for default sink
 super + {Prior, Next}
-	pactl set-sink-volume "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" {+,-}1%
+	pactl set-sink-volume "$(pactl get-default-sink)" {+,-}1%
 
 # Change volume using media keys for default sink
 {XF86AudioRaiseVolume,XF86AudioLowerVolume}
-	pactl set-sink-volume "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" {+,-}1%
+	pactl set-sink-volume "$(pactl get-default-sink)" {+,-}1%
 
 # Toggle volume using standard keys for default sink
 super + Insert
-	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
+	pactl set-sink-mute "$(pactl get-default-sink)" toggle
 
 # Toggle volume using media keys for default sink
 XF86AudioMute
-	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
+	pactl set-sink-mute "$(pactl get-default-sink)" toggle
 
 # Change brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
@@ -339,7 +339,7 @@ super + XF86AudioMute
 
 # Toggle mute microphone
 {super + shift + Insert, XF86AudioMicMute}
-	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
+	pactl set-source-mute "$(pactl get-default-source)" toggle
 
 # Playerctl previous track in playlist
 {super + @F10, XF86AudioPrev}
