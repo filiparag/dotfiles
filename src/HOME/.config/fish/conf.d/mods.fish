@@ -144,18 +144,18 @@ end
 
 function l -d 'Simple pretty file list'
     lsd --classify --icon-theme unicode --oneline \
-        --icon always --color always --date --group-dirs first $argv
+        --icon always --color always --group-dirs first $argv
 end
 
 function la -d 'Simple pretty file list (with hidden)'
     lsd --classify --almost-all --icon-theme unicode --oneline \
-        --icon always --color always --date --group-dirs first $argv
+        --icon always --color always --group-dirs first $argv
 end
 
 function ll -d 'Detailed pretty file list'
     lsd --classify --long --almost-all --icon-theme unicode \
         --icon always --blocks name,size,permission,user,group,date \
-        --color always --date --group-dirs first $argv
+        --color always --group-dirs first $argv
 end
 
 # NNN File manager bind
