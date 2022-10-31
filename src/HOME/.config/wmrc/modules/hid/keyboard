@@ -31,7 +31,7 @@ keybinds() {
       FILE_SELECT="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
 
       for FILE in $FILE_SENSITIVITY; do
-        sudo su -c "echo -n 150 > $FILE"
+        sudo su -c "echo -n 220 > $FILE"
       done
 
       for FILE in $FILE_SELECT; do

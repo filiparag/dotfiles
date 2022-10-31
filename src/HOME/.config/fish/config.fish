@@ -4,7 +4,7 @@ ssh_agent
 
 
 function __graphical_environments
-    set -l envs bspwm gnome
+    set -l envs bspwm gnome-shell
     set -l ens tty
     for e in $envs
         if command -v $e &>/dev/null
@@ -24,9 +24,8 @@ function __graphical_environment_bspwm
     exec startx -- -keeptty
 end
 
-function __graphical_environment_gnome
-    gnome-shell --wayland
-	#MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM=wayland XDG_SESSION_TYPE=wayland exec dbus-run-session gnome-session
+function __graphical_environment_gnome-shell
+    MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM=wayland XDG_SESSION_TYPE=wayland exec gnome-shell --wayland
 end
 
 # Start X at login
