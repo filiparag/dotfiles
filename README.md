@@ -10,22 +10,28 @@
 - [base Arch Linux](https://wiki.archlinux.org/index.php/Installation_guide) installed
 - at least 8 GiB of free space on root partition
 - user account with [`sudo`](https://wiki.archlinux.org/index.php/Sudo#Example_entries) privileges
-- access to the internet
 
 ### Steps
 ```bash
 # Clone dotfiles repository
 git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
 
-# Run automatic installer
-./scripts/dotfiles.sh
+# Install required system packages
+paru -S --needed - < pkglist.txt
 
-# Hardware-specific commands go here
+# Create dotfiles tarball for your user (choose one)
+make            # place copies of files
+make symlink    # place symlinks to files
+
+# Apply dotfiles to the system (might require sudo)
+make install
 
 # Reboot your system to apply all modifications (optional)
 reboot
 ```
-Existing conflicting configuration files will be saved in `~/.dotfiles/workdir/backup.tar.gz`.
+
+**Warning**: Automatic installation using `Makefile` is currently semi-broken.
+Use it at your own risk until it is fixed.
 
 ## Usage and customization
 
