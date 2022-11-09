@@ -137,7 +137,7 @@ super + shift + {0-9}
 	bspc node -d {0-9}.local -f
 
 # Move focused window to neighbouring desktop on current monitor
-super + shift + {@Home,@End}
+super + shift + {@Prior,@Next}
 	bspc node -d {prev,next}.local -f
 
 # Toggle monocle mode for focused window
@@ -237,11 +237,11 @@ super + alt + {0-9}
 	bspc monitor -f "$cur";
 
 # Move through neighbouring desktops on current monitor
-super + {@Home,@End}
+super + {@Prior,@Next}
 	bspc desktop -f {prev,next}.local
 
 # Move through neighbouring desktops on all monitors
-super + alt + {@Home,@End}
+super + alt + {@Prior,@Next}
 	cur="$(bspc query -M -m)"; \
 	for m in $(bspc query -M); do \
 		bspc monitor -f "$m"; \
@@ -322,8 +322,8 @@ XF86AudioMute
 	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
 
 # Change brightness using media keys
-super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	wmrc -r 'screen/backlight({dec,inc},20)'
+{XF86MonBrightnessDown,XF86MonBrightnessUp}
+	xbacklight {-,+} 9
 
 # Set brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}

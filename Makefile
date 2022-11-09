@@ -1,6 +1,6 @@
 SRCDIR		?=	./src
 WORKDIR		?=	./workdir
-USER 		?=	filiparag
+USER 		?=	dovla
 HOME		?=	/home/${USER}
 PREFIX		?=	/
 DATETIME 	:= 	$(shell date +%Y-%m-%d_%H-%M-%S)

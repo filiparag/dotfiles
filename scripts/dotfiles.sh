@@ -80,12 +80,12 @@ install_packages() {
 
 	# Add additional repositories
 	print s 'Add additional repositories' && \
-	if ! grep -q filiparag /etc/pacman.conf; then
+	if ! grep -q dovla /etc/pacman.conf; then
 		sudo tee -a /etc/pacman.conf &>> "$LOGFILE" << END
 
-[filiparag]
+[dovla]
 SigLevel = Optional TrustAll
-Server = https://pkg.filiparag.com/archlinux/
+Server = https://pkg.dovla.com/archlinux/
 END
 	fi && \
 
@@ -122,12 +122,12 @@ install_dotfiles() {
 	print s 'Initialize git submodules' && \
 	git submodule update --init --recursive --depth 1 &>> "$LOGFILE" && \
 
-	# Use current username instead of 'filiparag'
+	# Use current username instead of 'dovla'
 	{
 		print s 'Replace hard coded username' && \
-		if [ "$USER" != 'filiparag' ]; then
-			rg --hidden -i filiparag -g '!src/etc/pacman.conf' \
-				-l "$HOME/.dotfiles/src" | xargs sed -i "s|filiparag|$USER|g" &>> "$LOGFILE"
+		if [ "$USER" != 'dovla' ]; then
+			rg --hidden -i dovla -g '!src/etc/pacman.conf' \
+				-l "$HOME/.dotfiles/src" | xargs sed -i "s|dovla|$USER|g" &>> "$LOGFILE"
 		fi
 	} && \
 

@@ -14,7 +14,7 @@
 ### Steps
 ```bash
 # Clone dotfiles repository
-git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
+git clone https://github.com/dovla/dotfiles.git && cd dotfiles
 
 # Install required system packages
 paru -S --needed - < pkglist.txt
@@ -43,7 +43,7 @@ Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhk
 
 ### Configuring the environment
 
-Window manager configuration ([wmrc](https://github.com/filiparag/wmrc/)):
+Window manager configuration ([wmrc](https://github.com/dovla/wmrc/)):
 [`~/.config/wmrc/rc.conf`](./src/HOME/.config/wmrc/rc.conf)
 
 Startup applications and daemons are listed in `APPS` variable in

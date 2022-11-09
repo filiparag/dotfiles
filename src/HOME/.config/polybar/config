@@ -2,11 +2,11 @@ include-file = $HOME/.config/polybar/modules.ini
 
 [color]
 
-trans 			= #00000000
+trans 			= #002B36
 white 			= #FFFFFF
-black 			= #000000
+black 			= #002B36
 
-bg 					= #00000000
+bg 					= #002B36
 fg 					= #BBFFFFFF
 mg 					= #40FFFFFF
 
@@ -178,9 +178,9 @@ tray-position = right
 tray-detached = false
 tray-maxsize = 20
 tray-background = ${color.trans}
-tray-offset-x = 5
-tray-offset-y = -2
-tray-padding = 1
+tray-offset-x = 2.5
+tray-offset-y = 0
+tray-padding = 5
 tray-scale = 1.0
 
 wm-restack = bspwm

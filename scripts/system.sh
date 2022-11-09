@@ -963,7 +963,7 @@ dotfiles_installer() {
 		tee /mnt/usr/bin/dotfiles-install &>> "$CONF_LOGFILE" << END
 #!/bin/sh
 [ -d /tmp/dotfiles ] || \
-git clone --depth 1 https://github.com/filiparag/dotfiles /tmp/dotfiles
+git clone --depth 1 https://github.com/dovla/dotfiles /tmp/dotfiles
 chmod +x /tmp/dotfiles/install-dotfiles.sh && \
 /tmp/dotfiles/install-dotfiles.sh && \
 rm -rf /tmp/dotfiles

@@ -1,6 +1,6 @@
 # Personal environment variables
-set -x NAME     'Filip Parag'
-set -x EMAIL    'filip@parag.rs'
+set -x NAME     'dovla'
+set -x EMAIL    'vladimirjovin8@gmail.com'
 set -x EDITOR   'vim'
 set -x BROWSER  'firefox'
 #set -x VISUAL	'subl -w'

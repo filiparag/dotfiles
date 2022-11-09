@@ -3,7 +3,7 @@ set -x SSH_KEEPASS_SOCK /run/user/(id -u)/keyring/ssh
 
 function ssh_use_keepassxc
     if test -S $SSH_KEEPASS_SOCK &>/dev/null
-        if pgrep -xu filiparag keepassxc &>/dev/null
+        if pgrep -xu dovla keepassxc &>/dev/null
             set -x SSH_AUTH_SOCK $SSH_KEEPASS_SOCK
             return 0
         else

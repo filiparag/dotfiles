@@ -16,7 +16,7 @@ reboot() {
 
 suspend() {
 
-	sudo systemctl suspend
+	systemctl suspend
 
 }
 
