@@ -88,7 +88,9 @@ python-axolotl-curve25519
 python-pip
 qbittorrent
 qt5ct
+qt6ct
 qt5-styleplugins
+qt6gtk2
 redshift-qt
 ripgrep
 rofi
