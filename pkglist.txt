@@ -4,7 +4,6 @@ alacritty
 alsa-utils
 arandr
 auto-cpufreq
-ayatana-webmail
 base
 bat
 bc
@@ -73,7 +72,6 @@ openresolv
 openssh
 paper-icon-theme-git
 paprefs
-paru-bin
 pavucontrol
 pcmanfm
 peek
@@ -121,7 +119,6 @@ unp
 unrar
 unzip
 vim
-viper4linux-git
 vlc
 wget
 which

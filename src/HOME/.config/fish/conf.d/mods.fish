@@ -130,16 +130,6 @@ if status --is-interactive
 
 end
 
-# Wikiman widget
-
-for widget in (
-    find '/usr/share/wikiman/widgets/widget.fish' \
-         '/usr/local/share/wikiman/widgets/widget.fish' -type f 2>/dev/null
-);
-    source "$widget" 2>/dev/null
-    break
-end
-
 # List files
 
 function l -d 'Simple pretty file list'
