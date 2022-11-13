@@ -8,11 +8,8 @@ APPS='unclutter -idle 1
       flameshot
       signal-desktop --start-in-tray
       dino --gapplication-service
-      wire-desktop --startup
-      element-desktop --hidden
-      mail-notification
-      ayatana-webmail
-      safeeyes
+      discord
+      spotify
       '
 
 app_list() {

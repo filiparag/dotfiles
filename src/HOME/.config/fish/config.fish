@@ -29,9 +29,9 @@ function __graphical_environment_gnome-shell
 end
 
 # Start X at login
-if status --is-login
-    if test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1
-        # exec startx -- -keeptty
-        __graphical_environments
-    end
-end
+#if status --is-login
+#    if test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1
+#        # exec startx -- -keeptty
+#        __graphical_environments
+#    end
+#end

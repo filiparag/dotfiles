@@ -138,6 +138,10 @@ start() {
   BLANK_TIMEOUT=300
   LOCK_TIMEOUT=305
 
+  if lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {} | grep -q '5700 XT'; then
+    BLANK_TIMEOUT=999999999
+  fi
+
   xset s off -dpms &
 
 	xidlehook \
