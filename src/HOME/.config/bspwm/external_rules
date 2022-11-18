@@ -6,7 +6,7 @@ instance=$3
 consequences=$4
 
 case "$class" in
-	firefox)
+	firefox|firefoxdeveloperedition)
 		# Picture in picture
 		xprop -id "$wid" 'WM_NAME' | grep -q 'Picture-in-Picture' && {
 			rec="$(
