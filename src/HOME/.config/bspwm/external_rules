@@ -31,7 +31,6 @@ case "$class" in
 						printf("rectangle=%ix%i+%i+%i",w*3/4,h*3/4,x+ow-w*3/4-20,y+oh-h*3/4-45)
 					};'
 			)"
-			# notify-send -a firefox -i firefox -u low 'Firefox' 'Picture-in-picture'
 			echo "state=floating sticky=on $rec"
 		}
 		;;
@@ -41,5 +40,14 @@ case "$class" in
 	Peek)
 		echo "state=floating"
 		echo "rectangle=640x480+363+144"
+		;;
+	Dino|Signal|Wire)
+		echo "desktop=3"
+		;;
+	freezer)
+		echo "desktop=5"
+		;;
+	thunderbird)
+		echo "desktop=0"
 		;;
 esac
