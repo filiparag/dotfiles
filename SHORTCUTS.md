@@ -153,6 +153,8 @@ Toggle volume using media keys for default sink `XF86AudioMute`
 
 Change brightness using media keys `super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
 
+Change brightness using backlight keys `{XF86MonBrightnessDown,XF86MonBrightnessUp}`
+
 Set brightess to low / high using media keys `ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
 
 Select monitor layout `super + {o, XF86AudioMicMute}`

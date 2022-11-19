@@ -325,6 +325,10 @@ XF86AudioMute
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
 	wmrc -r 'screen/backlight({dec,inc},20)'
 
+# Change brightness using backlight keys
+{XF86MonBrightnessDown,XF86MonBrightnessUp}
+	wmrc -r 'screen/backlight({dec,inc},20)'
+
 # Set brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
 	wmrc -r 'screen/backlight(equ,{0,100})'
