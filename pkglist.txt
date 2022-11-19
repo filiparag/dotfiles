@@ -13,6 +13,7 @@ bspwm
 code
 cronie
 dash
+ddcutil
 dino
 dunst
 eog
