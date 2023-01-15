@@ -19,8 +19,8 @@ start() {
   local M_ALL
   local M
 
-  WLP="$(ip -o link show | awk -F': ' '{print $2}' | grep wlp)"
-	ENP="$(ip -o link show | awk -F': ' '{print $2}' | grep enp)"
+  WLP="$(ip -o link show | awk -F': ' '{print $2}' | grep 'wlp\|wlan')"
+	ENP="$(ip -o link show | awk -F': ' '{print $2}' | grep 'enp\|end\|eth')"
 	MNT="$(lsblk | awk '/\//{printf "mount-"NR-2" = "$7"\n"}')"
 
   M_PRIMARY="$(xrandr --query | grep " primary" | cut -d" " -f1)"
