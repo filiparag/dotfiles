@@ -45,6 +45,7 @@ i3lock
 imagemagick
 inetutils
 jq
+kdeconnect
 keepassxc
 otf-latin-modern
 otf-latinmodern-math
@@ -105,6 +106,7 @@ sxhkd
 sydf
 syncthing
 sysstat
+thunderbird
 tigervnc
 tmux
 tree
