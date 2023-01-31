@@ -1,8 +1,3 @@
-# Workfiles
-plist
-fakeroot
-oldroot
-
 # Syncthing
 .stfolder
 .stignore
