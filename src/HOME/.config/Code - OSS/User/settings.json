@@ -10,9 +10,7 @@
     "shellcheck.executablePath": "/usr/bin/shellcheck",
     "python.showStartPage": false,
     "vsicons.dontShowNewVersionMessage": true,
-    "editor.rulers": [
-        100
-    ],
+  "editor.rulers": [100],
     "terminal.integrated.tabs.enabled": true,
     "workbench.editor.untitled.hint": "hidden",
     "editor.suggestSelection": "first",
@@ -21,6 +19,6 @@
     "files.exclude": {
         "**/.venv": true
     },
-    "window.zoomLevel": 1,
-    "diffEditor.ignoreTrimWhitespace": false
+  "diffEditor.ignoreTrimWhitespace": false,
+  "window.zoomLevel": 1
 }
