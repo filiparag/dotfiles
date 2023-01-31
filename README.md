@@ -16,28 +16,23 @@
 # Clone dotfiles repository
 git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
 
-# Install required system packages
-paru -S --needed - < pkglist.txt
+# Install dependencies
+make dependencies
 
-# Create dotfiles tarball for your user (choose one)
-make            # place copies of files
-make symlink    # place symlinks to files
-
-# Apply dotfiles to the system (might require sudo)
-make install
+# Install dotfiles for your user (pick one)
+make symlink    # place symlinks to files (recommended)
+make copy       # place copies of files
 
 # Reboot your system to apply all modifications (optional)
 reboot
 ```
 
-**Warning**: Automatic installation using `Makefile` is currently semi-broken.
-Use it at your own risk until it is fixed.
-
 ## Usage and customization
 
 ### Keyboard shortcuts
 
-Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)
+Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)  
+This manual can also be found in `/usr/share/doc/dotfiles/shortcuts.md` after installing dotfiles.
 
 Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhkd/sxhkdrc)
 
