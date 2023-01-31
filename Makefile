@@ -1,103 +1,74 @@
-SRCDIR		?=	./src
-WORKDIR		?=	./workdir
-USER 		?=	filiparag
-HOME		?=	/home/${USER}
-PREFIX		?=	/
-DATETIME 	:= 	$(shell date +%Y-%m-%d_%H-%M-%S)
-SRCDIRABS	=	$(shell realpath ${SRCDIR})
+PREFIX			?= /
+DEFAULT_USER	:= filiparag
+DEFAULT_NAME	:= Filip Parag
+DEFAULT_EMAIL	:= filip@parag.rs
+WORKDIR			:= $(shell mktemp -d -t 'dotfiles-XXXXX')
+WORKFILE		:= $(shell sudo mktemp -t 'dotfiles-XXXXX.tar')
+SRCDIR			:= $(shell realpath ./src/)
 
-.PHONY: all clean backup conflicts package symlink install
+.PHONY: symlink
 
-all: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
+copy: .bootstrap .configure .prepare-copy .rename .chown .package .install .cleanup .docs .post-install
+symlink: .bootstrap .configure .prepare-symlink .rename .chown .package .install .cleanup .docs .post-install
 
-${WORKDIR}/.targets/workdir:
-	@mkdir -p ${WORKDIR} \
-		${WORKDIR}/.fakeroot ${WORKDIR}/.backups \
-		${WORKDIR}/.list ${WORKDIR}/.targets
-	@touch ${WORKDIR}/.list/files.txt ${WORKDIR}/.list/dirs.txt
-	@echo '**' > ${WORKDIR}/.gitignore
-	@touch ${WORKDIR}/.targets/workdir
+.bootstrap:
+	@sudo pacman -Sy --needed git dialog coreutils findutils pciutils
+	@command -v paru &> /dev/null || git clone https://aur.archlinux.org/paru-bin.git ${WORKDIR}/paru
+	@cd ${WORKDIR}/paru &> /dev/null && makepkg --needed -si && rm -rf ${WORKDIR}/paru || true
 
-${WORKDIR}/.targets/prepare: ${WORKDIR}/.targets/workdir
-	@cp -f ${SRCDIR}/../dirlist.txt ${WORKDIR}/.list/dirs.txt
-	@find ${SRCDIR} -not -type d > ${WORKDIR}/.list/files.txt
-	@sed -i "s:^${SRCDIR}::" \
-	 	${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt
-	@grep -vF -f ${WORKDIR}/.list/dirs.txt \
-		${WORKDIR}/.list/files.txt > ${WORKDIR}/.files.txt
-	@mv -f ${WORKDIR}/.files.txt ${WORKDIR}/.list/files.txt
-	@cp ${WORKDIR}/.list/files.txt ${WORKDIR}/.list/files.raw.txt
-	@cp ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/dirs.raw.txt
-	@sed -i "s:^/HOME:${HOME}:" \
-		${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt
-	@touch ${WORKDIR}/.targets/prepare
+.configure: 
+	@$(eval USERNAME=$(shell dialog --title 'Configuration' --inputbox "Username" 8 30 "${USER}" --output-fd 1))
+	@$(eval GROUP=$(shell dialog --title 'Configuration' --inputbox "User group" 8 30 "$(shell id -gn ${USERNAME})" --output-fd 1))
+	@$(eval HOMEDIR=$(shell dialog --title 'Configuration' --inputbox "Home directory" 8 30 "$(shell echo ~${USERNAME})" --output-fd 1))
+	@$(eval USER_NAME=$(shell dialog --title 'Configuration' --inputbox "Full name" 8 30 "${DEFAULT_NAME}" --output-fd 1))
+	@$(eval USER_EMAIL=$(shell dialog --title 'Configuration' --inputbox "Email" 8 30 "${DEFAULT_EMAIL}" --output-fd 1))
 
-clean:
-	@rm -rf ${WORKDIR}/.fakeroot ${WORKDIR}/.list \
-		${WORKDIR}/.targets ${WORKDIR}/dotfiles.tar.xz
+dependencies: .bootstrap
+	@if ! grep -q 'filiparag' /etc/pacman.conf; then \
+		dialog --title 'Package installation' --yesno 'Use build server for AUR packages' 5 40 && \
+		printf "[filiparag]\nSigLevel = Optional TrustAll\nServer = https://pkg.filiparag.com/archlinux/\n" | sudo tee -a /etc/pacman.conf || \
+		true; \
+	fi
+	@paru -Sy --needed - < pkglist.txt
 
-backup: ${WORKDIR}/.targets/prepare
-	@mkdir -p ${WORKDIR}/.backup
-	@cat ${WORKDIR}/.list/files.raw.txt | \
-		xargs -I{} echo \
-		'mkdir -p ${WORKDIR}/.backup/$$(dirname {});' | sh -
-	@cat ${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt | \
-		xargs -I{} echo \
-		'test -e ${PREFIX}/{} && cp -frp ${PREFIX}/{} ${WORKDIR}/.backup/{} || true' | sh -
-	@find ${WORKDIR}/.backup -mindepth 1 -type d -empty -delete
-	@tar -C ${WORKDIR}/.backup \
-		-cJf ${WORKDIR}/.backups/${DATETIME}.tar.xz .
-	@ln -f ${WORKDIR}/.backups/${DATETIME}.tar.xz ${WORKDIR}/backup.tar.gz
-	@rm -rf ${WORKDIR}/.backup
+.prepare-symlink: .prepare-copy
+	@find ${WORKDIR} -not -type d -exec rm -f {} \;
+	@cat dirlist.txt | xargs -I{} rm -rf ${WORKDIR}/{}
+	@cat dirlist.txt | xargs -I{} ln -s ${SRCDIR}/{} ${WORKDIR}/{}
+	@awk 'BEGIN { printf("cd ${SRCDIR} && find * -type f") } { printf(" -not -path \"%s/*\" ", $$0) } END { print "-exec ln -s ${SRCDIR}/{} ${WORKDIR}/{} \\;" }' dirlist.txt > ${WORKDIR}/symlink.sh
+	@sh ${WORKDIR}/symlink.sh && rm -f ${WORKDIR}/symlink.sh
 
-conflicts: backup
-	@cat ${WORKDIR}/.list/dirs.raw.txt ${WORKDIR}/.list/files.raw.txt | \
-		xargs -I{} rm -rf {} \;
+.prepare-copy:
+	@cp -Rpd ${SRCDIR}/* ${WORKDIR}/
 
-${WORKDIR}/.targets/fakeroot_dirs: ${WORKDIR}/.targets/prepare
-	@cat ${WORKDIR}/.list/files.txt | \
-		xargs -I{} echo \
-		'mkdir -p ${WORKDIR}/.fakeroot/$$(dirname {});' | sh -
-	@touch ${WORKDIR}/.targets/fakeroot_dirs
+.rename:
+	@find ${WORKDIR} -type f -not -name 'pacman.conf' -exec sed -i 's|${DEFAULT_USER}|${USERNAME}|g' {} \;
+	@find ${WORKDIR} -type f -exec sed -i 's|${DEFAULT_NAME}|${USER_NAME}|g' {} \;
+	@find ${WORKDIR} -type f -exec sed -i 's|${DEFAULT_EMAIL}|${USER_EMAIL}|g' {} \;
+	@[ '${DEFAULT_EMAIL}' != '${USER_EMAIL}' ] && sed -i '/signingkey/d' ${WORKDIR}/HOME/.gitconfig || true
+	@dirname ${WORKDIR}/${HOMEDIR} | xargs mkdir -p
+	@mv ${WORKDIR}/HOME ${WORKDIR}/${HOMEDIR}
 
-${WORKDIR}/.targets/fakeroot_home: ${WORKDIR}/.targets/prepare
-	@mkdir -p ${WORKDIR}/.fakeroot/${HOME}
-	@find ${WORKDIR}/.fakeroot/HOME -maxdepth 1 -mindepth 1 \
-		-exec mv -f "{}" ${WORKDIR}/.fakeroot/${HOME} \;
-	@rm -rf ${WORKDIR}/.fakeroot/HOME
-	@touch ${WORKDIR}/.targets/fakeroot_home
+.chown:
+	@sudo -E find ${WORKDIR} -mindepth 1 -not -path '${WORKDIR}/${HOMEDIR}*' -exec chown root:root {} \;
+	@sudo -E find ${WORKDIR}/${HOMEDIR} -exec chown ${USERNAME}:${GROUP} {} \;
 
-${WORKDIR}/.targets/src_copy_hard: ${WORKDIR}/.targets/fakeroot_dirs
-	@cat ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt | \
-		xargs -I{} cp -frp "${SRCDIR}/{}" "${WORKDIR}/.fakeroot/{}"
-	@touch ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/src_copy
+.package:
+	@sudo -E tar -cf ${WORKFILE} -C ${WORKDIR} .
 
-${WORKDIR}/.targets/src_copy_soft: ${WORKDIR}/.targets/fakeroot_dirs
-	@cat ${WORKDIR}/.list/dirs.txt ${WORKDIR}/.list/files.txt | \
-		xargs -I{} ln -sf "${SRCDIRABS}{}" "${WORKDIR}/.fakeroot{}"
-	@touch ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/src_copy
-	
-${WORKDIR}/.targets/hard: ${WORKDIR}/.targets/src_copy_hard ${WORKDIR}/.targets/fakeroot_home
-	@touch ${WORKDIR}/.targets/src_copy ${WORKDIR}/.targets/hard
+.install:
+	@sudo -E mkdir -p ${PREFIX}
+	@sudo -E tar -xf ${WORKFILE} -C ${PREFIX}
+	@sudo -E chown root:root ${PREFIX}
+	@sudo -E chmod 0755 ${PREFIX}
 
-${WORKDIR}/.targets/soft: ${WORKDIR}/.targets/src_copy_soft ${WORKDIR}/.targets/fakeroot_home
-	@touch ${WORKDIR}/.targets/src_copy ${WORKDIR}/.targets/soft
+.cleanup:
+	@lspci | grep -qi 'VGA.*Intel' || sudo rm -f ${PREFIX}/etc/X11/xorg.conf.d/20-intel.conf
+	@lspci | grep -qi 'VGA.*AMD' || sudo rm -f ${PREFIX}/etc/X11/xorg.conf.d/20-amdgpu.conf
 
-${WORKDIR}/.targets/package: ${WORKDIR}/.targets/src_copy
-	@tar -C ${WORKDIR}/.fakeroot \
-		-cJf ${WORKDIR}/dotfiles.tar.xz .
-	@touch ${WORKDIR}/.targets/package
-
-symlink: ${WORKDIR}/.targets/soft ${WORKDIR}/.targets/package
-
-package: ${WORKDIR}/.targets/hard ${WORKDIR}/.targets/package
-	@echo 'Package location: ${WORKDIR}/dotfiles.tar.xz'
-
-install: ${WORKDIR}/dotfiles.tar.xz conflicts
-	@tar -C ${PREFIX} -xf ${WORKDIR}/dotfiles.tar.xz
-
-docs: ${SRCDIRABS}/HOME/.config/sxhkd/sxhkdrc
-	@cat "${SRCDIRABS}/HOME/.config/sxhkd/sxhkdrc" | awk \
+.docs:
+	@sudo mkdir -p /usr/share/doc/dotfiles
+	@cat "${SRCDIR}/HOME/.config/sxhkd/sxhkdrc" | awk \
 	'BEGIN { \
 		print "# Keyboard shortcuts\n" \
 	} \
@@ -109,4 +80,20 @@ docs: ${SRCDIRABS}/HOME/.config/sxhkd/sxhkdrc
 		} else if (c==1) { \
 			printf("`%s`\n\n", $$0); c=0 \
 		} \
-	}' > ./SHORTCUTS.md
+	}' | sudo tee /usr/share/doc/dotfiles/shortcuts.md
+
+.post-install:
+	@sudo systemctl enable "sshd"
+	@sudo systemctl enable "cronie"
+	@sudo systemctl enable "NetworkManager"
+	@sudo systemctl enable "suspend@${USERNAME}"
+	@sudo systemctl enable "syncthing@${USERNAME}"
+	@sudo systemctl enable "syncthing-resume"
+	@sudo systemctl enable "systemd-resolved"
+	@sudo systemctl enable "ufw"
+	@sudo ufw default deny incoming
+	@sudo ufw default allow outgoing
+	@sudo ufw allow ssh
+	@sudo ufw allow syncthing
+	@sudo ufw enable
+	@sudo chsh -s /usr/bin/fish "${USERNAME}"
