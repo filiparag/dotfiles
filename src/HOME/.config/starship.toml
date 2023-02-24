@@ -1,0 +1,64 @@
+format = '$username[@](bright-white)$hostname$container$directory$all'
+right_format = '$time'
+add_newline = false
+
+[username]
+format = '[$user]($style)'
+style_user = 'bright-cyan'
+style_root = 'bright-yellow bold'
+disabled = false
+show_always = true
+
+[hostname]
+format = '[$hostname](bright-cyan)[$ssh_symbol](purple bold) '
+trim_at = '.'
+ssh_symbol = ' SSH'
+ssh_only = false
+disabled = false
+
+[directory]
+fish_style_pwd_dir_length = 3
+use_logical_path = true
+read_only = ' ro'
+style = 'white'
+read_only_style = 'yellow'
+repo_root_style = 'white bold'
+
+[git_status]
+format = '[\[$all_status$ahead_behind\]](white dimmed) '
+style = 'white dimmed'
+conflicted = '[C](bright-red)'
+ahead = ' [ahead](bright-cyan)'
+behind = ' [behind](bright-cyan)'
+diverged = '[diverged](red bold)'
+up_to_date = ''
+untracked = '[U](bright-green)'
+stashed = '[s](white)'
+modified = '[M](yellow)'
+staged = '[S](cyan)'
+renamed = '[R](green)'
+deleted = '[D](red)'
+
+[git_branch]
+style = 'bright-white'
+
+[status]
+format = '[$status]($style)'
+disabled = false
+pipestatus = true
+
+[character]
+success_symbol = '[❯](white)'
+error_symbol = '[❯](bold red)'
+disabled = false
+
+[time]
+format = '[$time]($style)'
+time_format = '%T'
+style = 'white dimmed'
+utc_time_offset = 'local'
+disabled = false
+
+[container]
+format = '[$name]($style) '
+style = 'purple bold'

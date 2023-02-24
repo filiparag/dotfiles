@@ -103,7 +103,7 @@ if status --is-interactive
     set os (grep '^ID=' /etc/os-release | cut -d'=' -f2)
     eval "__abbr_os_$os"
 
-    if grep -q signingkey ~/.gitconfig
+    if test -f ~/.gitconfig && grep -q signingkey ~/.gitconfig
         set sign_upper ' -S'
         set sign_lower ' -s'
     else

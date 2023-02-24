@@ -63,3 +63,8 @@ function fish_prompt
   # Line 2
   echo -n $red'└'$pcolor$__fish_prompt_char $normal
 end
+
+# Starship prompt
+if command -v 'starship' &>/dev/null
+  starship init fish | source
+end
