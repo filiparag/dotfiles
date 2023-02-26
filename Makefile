@@ -97,3 +97,5 @@ dependencies: .bootstrap
 	@sudo ufw allow syncthing
 	@sudo ufw enable
 	@sudo chsh -s /usr/bin/fish "${USERNAME}"
+	@sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	@gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'

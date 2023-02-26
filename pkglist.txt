@@ -29,6 +29,7 @@ firefox
 firejail
 fish
 flameshot
+flatpak
 fzf
 gettext
 gifski
@@ -136,6 +137,7 @@ wmrc
 wpa_supplicant
 x11-ssh-askpass
 xclip
+xdg-desktop-portal-gtk
 xdg-utils
 xdotool
 xf86-input-libinput
