@@ -66,6 +66,7 @@ mypaint
 neofetch
 networkmanager
 nfs-utils
+noto-color-emoji-fontconfig
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji

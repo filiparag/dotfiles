@@ -1,16 +1,20 @@
-format = '$username[@](bright-white)$hostname$container$directory$all'
-right_format = '$time'
+format = """
+[┌](red)$username[@](bright-white)$hostname\
+$container$status$directory$all\
+$cmd_duration$time$line_break\
+[└](red)$character
+"""
 add_newline = false
 
 [username]
 format = '[$user]($style)'
-style_user = 'bright-cyan'
-style_root = 'bright-yellow bold'
+style_user = 'cyan'
+style_root = 'cyan bold'
 disabled = false
 show_always = true
 
 [hostname]
-format = '[$hostname](bright-cyan)[$ssh_symbol](purple bold) '
+format = '[$hostname](cyan)[$ssh_symbol](purple bold) '
 trim_at = '.'
 ssh_symbol = ' SSH'
 ssh_only = false
@@ -28,36 +32,45 @@ repo_root_style = 'white bold'
 format = '[\[$all_status$ahead_behind\]](white dimmed) '
 style = 'white dimmed'
 conflicted = '[C](bright-red)'
-ahead = ' [ahead](bright-cyan)'
-behind = ' [behind](bright-cyan)'
-diverged = '[diverged](red bold)'
+ahead = ' [ahead](white)'
+behind = ' [behind](white)'
+diverged = ' [diverged](red)[ ahead $ahead_count behind $behind_count](white)'
 up_to_date = ''
 untracked = '[U](bright-green)'
 stashed = '[s](white)'
 modified = '[M](yellow)'
 staged = '[S](cyan)'
-renamed = '[R](green)'
+renamed = '[R](bright-green)'
 deleted = '[D](red)'
 
 [git_branch]
-style = 'bright-white'
+format = '[$symbol$branch(:$remote_branch)]($style) '
+style = 'bright-blue'
 
 [status]
-format = '[$status]($style)'
-disabled = false
+format = '[$status]($style) '
+pipestatus_format = '$pipestatus '
+pipestatus_separator = '[|](red)'
+pipestatus_segment_format = '[$status]($style)'
+style = 'red bold'
 pipestatus = true
+disabled = false
 
 [character]
-success_symbol = '[❯](white)'
-error_symbol = '[❯](bold red)'
+success_symbol = '[>](white)'
+error_symbol = '[>](red)'
 disabled = false
 
 [time]
-format = '[$time]($style)'
+format = '[$time]($style) '
 time_format = '%T'
-style = 'white dimmed'
+style = 'bright-black'
 utc_time_offset = 'local'
 disabled = false
+
+[cmd_duration]
+min_time = 1
+format = '[$duration](white dimmed) '
 
 [container]
 format = '[$name]($style) '

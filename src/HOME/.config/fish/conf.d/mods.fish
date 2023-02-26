@@ -230,7 +230,7 @@ function _sudo_widget -d 'Append sudo to last or current command'
     end
 end
 
-bind \cs _sudo_widget
+bind \ce _sudo_widget
 if bind -M insert >/dev/null 2>&1
     bind -M insert \cr _sudo_widget
 end
