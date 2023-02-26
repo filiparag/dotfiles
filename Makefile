@@ -83,14 +83,15 @@ dependencies: .bootstrap
 	}' | sudo tee /usr/share/doc/dotfiles/shortcuts.md
 
 .post-install:
-	@sudo systemctl enable "sshd"
-	@sudo systemctl enable "cronie"
-	@sudo systemctl enable "NetworkManager"
+	@sudo systemctl enable sshd
+	@sudo systemctl enable cronie
+	@sudo systemctl enable NetworkManager
 	@sudo systemctl enable "suspend@${USERNAME}"
 	@sudo systemctl enable "syncthing@${USERNAME}"
-	@sudo systemctl enable "syncthing-resume"
-	@sudo systemctl enable "systemd-resolved"
-	@sudo systemctl enable "ufw"
+	@sudo systemctl enable syncthing-resume
+	@sudo systemctl enable systemd-resolved
+	@sudo systemctl enable systemd-timesyncd
+	@sudo systemctl enable ufw
 	@sudo ufw default deny incoming
 	@sudo ufw default allow outgoing
 	@sudo ufw allow ssh
