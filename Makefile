@@ -59,8 +59,8 @@ dependencies: .bootstrap
 .install:
 	@sudo -E mkdir -p ${PREFIX}
 	@sudo -E tar -xf ${WORKFILE} -C ${PREFIX}
-	@sudo -E chown root:root ${PREFIX}
 	@sudo -E chmod 0755 ${PREFIX}
+	@sudo -E chown root:root ${PREFIX}
 
 .cleanup:
 	@lspci | grep -qi 'VGA.*Intel' || sudo rm -f ${PREFIX}/etc/X11/xorg.conf.d/20-intel.conf
