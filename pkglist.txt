@@ -11,6 +11,7 @@ bc
 binutils
 bspwm
 code
+croc
 cronie
 dash
 ddcutil
@@ -25,7 +26,7 @@ fcitx-googlepinyin
 feh
 ffmpeg
 file-roller
-firefox
+firefox-developer-edition
 firejail
 fish
 flameshot
@@ -75,6 +76,7 @@ ntp
 numlockx
 openresolv
 openssh
+openssl-1.1
 paper-icon-theme-git
 paprefs
 paru-bin
@@ -87,6 +89,9 @@ pkgconf
 playerctl
 polybar
 pulseaudio
+pulseaudio-alsa
+pulseaudio-bluetooth
+pulseaudio-zeroconf
 python-axolotl
 python-axolotl-curve25519
 python-pip

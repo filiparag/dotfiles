@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Action
+Profiles=profile_id
+Name=Share with croc
+Icon=emblem-shared-symbolic
+
+[X-Action-Profile profile_id]
+MimeTypes=all/all
+Exec=alacritty -e croc send '%f'

@@ -2,3 +2,7 @@
 .stfolder
 .stignore
 .stversions
+**.sync-conflict**
+
+# Dynamic files
+src/HOME/.config/fish/fish_variables

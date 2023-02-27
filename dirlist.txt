@@ -10,3 +10,4 @@ HOME/.config/rofi
 HOME/.config/safeeyes
 HOME/.config/viper4linux
 HOME/.config/wmrc
+HOME/.local/share/file-manager/actions

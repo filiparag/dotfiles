@@ -86,6 +86,7 @@ dependencies: .bootstrap
 	@sudo systemctl enable sshd
 	@sudo systemctl enable cronie
 	@sudo systemctl enable NetworkManager
+	@sudo systemctl enable avahi-daemon
 	@sudo systemctl enable "suspend@${USERNAME}"
 	@sudo systemctl enable "syncthing@${USERNAME}"
 	@sudo systemctl enable syncthing-resume
@@ -96,7 +97,11 @@ dependencies: .bootstrap
 	@sudo ufw default allow outgoing
 	@sudo ufw allow ssh
 	@sudo ufw allow syncthing
+	@sudo ufw allow 1714:1764/udp
+	@sudo ufw allow 1714:1764/tcp
 	@sudo ufw enable
 	@sudo chsh -s /usr/bin/fish "${USERNAME}"
+	@test -e /usr/bin/vi || sudo ln -s /usr/bin/vim /usr/bin/vi
+	@test -e /usr/bin/firefox || sudo ln -s /usr/bin/firefox-developer-edition /usr/bin/firefox
 	@sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 	@gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
