@@ -41,7 +41,6 @@ gvfs
 gvfs-mtp
 gvfs-nfs
 htop
-i3lock
 imagemagick
 inetutils
 jq
