@@ -2,10 +2,12 @@
 # WMRC_DEPS: sudo, ddcutil
 # WMRC_FLAGS: 
 
-MAX_FILE="/sys/class/backlight/intel_backlight/max_brightness"
-CUR_FILE="/sys/class/backlight/intel_backlight/brightness"
+INTERNAL_VENDOR="$(find /sys/class/backlight/ -mindepth 1 -maxdepth 1 -printf '%P' | head -n 1)"
 
-is_intel() {
+MAX_FILE="/sys/class/backlight/$INTERNAL_VENDOR/max_brightness"
+CUR_FILE="/sys/class/backlight/$INTERNAL_VENDOR/brightness"
+
+is_internal() {
   if [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ]; then
     return 0 # Intel backlight
   else
@@ -15,8 +17,7 @@ is_intel() {
 
 read() {
 
-  if is_intel; then
-
+  if is_internal; then
     [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ] || \
       error "Brightness control is unavailable!" fatal 2
 
@@ -63,7 +64,7 @@ write() {
   [ "$NEW" -lt "0" ] && \
     NEW="0"
 
-  if is_intel; then
+  if is_internal; then
 
     echo "$NEW" | sudo tee "$CUR_FILE"
 

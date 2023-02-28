@@ -10,8 +10,10 @@ bc
 binutils
 bspwm
 code
+croc
 cronie
 dash
+ddcutil
 dino
 dunst
 eog
@@ -26,6 +28,7 @@ file-roller
 firefox
 fish
 flameshot
+flatpak
 fzf
 gettext
 gifski
@@ -42,6 +45,7 @@ i3lock
 imagemagick
 inetutils
 jq
+kdeconnect
 keepassxc
 otf-latin-modern
 otf-latinmodern-math
@@ -62,6 +66,7 @@ mypaint
 neofetch
 networkmanager
 nfs-utils
+noto-color-emoji-fontconfig
 noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
@@ -69,6 +74,7 @@ ntp
 numlockx
 openresolv
 openssh
+openssl-1.1
 paper-icon-theme-git
 paprefs
 pavucontrol
@@ -80,6 +86,9 @@ pkgconf
 playerctl
 polybar
 pulseaudio
+pulseaudio-alsa
+pulseaudio-bluetooth
+pulseaudio-zeroconf
 python-axolotl
 python-axolotl-curve25519
 python-pip
@@ -95,12 +104,14 @@ rofi-calc
 rsync
 safeeyes
 signal-desktop
+starship
 sublime-text-4
 sudo
 sxhkd
 sydf
 syncthing
 sysstat
+thunderbird
 tigervnc
 tmux
 tree
@@ -127,6 +138,7 @@ wmrc
 wpa_supplicant
 x11-ssh-askpass
 xclip
+xdg-desktop-portal-gtk
 xdg-utils
 xdotool
 xf86-input-libinput

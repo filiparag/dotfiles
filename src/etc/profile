@@ -17,6 +17,7 @@ export QT_QPA_PLATFORMTHEME="qt5ct"
 export QT_PLATFORMTHEME="qt5ct"
 export QT_PLATFORM_PLUGIN="qt5ct"
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
+export EDITOR=/usr/bin/vim
 
 appendpath '/usr/local/sbin'
 appendpath '/usr/local/bin'
@@ -43,5 +44,3 @@ unset TERMCAP
 
 # Man is much better than us at figuring this out
 unset MANPATH
-# >>> Added by cnchi installer
-EDITOR=/usr/bin/nano

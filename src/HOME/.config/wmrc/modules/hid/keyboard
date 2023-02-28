@@ -38,10 +38,10 @@ keybinds() {
         sudo su -c "echo -n 0 > $FILE"
       done
 
-      # Turn of power LED
+      # Turn of power and lid logo LEDs
       [ -e "/proc/acpi/ibm/led" ] &&
         sudo su -c "echo '0 off' > /proc/acpi/ibm/led"
-
+        sudo su -c "echo '0' > /sys/devices/platform/thinkpad_acpi/leds/tpacpi::lid_logo_dot/brightness"
     else
 
       error "User '$(whoami)' is not allowed to run sudo!"

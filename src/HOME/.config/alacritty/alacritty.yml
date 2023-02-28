@@ -17,9 +17,10 @@ window:
   #
   # Specified in number of columns/lines, not pixels.
   # If both are `0`, this setting is ignored.
-  #dimensions:
-  #  columns: 0
-  #  lines: 0
+  dimensions:
+   columns: 88
+   lines: 23
+
   # Window position (changes require restart)
   #
   # Specified in number of pixels.
@@ -34,32 +35,37 @@ window:
   padding:
     x: 10
     y: 10
-    # Spread additional padding evenly around the terminal content.
-    #dynamic_padding: false
-    # Window decorations
-    #
-    # Values for `decorations`:
-    #     - full: Borders and title bar
-    #     - none: Neither borders nor title bar
-    #
-    # Values for `decorations` (macOS only):
-    #     - transparent: Title bar, transparent background and title bar buttons
-    #     - buttonless: Title bar, transparent background, but no title bar buttons
-    #decorations: full
-    # Startup Mode (changes require restart)
-    #
-    # Values for `startup_mode`:
-    #   - Windowed
-    #   - Maximized
-    #   - Fullscreen
-    #
-    # Values for `startup_mode` (macOS only):
-    #   - SimpleFullscreen
-    #startup_mode: Windowed
-    # Window title
-    #title: Alacritty
-    # Window class (Linux/BSD only):
-    #class:
+
+  # Spread additional padding evenly around the terminal content.
+  #dynamic_padding: false
+
+  # Window decorations
+  #
+  # Values for `decorations`:
+  #     - full: Borders and title bar
+  #     - none: Neither borders nor title bar
+  #
+  # Values for `decorations` (macOS only):
+  #     - transparent: Title bar, transparent background and title bar buttons
+  #     - buttonless: Title bar, transparent background, but no title bar buttons
+  #decorations: full
+
+  # Startup Mode (changes require restart)
+  #
+  # Values for `startup_mode`:
+  #   - Windowed
+  #   - Maximized
+  #   - Fullscreen
+  #
+  # Values for `startup_mode` (macOS only):
+  #   - SimpleFullscreen
+  startup_mode: Maximized
+
+  # Window title
+  #title: Alacritty
+
+  # Window class (Linux/BSD only):
+  #class:
     # Application instance name
     #instance: Alacritty
     # General application class
@@ -72,7 +78,8 @@ window:
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
-  history: 20000
+  history: 100000
+
   # Number of lines the viewport will move for every line scrolled when
   # scrollback is enabled (history > 0).
   #multiplier: 3

@@ -24,3 +24,6 @@ set -g -x LANG 'en_US.UTF-8'
 
 # Cargo
 set -g -x CARGO_TARGET_DIR "$HOME/.cargo/target"
+
+# Valgrind
+set -x DEBUGINFOD_URLS 'https://debuginfod.archlinux.org'

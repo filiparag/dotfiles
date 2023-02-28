@@ -6,6 +6,7 @@ APPS='unclutter -idle 1
       redshift-qt
       dunst
       flameshot
+      kdeconnect-indicator
       signal-desktop --start-in-tray
       dino --gapplication-service
       discord

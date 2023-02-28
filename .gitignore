@@ -1,9 +1,8 @@
-# Workfiles
-plist
-fakeroot
-oldroot
-
 # Syncthing
 .stfolder
 .stignore
 .stversions
+**.sync-conflict**
+
+# Dynamic files
+src/HOME/.config/fish/fish_variables
