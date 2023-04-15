@@ -1,0 +1,195 @@
+#!/bin/sh
+
+panic() {
+    >&2 echo "$@"
+    exit 1
+}
+
+chech_permissions() {
+    if ! test -e "$1"; then
+        panic "File not found: '$1'"
+    fi
+    if ! test -r "$1" || ! test -w "$1"; then
+        panic "Insufficient permissions: $1"
+    fi
+}
+
+cleanup_empty_directory() {
+    test -d "$1" || \
+        panic "Target is not a directory: $1"
+    arg="$1"
+    while ! find "$arg" -mindepth 1 -maxdepth 1 | grep -q ''; do
+        next="$(realpath --no-symlinks "$arg/..")"
+        rmdir "$arg" || \
+            panic "Unable to clean up empty directory: $arg"
+        arg="$next"
+    done
+}
+
+existing_directory_conflict() {
+    project_base_directory
+    while read -r arg; do
+        if echo "$1" | grep -qE "^/$arg"; then
+            panic "Target is a child of an existing directory in project: $project/src/$arg"
+        fi
+        if echo "/$arg" | grep -qE "^$1"; then
+            panic "Target is a parent of an existing directory in project: $project/src/$arg"
+        fi
+    done < "$project/dirlist.txt"
+}
+
+parent_conflict() {
+    project_base_directory
+    arg="$(find "$project/src" -type f -printf '/%P\n' | grep -E "^$1")";
+    if [ -n "$arg" ]; then
+        panic "Target is a parent of a file in project: $project/src$(echo "$arg" | head -n 1)"
+    fi
+    while read -r arg; do
+        if echo "/$arg" | grep -qE "^$1" && [ "$1" != "/$arg" ]; then
+            panic "Target is a parent of a directory in project: $project/src/$arg"
+        fi
+    done < "$project/dirlist.txt"
+}
+
+child_conflict() {
+    project_base_directory
+    next="$1"
+    while [ -n "$next" ]; do
+        while read -r arg; do
+            if echo "$next" | grep -qE "^/$arg" && [ "$next" != "/$arg" ]; then
+                panic "Target is a child of a directory in project: $project/src/$arg"
+            fi
+        done < "$project/dirlist.txt"
+        next="$(echo "$next" | sed 's/\/[^\/]*$//')"
+    done
+}
+
+project_base_directory() {
+    arg="$(readlink -f "$0")"
+    project="$(echo "$arg" | sed 's/\/[^\/]*$//')"
+    for _ in $(seq 0 3); do
+        project="$(readlink -f "$project/..")"
+    done
+    test -f "$project/dirlist.txt" || \
+        panic "Dotfiles project not found: $project"
+    chech_permissions "$project"
+}
+
+relative_target() {
+   chech_permissions "$1"
+    arg="$(realpath --no-symlinks --relative-to "$HOME" "$1")"
+    if echo "$arg" | grep -qvE '^../'; then
+        source="$(realpath --no-symlinks "$1")"
+        dest="/HOME/$arg"
+    else
+        abs="$(realpath --no-symlinks "$1")"
+        source="$abs"
+        dest="$abs"
+    fi
+    dest_dir="$(echo "$dest" | sed 's/\/[^\/]*$//')"
+    if [ -z "$source" ] || [ -z "$dest" ] || [ -z "$dest_dir" ]; then
+        panic "Error calculating relative target: $1"
+    fi
+}
+
+add_to_project() {
+    project_base_directory
+    relative_target "$1"
+    if test -f "$1"; then
+        type='file'
+    elif test -d "$1"; then
+        type='dir'
+    else
+        panic "Unsupported file type: $1"
+    fi
+    existing_directory_conflict "$dest"
+    parent_conflict "$dest"
+    test -e "$project/src$dest" && \
+        panic 'Already exists in project'
+    if [ "$type" = 'file' ]; then
+        mkdir -p "$project/src$dest_dir" || \
+            panic "Unable to create destination directory: $project/src$dest_dir"
+        mv -i "$source" "$project/src$dest" || \
+            panic "Unable to move target file: $source -> $project/src$dest"
+        ln -si "$project/src$dest" "$source" || \
+            panic "Unable to create symbolic link: $project/src$dest -> $source"
+    fi
+    if [ "$type" = 'dir' ]; then
+        mkdir -p "$project/src$dest_dir" || \
+            panic "Unable to create destination directory: $project/src$dest_dir"
+        mv -i "$source" "$project/src$dest" || \
+            panic "Unable to move target directory: $source -> $project/src$dest"
+        ln -si "$project/src$dest" "$source" || \
+            panic "Unable to create symbolic link: $project/src$dest -> $source"
+        echo "$dest" | sed 's/^\///' >> "$project/dirlist.txt" || \
+            panic "Unable to append to directory list: $dest >> $project/dirlist.txt"
+    fi
+}
+
+remove_from_project() {
+    project_base_directory
+    relative_target "$1"
+    test -e "$project/src$dest" || \
+        panic 'Does not exist in project'
+    chech_permissions "$project/src$dest"
+    if test -f "$project/src$dest"; then
+        type='file'
+    elif test -d "$project/src$dest"; then
+        type='dir'
+    else
+       panic "Unexpected file type: $1"
+    fi
+    child_conflict "$dest"
+    if [ "$type" = 'file' ]; then
+        rm -i "$source" || \
+            panic "Unable to remove target: $source"
+        mv -i "$project/src$dest" "$source" || \
+            panic "Unable to move target file: $project/src$dest -> $source"
+        cleanup_empty_directory "$project/src$dest_dir"
+    fi
+    if [ "$type" = 'dir' ]; then
+        grep -qE "^$(echo "$dest" | sed 's/\///')$" "$project/dirlist.txt" ||
+            panic "Target is not a directory in project"
+        rm -i "$source" || \
+            panic "Unable to remove target: $source"
+        mv -i "$project/src$dest" "$source" || \
+            panic "Unable to move target directory: $project/src$dest -> $source"
+        awk -i inplace "{if(\"/\"\$0!=\"$dest\")print\$0 }" "$project/dirlist.txt" || \
+            panic "Unable to remove from directory list: $dest >> $project/dirlist.txt"
+        cleanup_empty_directory "$project/src$dest_dir"
+    fi
+}
+
+run_makefile() {
+    project_base_directory
+    test -r "$HOME/.cache/dotfiles.ini" || \
+        panic "Dotfile configuration cache is missing: $HOME/.cache/dotfiles.ini"
+    . "$HOME/.cache/dotfiles.ini"
+    cd "$project" || \
+        panic "Unable to change directory: $project"
+    make "$type"
+}
+
+print_usage() {
+    printf 'Dotfile Manager
+  add <path>  add file or directory to project
+  rm <path>   remove file or directory from project
+  reload      rerun project installation
+  help        print help
+\n'
+    project_base_directory
+    printf 'Project directory: %s\n' "$project"
+}
+
+case "$1" in
+    add)
+        add_to_project "$2";;
+    rm)
+        remove_from_project "$2";;
+    reload)
+        run_makefile;;
+    help|'--help')
+        print_usage;;
+    *)
+        panic 'Invalid arguments';;
+esac
