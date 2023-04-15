@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Action
+Profiles=profile_id
+Name=Share with KDE Connect
+Icon=kdeconnect
+
+[X-Action-Profile profile_id]
+MimeTypes=all/all
+Exec=kdeconnect-handler '%f'
