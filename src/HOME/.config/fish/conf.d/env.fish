@@ -1,5 +1,11 @@
 # Configuration environment variables
 
+# XDG
+set -g -x XDG_CONFIG_HOME "$HOME/.config"
+set -g -x XDG_CACHE_HOME "$HOME/.cache"
+set -g -x XDG_DATA_HOME "$HOME/.local/share"
+set -g -x XDG_STATE_HOME "$HOME/.local/state"
+
 # Qt 5
 set -g -x QT_QPA_PLATFORMTHEME qt5ct
 set -g -x QT_AUTO_SCREEN_SCALE_FACTOR 0
