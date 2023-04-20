@@ -41,9 +41,9 @@ case "$class" in
 		echo "state=floating"
 		echo "rectangle=640x480+363+144"
 		;;
-	Dino|Signal|Wire)
-		echo "desktop=3"
-		;;
+	# Dino|Signal|Wire)
+	# 	echo "desktop=3"
+	# 	;;
 	freezer)
 		echo "desktop=5"
 		;;
