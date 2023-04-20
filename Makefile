@@ -9,7 +9,12 @@ SRCDIR			:= $(shell realpath ./src/)
 .PHONY: symlink
 
 copy: .bootstrap .configure .prepare-copy .rename .chown .package .install .cleanup .docs .post-install
+	@mkdir -p ${HOMEDIR}/.cache
+	@echo 'type=copy' > ${HOMEDIR}/.cache/dotfiles.ini
+
 symlink: .bootstrap .configure .prepare-symlink .rename .chown .package .install .cleanup .docs .post-install
+	@mkdir -p ${HOMEDIR}/.cache
+	@echo 'type=symlink' > ${HOMEDIR}/.cache/dotfiles.ini
 
 .bootstrap:
 	@sudo pacman -Sy --needed git dialog coreutils findutils pciutils

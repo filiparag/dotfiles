@@ -3894,7 +3894,8 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ	kaomoji/yolo
 𝄫	symbols/music/doubleflat
 𝄪	symbols/music/doublesharp
 ♫	symbols/music/sing
-—	symbols/other-symbol/dash
+–	symbols/other-symbol/en-dash
+—	symbols/other-symbol/em-dash
 ↓	symbols/other-symbol/down
 „	symbols/other-symbol/double-begin-quote
 ”	symbols/other-symbol/double-end-quote
@@ -3933,6 +3934,10 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ	kaomoji/yolo
 ∀	math/for-all
 ≥	math/greater-than-or-equal-to
 ⇒	math/implies
+→	math/arrow-right
+←	math/arrow-left
+↦	math/maplet-arrow-right
+↤	math/maplet-arrow-left
 ∞	math/infinity
 ∫	math/integral
 ∬	math/integral2
