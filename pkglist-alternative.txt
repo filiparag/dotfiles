@@ -12,6 +12,7 @@ bspwm
 code
 cronie
 dash
+ddcutil
 dunst
 eog
 evince
