@@ -28,6 +28,7 @@ window:
   #position:
   #  x: 0
   #  y: 0
+
   # Window padding (changes require restart)
   #
   # Blank space added around the window in pixels. This padding is scaled
@@ -70,11 +71,13 @@ window:
     #instance: Alacritty
     # General application class
     #general: Alacritty
+
   # GTK theme variant (Linux/BSD only)
   #
   # Override the variant of the GTK theme. Commonly supported values are `dark` and `light`.
   # Set this to `None` to use the default theme variant.
   #gtk_theme_variant: None
+
 scrolling:
   # Maximum number of lines in the scrollback buffer.
   # Specifying '0' will disable scrolling.
@@ -98,47 +101,56 @@ font:
 
     # The `style` can be specified to pick a specific face.
     style: Regular
-    # Bold font face
-    #bold:
+
+  # Bold font face
+  #bold:
     # Font family
     #
     # If the bold family is not specified, it will fall back to the
     # value specified for the normal font.
     #family: monospace
+
     # The `style` can be specified to pick a specific face.
     #style: Bold
-    # Italic font face
-    #italic:
+
+  # Italic font face
+  #italic:
     # Font family
     #
     # If the italic family is not specified, it will fall back to the
     # value specified for the normal font.
     #family: monospace
+
     # The `style` can be specified to pick a specific face.
     #style: Italic
-    # Bold italic font face
-    #bold_italic:
+
+  # Bold italic font face
+  #bold_italic:
     # Font family
     #
     # If the bold italic family is not specified, it will fall back to the
     # value specified for the normal font.
     #family: monospace
+
     # The `style` can be specified to pick a specific face.
     #style: Bold Italic
 
   # Point size
   #size: 11.0
+
   # Offset is the extra space around each character. `offset.y` can be thought of
   # as modifying the line spacing, and `offset.x` as modifying the letter spacing.
   offset:
     x: 0
     y: 6
+
   # Glyph offset determines the locations of the glyphs within their cells with
   # the default being at the bottom. Increasing `x` moves the glyph to the right,
   # increasing `y` moves the glyph upwards.
   #glyph_offset:
   #  x: 0
   #  y: 0
+
   # Thin stroke font rendering (macOS only)
   #
   # Thin strokes are suitable for retina displays, but for non-retina screens
@@ -154,41 +166,108 @@ font:
   # This is a global setting and will require a log out or restart to take
   # effect.
   #use_thin_strokes: true
+
 # If `true`, bold text is drawn using the bright color variants.
 #draw_bold_text_with_bright_colors: false
+
 # Colors (Tomorrow Night Bright)
 colors:
   # Default colors
   primary:
-    background: "#002b36" # base03
-    foreground: "#839496" # base0
+    background: '0x131313'
+    foreground: '0xdadada'
+
+    # Bright and dim foreground colors
+    #
+    # The dimmed foreground color is calculated automatically if it is not present.
+    # If the bright foreground color is not set, or `draw_bold_text_with_bright_colors`
+    # is `false`, the normal foreground color will be used.
+    dim_foreground: '0x9a9a9a'
+    #bright_foreground: '0xffffff'
 
   # Cursor colors
+  #
+  # Colors which should be used to draw the terminal cursor. If these are unset,
+  # the cursor color will be the inverse of the cell color.
   cursor:
-    text: "#002b36" # base03
-    cursor: "#839496" # base0
+    # text: '0x000000'
+    cursor: '0xffffff'
+
+  # Selection colors
+  #
+  # Colors which should be used to draw the selection area. If selection
+  # background is unset, selection color will be the inverse of the cell colors.
+  # If only text is unset the cell text color will remain the same.
+  #selection:
+  #  text: '0xeaeaea'
+  #  background: '0x404040'
+
+  normal:
+   black:   '0x1c1c1c'
+   red:     '0xff005b'
+   green:   '0xcee318'
+   yellow:  '0xffe755'
+   blue:    '0x048ac7'
+   magenta: '0x833c9f'
+   cyan:    '0x0ac1cd'
+   white:   '0xe5e5e5'
+
+  bright:
+   black:   '0x666666'
+   red:     '0xff00a0'
+   green:   '0xccff00'
+   yellow:  '0xff9f00'
+   blue:    '0x48c6ff'
+   magenta: '0xbe67e1'
+   cyan:    '0x63e7f0'
+   white:   '0xf3f3f3'
 
   # Normal colors
-  normal:
-    black: "#073642" # base02
-    red: "#dc322f" # red
-    green: "#859900" # green
-    yellow: "#b58900" # yellow
-    blue: "#268bd2" # blue
-    magenta: "#d33682" # magenta
-    cyan: "#2aa198" # cyan
-    white: "#eee8d5" # base2
+  #normal:
+  #  black:   '0x000000'
+  #  red:     '0xd54e53'
+  #  green:   '0xb9ca4a'
+  #  yellow:  '0xe6c547'
+  #  blue:    '0x7aa6da'
+  #  magenta: '0xc397d8'
+  #  cyan:    '0x70c0ba'
+  #  white:   '0xeaeaea'
 
   # Bright colors
-  bright:
-    black: "#002b36" # base03
-    red: "#cb4b16" # orange
-    green: "#586e75" # base01
-    yellow: "#657b83" # base00
-    blue: "#839496" # base0
-    magenta: "#6c71c4" # violet
-    cyan: "#93a1a1" # base1
-    white: "#fdf6e3" # base3
+  #bright:
+  #  black:   '0x666666'
+  #  red:     '0xff3334'
+  #  green:   '0x9ec400'
+  #  yellow:  '0xe7c547'
+  #  blue:    '0x7aa6da'
+  #  magenta: '0xb77ee0'
+  #  cyan:    '0x54ced6'
+  #  white:   '0xffffff'
+
+  # Dim colors
+  #
+  # If the dim colors are not set, they will be calculated automatically based
+  # on the `normal` colors.
+  #dim:
+  #  black:   '0x000000'
+  #  red:     '0x8c3336'
+  #  green:   '0x7a8530'
+  #  yellow:  '0x97822e'
+  #  blue:    '0x506d8f'
+  #  magenta: '0x80638e'
+  #  cyan:    '0x497e7a'
+  #  white:   '0x9a9a9a'
+
+  # Indexed Colors
+  #
+  # The indexed colors include all colors from 16 to 256.
+  # When these are not set, they're filled with sensible defaults.
+  #
+  # Example:
+  #   `- { index: 16, color: '0xff00ff' }`
+  #
+  #indexed_colors: []
+
 # Visual Bell
 #
 # Any time the BEL code is received, Alacritty "rings" the visual bell. Once
@@ -214,16 +293,19 @@ colors:
 #  animation: EaseOutExpo
 #  duration: 0
 #  color: '0xffffff'
+
 # Background opacity
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-window.opacity: 0.7
+window.opacity: 1.0
 
 #selection:
-#semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
-# When set to `true`, selected text will be copied to the primary clipboard.
-#save_to_clipboard: false
+  #semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+
+  # When set to `true`, selected text will be copied to the primary clipboard.
+  #save_to_clipboard: false
+
 # Allow terminal applications to change Alacritty's window title.
 window.dynamic_title: true
 
@@ -239,42 +321,50 @@ cursor:
   # If this is `true`, the cursor will be rendered as a hollow box when the
   # window is not focused.
   unfocused_hollow: false
-  # Live config reload (changes require restart)
-  #live_config_reload: true
-  # Shell
-  #
-  # You can set `shell.program` to the path of your favorite shell, e.g. `/bin/fish`.
-  # Entries in `shell.args` are passed unmodified as arguments to the shell.
-  #
-  # Default:
-  #   - (macOS) /bin/bash --login
-  #   - (Linux/BSD) user login shell
-  #   - (Windows) powershell
-  #shell:
-  #  program: /bin/bash
-  #  args:
-  #    - --login
-  # Startup directory
-  #
-  # Directory the shell is started in. If this is unset, or `None`, the working
-  # directory of the parent process will be used.
-  #working_directory: None
-  # WinPTY backend (Windows only)
-  #
-  # Alacritty defaults to using the newer ConPTY backend if it is available,
-  # since it resolves a lot of bugs and is quite a bit faster. If it is not
-  # available, the the WinPTY backend will be used instead.
-  #
-  # Setting this option to `true` makes Alacritty use the legacy WinPTY backend,
-  # even if the ConPTY backend is available.
-  #winpty_backend: false
-  # Send ESC (\x1b) before characters when alt is pressed.
-  #alt_send_esc: true
-  #debug:
+
+# Live config reload (changes require restart)
+#live_config_reload: true
+
+# Shell
+#
+# You can set `shell.program` to the path of your favorite shell, e.g. `/bin/fish`.
+# Entries in `shell.args` are passed unmodified as arguments to the shell.
+#
+# Default:
+#   - (macOS) /bin/bash --login
+#   - (Linux/BSD) user login shell
+#   - (Windows) powershell
+#shell:
+#  program: /bin/bash
+#  args:
+#    - --login
+
+# Startup directory
+#
+# Directory the shell is started in. If this is unset, or `None`, the working
+# directory of the parent process will be used.
+#working_directory: None
+
+# WinPTY backend (Windows only)
+#
+# Alacritty defaults to using the newer ConPTY backend if it is available,
+# since it resolves a lot of bugs and is quite a bit faster. If it is not
+# available, the the WinPTY backend will be used instead.
+#
+# Setting this option to `true` makes Alacritty use the legacy WinPTY backend,
+# even if the ConPTY backend is available.
+#winpty_backend: false
+
+# Send ESC (\x1b) before characters when alt is pressed.
+#alt_send_esc: true
+
+#debug:
   # Display the time it takes to redraw each frame.
   #render_timer: false
+
   # Keep the log file after quitting Alacritty.
   #persistent_logging: false
+
   # Log level
   #
   # Values for `log_level`:
@@ -285,8 +375,10 @@ cursor:
   #   - Debug
   #   - Trace
   #log_level: Warn
+
   # Print all received window events.
   #print_events: false
+
   # Record all characters and escape sequences as test data.
   #ref_test: false
 
@@ -298,8 +390,10 @@ mouse:
   # or triple click.
   #double_click: { threshold: 300 }
   #triple_click: { threshold: 300 }
+
   # If this is `true`, the cursor is temporarily hidden when typing.
   #hide_when_typing: false
+
   hints:
     # URL launcher
     #
@@ -346,6 +440,7 @@ mouse:
 # - `mods` (see key bindings)
 #mouse_bindings:
 #  - { mouse: Middle, action: PasteSelection }
+
 # Key bindings
 #
 # Key bindings are specified as a list of objects. For example, this is the
@@ -451,16 +546,19 @@ mouse:
 # at once.
 key_bindings:
   # (Windows, Linux, and BSD only)
-  - { key: V, mods: Control|Shift, action: Paste }
-  - { key: C, mods: Control|Shift, action: Copy }
-  - { key: Insert, mods: Shift, action: PasteSelection }
-  - { key: Key0, mods: Control, action: ResetFontSize }
-  - { key: Equals, mods: Control, action: IncreaseFontSize }
-  - { key: Minus, mods: Control, action: DecreaseFontSize }
-  - { key: L, mods: Control|Shift, action: ClearHistory }
-  - { key: F11, action: ToggleFullscreen }
+  - { key: V,        mods: Control|Shift, action: Paste            }
+  - { key: C,        mods: Control|Shift, action: Copy             }
+  - { key: Insert,   mods: Shift,         action: PasteSelection   }
+  - { key: Key0,     mods: Control,       action: ResetFontSize    }
+  - { key: Equals,   mods: Control,       action: IncreaseFontSize }
+  - { key: Minus,    mods: Control,       action: DecreaseFontSize }
+  - { key: L,        mods: Control|Shift, action: ClearHistory     }
+  - { key: F11,                           action: ToggleFullscreen }
+
+
   # (Windows only)
   #- { key: Return,   mods: Alt,           action: ToggleFullscreen }
+
   # (macOS only)
   #- { key: Key0,   mods: Command,         action: ResetFontSize    }
   #- { key: Equals, mods: Command,         action: IncreaseFontSize }
@@ -475,6 +573,7 @@ key_bindings:
   #- { key: Q,      mods: Command,         action: Quit             }
   #- { key: W,      mods: Command,         action: Quit             }
   #- { key: F,      mods: Command|Control, action: ToggleFullscreen }
+
   #- { key: Paste,                    action: Paste                            }
   #- { key: Copy,                     action: Copy                             }
   #- { key: L,         mods: Control, action: ClearLogNotice                   }
@@ -483,4 +582,3 @@ key_bindings:
   #- { key: PageDown,  mods: Shift,   action: ScrollPageDown, mode: ~Alt       }
   #- { key: Home,      mods: Shift,   action: ScrollToTop,    mode: ~Alt       }
   #- { key: End,       mods: Shift,   action: ScrollToBottom, mode: ~Alt       }
-theme: Solarized-Dark
