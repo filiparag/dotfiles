@@ -10,7 +10,7 @@ start() {
   pgrep -u "$(whoami)" x0vncserver >/dev/null &&
     error "VNC server is already running!" fatal 3
 
-  x0vncserver -SecurityTypes=TLSVnc \
+  x0vncserver -CompareFB=1 -FrameRate=24 -SecurityTypes=TLSVnc \
 		--PasswordFile="$HOME/.vnc/passwd" >/dev/null &
 
   [ -z $? ] ||
