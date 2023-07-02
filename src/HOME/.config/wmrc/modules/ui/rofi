@@ -19,6 +19,14 @@ calc() {
 
 }
 
+movewindow() {
+  
+ bspc query -N -n .leaf | xargs -I{} sh -c 'echo {} $(xprop -notype -id {} _NET_WM_DESKTOP WM_NAME  \
+          | sed "s#WM_NAME = \"# #g" | sed "s#\" WM_CLASS =# #g" \
+          | sed "s#WM_CLASS = # #g" | sed "s#_NET_WM_DESKTOP =# #g" \
+          | sed "s#\"# #g"  )' sh | rofi -dmenu -p "window" | awk '{print $1}' | xargs -I{} bspc node {} --to-desktop newest;  bspc node --focus {} 
+}
+
 files() {
 
   CURRENT="$HOME"

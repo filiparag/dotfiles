@@ -14,6 +14,9 @@ super + grave
 super + z
 	wmrc -r 'ui/rofi(character)'
 
+super + x
+	wmrc -r 'ui/rofi(movewindow)'
+
 # Show calculator
 super + @less
 	wmrc -r 'ui/rofi(calc)'
