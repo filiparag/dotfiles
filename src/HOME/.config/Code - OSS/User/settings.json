@@ -6,13 +6,25 @@
     "statusBar.debuggingBackground": "#ffae00",
     "editorRuler.foreground": "#2a2a2a"
   },
-  "terminal.integrated.fontFamily": "Source Code Pro",
-  "editor.rulers": [100],
-  "terminal.integrated.tabs.enabled": true,
+  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.iconTheme": "vscode-icons",
   "workbench.editor.untitled.hint": "hidden",
+  "window.zoomLevel": 1,
   "editor.suggestSelection": "first",
-  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "editor.rulers": [
+    80,
+    100,
+    120
+  ],
   "editor.formatOnSave": true,
+  "editor.lineHeight": 20,
+  "explorer.autoReveal": true,
+  "files.insertFinalNewline": true,
+  "update.showReleaseNotes": false,
   "diffEditor.ignoreTrimWhitespace": false,
-  "window.zoomLevel": 1
+  "git.openRepositoryInParentFolders": "always",
+  "telemetry.telemetryLevel": "off",
+  "terminal.integrated.fontFamily": "Source Code Pro",
+  "terminal.integrated.tabs.enabled": true,
+  "vsicons.dontShowNewVersionMessage": true,
 }

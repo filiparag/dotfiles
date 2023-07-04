@@ -41,10 +41,10 @@ case "$class" in
 		echo "state=floating"
 		echo "rectangle=640x480+363+144"
 		;;
-	Dino|Signal|Wire)
+	Dino|dino|Signal|Wire)
 		echo "desktop=3"
 		;;
-	freezer)
+	freezer|audiotube|Supersonic)
 		echo "desktop=5"
 		;;
 	thunderbird)

@@ -15,6 +15,7 @@ APPS='unclutter -idle 1
       mail-notification
       ayatana-webmail
       safeeyes
+      xhost +si:localuser:$USER
       '
 
 app_list() {
