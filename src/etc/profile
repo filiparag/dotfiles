@@ -1,7 +1,7 @@
 # /etc/profile
 
 # Set our umask
-umask 022
+umask 027
 
 # Append our default paths
 appendpath () {
