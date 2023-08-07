@@ -1,7 +1,7 @@
 {
     "allow_postpone": true,
     "long_break_duration": 30,
-    "long_break_interval": 60,
+    "long_break_interval": 70,
     "long_breaks": [
         {
             "name": "Walk for a while"
@@ -35,7 +35,7 @@
             "enabled": true,
             "id": "audiblealert",
             "settings": {
-                "post_break_alert": true,
+                "post_break_alert": false,
                 "pre_break_alert": true
             },
             "version": "0.0.3"

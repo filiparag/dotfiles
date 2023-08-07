@@ -23,13 +23,13 @@ app_list() {
   APPLIST=""
 
   if [ -n "$2" ]; then
-    
+
     for A in $(echo "$*" | sed "s/$1//g"); do
-    
+
       APPLIST="$APPLIST\n$(echo "$APPS" |
               grep -P "^ *$A( |$)" ||
               error "Application '$A' is not listed!")"
-    
+
     done
 
   else
@@ -48,7 +48,7 @@ start() {
   app_list "$@"
 
   for A in $(echo "$APPLIST" | sed 's/^ *//g; s/ /\&nbsp/g'); do
-    
+
     CMD="$(echo "$A" | sed 's/\&nbsp/ /g')"
     EXE="$(echo "$CMD" | cut -d' ' -f1)"
 
@@ -74,7 +74,7 @@ stop() {
   app_list "$@"
 
   for A in $(echo "$APPLIST" | sed 's/^ *//g; s/ /\&nbsp/g'); do
-    
+
     EXE="$(echo "$A" | sed 's/\&nbsp/ /g' | cut -d' ' -f1)"
 
     if pgrep -u "$(whoami)" "$EXE" >/dev/null; then

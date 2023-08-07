@@ -19,6 +19,7 @@
   "editor.formatOnSave": true,
   "editor.lineHeight": 20,
   "explorer.autoReveal": true,
+  "explorer.compactFolders": false,
   "files.insertFinalNewline": true,
   "update.showReleaseNotes": false,
   "diffEditor.ignoreTrimWhitespace": false,
@@ -27,4 +28,5 @@
   "terminal.integrated.fontFamily": "Source Code Pro",
   "terminal.integrated.tabs.enabled": true,
   "vsicons.dontShowNewVersionMessage": true,
+  "workbench.editor.labelFormat": "short",
 }
