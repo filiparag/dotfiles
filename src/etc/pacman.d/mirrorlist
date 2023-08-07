@@ -1,6 +1,14 @@
-Server = https://mirror.pkgbuild.com/$repo/os/$arch
+Server = https://europe.mirror.pkgbuild.com/$repo/os/$arch
 Server = https://archimonde.ts.si/archlinux/$repo/os/$arch
-Server = https://mirror.23media.com/archlinux/$repo/os/$arch
+Server = https://at.arch.mirror.kescher.at/$repo/os/$arch
+Server = https://de.arch.mirror.kescher.at/$repo/os/$arch
+Server = https://mirror.23m.com/archlinux/$repo/os/$arch
 Server = https://mirror.f4st.host/archlinux/$repo/os/$arch
-Server = https://ftp.halifax.rwth-aachen.de/archlinux/$repo/os/$arch
+Server = https://mirror.ihost.md/archlinux/$repo/os/$arch
+Server = https://mirrors.pidginhost.com/arch/$repo/os/$arch
+Server = https://mirror.fra10.de.leaseweb.net/archlinux/$repo/os/$arch
+Server = https://mirrors.xtom.de/archlinux/$repo/os/$arch
+Server = https://ftp.sh.cvut.cz/arch/$repo/os/$arch
 Server = https://mirror.selfnet.de/archlinux/$repo/os/$arch
+Server = https://ftp.halifax.rwth-aachen.de/archlinux/$repo/os/$arch
+Server = https://mirror.pseudoform.org/$repo/os/$arch
