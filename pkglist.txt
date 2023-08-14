@@ -9,12 +9,14 @@ bat
 bc
 binutils
 bspwm
+ccache
 code
 croc
 cronie
 dash
 ddcutil
 dino
+dnsmasq
 dunst
 eog
 ethtool
@@ -63,6 +65,7 @@ mpv
 mpv-mpris
 mypaint
 neofetch
+ttf-sourcecodepro-nerd
 networkmanager
 nfs-utils
 noto-color-emoji-fontconfig

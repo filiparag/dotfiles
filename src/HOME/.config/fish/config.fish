@@ -1,8 +1,6 @@
 # Start SSH agent
 ssh_agent
 
-
-
 function __graphical_environments
     set -l envs bspwm gnome-shell
     set -l ens tty
@@ -30,8 +28,9 @@ end
 
 # Start X at login
 if status --is-login
-   if test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1
-       # exec startx -- -keeptty
-       __graphical_environments
-   end
+    if test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1
+        # exec startx -- -keeptty
+	# __graphical_environments
+	__graphical_environment_bspwm
+    end
 end
