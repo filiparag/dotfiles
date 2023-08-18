@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: polybar, pgrep, xrandr
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='polybar pgrep xrandr'
 
 PID_FILE="/tmp/polybar@$(whoami)"
 
@@ -85,5 +85,3 @@ stop() {
   rm -f "$PID_FILE"
 
 }
-
-. "$WMRC_MODULES/init"

@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: i3lock, xrandr, convert, perl, xkb-switch, xset, xdotool
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='i3lock xrandr convert perl xkb-switch xset xdotool'
 
 CACHE_DIR="$HOME/.cache/lockscreen"
 
@@ -17,7 +17,7 @@ generate_individual() {
   mkdir -p "$CACHE_DIR" || \
     error "Unable create lockscreen chache directory!" fatal 4
 
-  MONITORS="$(xrandr --listmonitors | 
+  MONITORS="$(xrandr --listmonitors |
             perl -n -e'/\d+: \+[^ ]+ (\d+)\/(\d+)x(\d+)\/(\d+)\+(\d+)\+(\d+)/
             && print "$1:$3:$5:$6 "')"
 
@@ -29,7 +29,7 @@ generate_individual() {
   OUTPUT_IMG_HEIGHT=0
 
   PARAMS=""
-  
+
   local CACHE_IMG
   local IFS
   local W
@@ -45,7 +45,7 @@ generate_individual() {
     H=$2
     X=$3
     Y=$4
-    
+
     CACHE_IMG="$CACHE_DIR/$W.$H.$MD5_BKG_IMG.png"
 
     [ -f "$CACHE_IMG" ] || \
@@ -69,13 +69,13 @@ generate_individual() {
 generate_composite() {
 
   generate_individual
-  
+
   if ! [ -f "$OUTPUT_IMG" ]; then
 
     convert -size "${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT}" \
       "xc:#101010" "$OUTPUT_IMG"
     convert -colorspace sRGB -type truecolor "$OUTPUT_IMG" $PARAMS "$OUTPUT_IMG"
-    
+
   fi
 
 }
@@ -96,9 +96,9 @@ lock() {
 smart_lock() {
 
   LANG="$(xkb-switch -p)"
-  CAPS="$(xset -q | 
+  CAPS="$(xset -q |
         grep -Pzo "Caps Lock: +(on|off)" |
-        sed "s/^.*: *//" | 
+        sed "s/^.*: *//" |
         tr '\0' '\n')"
 
   xkb-switch -s us
@@ -111,11 +111,11 @@ smart_lock() {
     xset dpms force off
   fi
 
-  wmrc -r 'ui/notify(pause)'
+  wmrc call ui/notify pause
 
   lock 'lock' 'wait'
 
-  wmrc -r 'ui/notify(resume)'
+  wmrc call ui/notify resume
 
   xkb-switch -s "$LANG"
   if [ "$CAPS" = "on" ]; then
@@ -146,7 +146,7 @@ start() {
 		--timer $BLANK_TIMEOUT \
 			"xset dpms force off" '' \
 		--timer $LOCK_TIMEOUT \
-			"wmrc -r 'screen/lock(smart_lock)'" '' \
+			"wmrc call screen/lock smart_lock" '' \
 		>/dev/null &
 
 }
@@ -159,5 +159,3 @@ stop() {
   killall -u "$(whoami)" -9 xidlehook > /dev/null
 
 }
-
-. "$WMRC_MODULES/init"

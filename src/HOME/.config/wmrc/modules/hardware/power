@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: sudo
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='sudo'
 
 off() {
 
@@ -19,5 +19,3 @@ suspend() {
 	sudo systemctl suspend
 
 }
-
-. "$WMRC_MODULES/init"

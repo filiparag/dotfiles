@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: rofi, xdotool, xclip, perl, xdg-open
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='rofi xdotool xclip perl xdg-open'
 
 start() {
 
@@ -24,7 +24,7 @@ files() {
   CURRENT="$HOME"
 
   while [ -n "$CURRENT" ]; do
-    
+
     LL="$(find "$CURRENT" -maxdepth 1 \
         -not -path "$CURRENT" \
         -not -name '.*' \
@@ -99,5 +99,3 @@ character() {
   fi
 
 }
-
-. "$WMRC_MODULES/init"

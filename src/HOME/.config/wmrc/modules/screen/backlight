@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: sudo, ddcutil
-# WMRC_FLAGS: 
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='sudo ddcutil'
 
 INTERNAL_VENDOR="$(find /sys/class/backlight/ -mindepth 1 -maxdepth 1 -printf '%P' | head -n 1)"
 
@@ -60,7 +60,7 @@ write() {
 
   [ "$NEW" -gt "$MAX" ] && \
     NEW="$MAX"
-  
+
   [ "$NEW" -lt "0" ] && \
     NEW="0"
 
@@ -77,15 +77,15 @@ write() {
 }
 
 inc() {
-  
+
   read
   step
-  
+
   [ -z "$2" ] && \
     MUL=1 || MUL="$2"
 
   CUR=$(( CUR + STEP * MUL ))
-  
+
   write "$CUR"
 
 }
@@ -94,27 +94,25 @@ dec() {
 
   read
   step
-  
+
   [ -z "$2" ] && \
     MUL=1 || MUL="$2"
 
   CUR=$(( CUR - STEP * MUL ))
-  
+
   write "$CUR"
 
 }
 
 equ() {
-  
+
   read
 
   [ -z "$2" ] && \
     MUL=1 || MUL="$2"
 
   CUR=$(( MAX / 100 * MUL ))
-  
+
   write "$CUR"
 
 }
-
-. "$WMRC_MODULES/init"

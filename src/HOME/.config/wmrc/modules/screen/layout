@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: arandr, xrandr, perl, rofi
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='arandr xrandr perl rofi'
 
 SCREENLAYOUT="$HOME/.screenlayout"
 
@@ -11,9 +11,9 @@ manual() {
   local WAIT
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
-  
+
   WAIT=$(arandr)
-  
+
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
   [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
@@ -27,7 +27,7 @@ restore() {
   local LAYOUT_NEW
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
-  
+
   [ -x "$SCREENLAYOUT/.restore.sh" ] && \
     "$SCREENLAYOUT/.restore.sh" || \
     error "Unable to restore previous monitor layout!" fatal 3
@@ -56,7 +56,7 @@ defined() {
   chmod +x "$SCREENLAYOUT/.restore.sh"
 
   "$SCREENLAYOUT/$SCRIPT"
-  
+
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
   [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
@@ -79,8 +79,8 @@ monitor() {
             print "--output $1 --off\n"' |
             grep -Fv "$(echo "$SEL" | sed 's/ (.*//')" |
             sed -z 's/\n/ /g')"
-  ON="$(echo "$SEL" | 
-          perl -n -e'/^([_-a-zA-Z0-9]+).* (\d+x\d+)/ && 
+  ON="$(echo "$SEL" |
+          perl -n -e'/^([_-a-zA-Z0-9]+).* (\d+x\d+)/ &&
           print "--output $1 --primary --mode $2 --pos 0x0 --rotate normal"')"
 
   NEW_LAYOUT="xrandr $OFF $ON"
@@ -98,9 +98,10 @@ monitor() {
 
 reload_ui() {
 
-  wmrc -r "wm/$WM"
-  wmrc -r 'ui/polybar(restart)'
-  wmrc -r 'screen/wallpaper_dynamic(restart),lock(generate_composite)'
+  wmrc call "wm/$WMRC_WM"
+  wmrc call ui/polybar restart
+  wmrc call screen/wallpaper_dynamic restart
+  wmrc call screen/lock generate_composite
 
 }
 
@@ -150,5 +151,3 @@ start() {
   fi
 
 }
-
-. "$WMRC_MODULES/init"

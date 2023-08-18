@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: pgrep, sxhkd
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='pgrep sxhkd'
 
 reload() {
 
@@ -28,5 +28,3 @@ stop() {
   killall -u "$(whoami)" -9 sxhkd > /dev/null
 
 }
-
-. "$WMRC_MODULES/init"

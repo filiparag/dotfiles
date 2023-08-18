@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: x0vncserver, pgrep
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='x0vncserver pgrep'
 
 start() {
 
@@ -22,9 +22,7 @@ stop() {
 
   pgrep -u "$(whoami)" x0vncserver >/dev/null ||
     error "VNC server is not running!" fatal 5
-  
+
   killall -9 x0vncserver >/dev/null &
 
 }
-
-. "$WMRC_MODULES/init"

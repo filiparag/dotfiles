@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: feh
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='feh'
 
 start() {
 
@@ -11,5 +11,3 @@ start() {
   DISPLAY=$DISPLAY feh --bg-fill "$BCK_IMG"
 
 }
-
-. "$WMRC_MODULES/init"

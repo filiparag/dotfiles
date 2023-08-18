@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: pgrep
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='pgrep'
 
 APPS='unclutter -idle 1
       redshift-qt
@@ -87,5 +87,3 @@ stop() {
   done
 
 }
-
-. "$WMRC_MODULES/init"

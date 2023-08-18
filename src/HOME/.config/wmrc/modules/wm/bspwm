@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: bspwm, bspc, xrandr
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='bspwm bspc xrandr'
 
 preferences() {
 
@@ -106,7 +106,7 @@ swap_monitor() {
 
 }
 
-start() {
+init() {
 
   preferences
   workspaces
@@ -114,5 +114,3 @@ start() {
   echo "$DISPLAY" > "/tmp/x11_$USER"
 
 }
-
-. "$WMRC_MODULES/init"

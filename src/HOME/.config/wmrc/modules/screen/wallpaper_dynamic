@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: feh, convert, jq, curl, bc, printf, xargs
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='feh convert jq curl bc printf xargs'
 
 BCK_IMG="$HOME/Pictures/wallpaper-%s.png"
 COMPOSITE="convert -colorspace Gray \( $BCK_IMG -evaluate multiply %.2f \) \( $BCK_IMG -evaluate multiply %.2f \) -compose plus -composite %s"
@@ -11,10 +11,10 @@ LATLNG="$(echo "$LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
 
 start() {
 
-  
+
 	[ -f "$(printf "$BCK_IMG" 'day')" ] && [ -f "$(printf "$BCK_IMG" 'night')" ] || \
     	error "Wallpaper images are missing!" fatal 2
-  
+
     [ -f "$PID_FILE" ] && ps "$(cat "$PID_FILE")" >/dev/null && \
     	error "Dynamic wallpaper daemon is already running!" fatal 3
 
@@ -113,5 +113,3 @@ background() {
 	eval "$command"
 
 }
-
-. "$WMRC_MODULES/init"

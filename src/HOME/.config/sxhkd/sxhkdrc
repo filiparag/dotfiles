@@ -4,37 +4,37 @@
 
 # Show application launcher
 super + d
-	wmrc -r 'ui/rofi'
+	wmrc call ui/rofi start
 
 # Show quick file browser
 super + grave
-	wmrc -r 'ui/rofi(files)'
+	wmrc call ui/rofi files
 
 # Show character menu
 super + z
-	wmrc -r 'ui/rofi(character)'
+	wmrc call ui/rofi character
 
 # Show calculator
 super + @less
-	wmrc -r 'ui/rofi(calc)'
+	wmrc call ui/rofi calc
 
 ## Applications
 
 # Launch terminal
 super + Return
-	$TERMINAL
+	$WMRC_TERMINAL
 
 # Launch terminal as root
 super + shift + Return
-	$TERMINAL -e sudo /usr/bin/fish
+	$WMRC_TERMINAL -e sudo /usr/bin/fish
 
 # Launch scratchpad terminal
 super + BackSpace
-	$TERMINAL -e tmux new-session -A -s scratchpad
+	$WMRC_TERMINAL -e tmux new-session -A -s scratchpad
 
 # Launch Firefox
 super + b
-	$BROWSER
+	$WMRC_BROWSER
 
 # Disable Firefox quit shortcut (ignore)
 ctrl + q
@@ -47,15 +47,15 @@ super + shift + b
 
 # Launch file manager
 super + n
-	$FILEMGR
+	$WMRC_FILEMGR
 
 # Launch file manager as root
 super + shift + n
-	sudo $FILEMGR
+	sudo $WMRC_FILEMGR
 
 # Launch default mail client
 super + m
-	$MAILCLIENT
+	$WMRC_MAILCLIENT
 
 # Launch Visual Studio Code
 super + v
@@ -141,7 +141,7 @@ super + shift + {@Home,@End}
 	bspc node -d {prev,next}.local -f
 
 # Toggle monocle mode for focused window
-super + f 
+super + f
 	bspc desktop -l next
 
 # Sift through windows in monocle mode
@@ -149,7 +149,7 @@ super + {comma,period}
   bspc node -f {next,prev}.local
 
 # Toggle fullscreen mode for focused window
-super + shift + f 
+super + shift + f
 	bspc node -t ~fullscreen
 
 # Swap places of current and last focused window
@@ -257,15 +257,15 @@ super + @F1
 
 # Move selected nodes
 super + @F2
-	wmrc -r 'wm/bspwm(move_node)'
-	
+	wmrc call wm/bspwm move_node
+
 # Swap desktops
 super + @F3
-	wmrc -r 'wm/bspwm(swap_desktop)'
-	
+	wmrc call wm/bspwm swap_desktop
+
 # Swap monitors
 super + @F4
-	wmrc -r 'wm/bspwm(swap_monitor)'
+	wmrc call wm/bspwm swap_monitor
 
 ## Bspwm
 
@@ -275,25 +275,25 @@ super + shift + e : Return
 
 # Reload config
 super + alt + r
-	if wmrc reload; then \
-		"$WMRC_MODULES/ui/notify" info "wmrc" "Desktop configuration reloaded successfully."; \
+	if wmrc unit reload; then \
+		wmrc call ui/notify info "wmrc" "Desktop configuration reloaded successfully."; \
 	else \
-		"$WMRC_MODULES/ui/notify" warn "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
+		wmrc call ui/notify info "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
 	fi
 
 ## System lock and power
 
 # Sleep
 super + @Delete
-	wmrc suspend
+	wmrc unit suspend
 
 # Shut down
 super + shift + @Delete : Return
-	wmrc -r 'hardware/power(off)'
+	wmrc call hardware/power off
 
 # Reboot
 super + shift + ctrl + @Delete : Return
-	wmrc -r 'hardware/power(reboot)'
+	wmrc call hardware/power reboot
 
 # Lock the device using physlock
 XF86Launch1
@@ -301,7 +301,7 @@ XF86Launch1
 
 # Lock screen and turn off screen
 super + l
-	wmrc lock
+	wmrc unit lock
 
 ## Multimedia keys
 
@@ -323,19 +323,19 @@ XF86AudioMute
 
 # Change brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	wmrc -r 'screen/backlight({dec,inc},20)'
+	wmrc call screen/backlight {dec,inc} 20
 
 # Change brightness using backlight keys
 {XF86MonBrightnessDown,XF86MonBrightnessUp}
-	wmrc -r 'screen/backlight({dec,inc},20)'
+	wmrc call screen/backlight {dec,inc} 20
 
 # Set brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	wmrc -r 'screen/backlight(equ,{0,100})'
+	wmrc call screen/backlight equ {0,100}
 
 # Select monitor layout
 super + {o, XF86AudioMicMute}
-	wmrc -r 'screen/layout'
+	wmrc call screen/layout start
 
 # Launch Pulseaudio control interface
 super + XF86AudioMute

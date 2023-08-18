@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: notify-send
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='notify-send'
 
 PID_FILE="/tmp/low_battery_daemon@$(whoami)"
 
@@ -23,14 +23,14 @@ daemon() {
        [ "$CURR_STATUS" = "Discharging" ]; then
 
       NOTIFY_TPREV="$CURR_TIMEST"
-      
+
       notify-send -u low -t $(( NOTIFY_TIME * 1000 )) \
         -i battery-empty-charging "Low battery" "Only $CURR_LEVEL% charge remaining!"
-      
+
       sleep "$NOTIFY_DELAY"
 
     else
-      
+
       sleep "$CHECK_FREQ"
 
     fi
@@ -67,4 +67,3 @@ stop() {
 
 }
 
-. "$WMRC_MODULES/init"

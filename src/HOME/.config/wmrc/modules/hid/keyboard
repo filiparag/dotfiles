@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: setxkbmap, numlockx, xmodmap, sudo
-# WMRC_FLAGS: async_lock
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='setxkbmap numlockx xmodmap sudo'
 
 layout() {
 
@@ -47,7 +47,7 @@ keybinds() {
       error "User '$(whoami)' is not allowed to run sudo!"
 
     fi
-    
+
     WAIT=$(sleep 2)
 
     # Change key bindings
@@ -67,5 +67,3 @@ start() {
   keybinds
 
 }
-
-. "$WMRC_MODULES/init"
