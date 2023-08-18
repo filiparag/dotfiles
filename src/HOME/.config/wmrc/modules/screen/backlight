@@ -19,10 +19,16 @@ read() {
 
   if is_internal; then
     [ -f "$MAX_FILE" ] && [ -f "$CUR_FILE" ] || \
-      error "Brightness control is unavailable!" fatal 2
+      {
+        error "Brightness control is unavailable!"
+        exit 2
+      }
 
     sudo -v >/dev/null || \
-      error "User '$(whoami)' is not allowed to run sudo!" fatal 3
+      {
+        error "User '$(whoami)' is not allowed to run sudo!"
+        exit 3
+      }
 
     MAX="$(cat "$MAX_FILE")"
     CUR="$(cat "$CUR_FILE")"
@@ -30,13 +36,19 @@ read() {
   else
 
     sudo modprobe i2c-dev || \
-      error "Unable to load I2C kernel module!" fatal 4
+      {
+        error "Unable to load I2C kernel module!"
+        exit 4
+      }
 
     CUR="$(sudo ddcutil getvcp 10 | grep -Po 'current value *= *\K.*?(?=,)')"
     MAX="$(sudo ddcutil getvcp 10 | grep -Po 'max value *= *\K.*?(?=$)')"
 
     [ "$CUR" != '' ] && [ "$MAX" != '' ] || \
-      error "Unable to read brigthness values!" fatal 2
+      {
+        error "Unable to read brigthness values!"
+        exit 2
+      }
 
   fi
 

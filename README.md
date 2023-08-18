@@ -31,7 +31,7 @@ reboot
 
 ### Keyboard shortcuts
 
-Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)  
+Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)
 This manual can also be found in `/usr/share/doc/dotfiles/shortcuts.md` after installing dotfiles.
 
 Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhkd/sxhkdrc)
@@ -69,7 +69,7 @@ vncpasswd
 sudo ufw allow in 5900/tcp
 
 # Restart wmrc VNC module
-wmrc -r 'services/vnc(start)'
+wmrc call services/vnc start
 ```
 
 ### Hardware-specific modifications

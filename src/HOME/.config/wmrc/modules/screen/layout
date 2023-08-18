@@ -30,7 +30,10 @@ restore() {
 
   [ -x "$SCREENLAYOUT/.restore.sh" ] && \
     "$SCREENLAYOUT/.restore.sh" || \
-    error "Unable to restore previous monitor layout!" fatal 3
+    {
+      error "Unable to restore previous monitor layout!"
+      exit 3
+    }
 
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
@@ -47,10 +50,13 @@ defined() {
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
 
-  SCRIPT="$(echo "$2" | sed 's/ \[.*//').sh"
+  SCRIPT="$(echo "$1" | sed 's/ \[.*//').sh"
 
   [ -x "$SCREENLAYOUT/$SCRIPT" ] ||
-    error "Unable to set monitor layout to '$2'!" fatal 2
+    {
+      error "Unable to set monitor layout to '$1'!"
+      exit 2
+    }
 
   cat "$SCREENLAYOUT/$SCRIPT" > "$SCREENLAYOUT/.restore.sh"
   chmod +x "$SCREENLAYOUT/.restore.sh"
@@ -133,7 +139,7 @@ start() {
 
   LAYOUT="$MANUAL$RESTORE$LAYOUT$MONITORS"
 
-  SEL="$(echo -n "$LAYOUT" |
+  SEL="$(printf '%b' "$LAYOUT" |
     rofi -dmenu -p 'monitor layout' -i \
     -columns 1 \
     -theme style/style_normal_grid.rasi)"

@@ -7,16 +7,22 @@ COMPOSITE="convert -colorspace Gray \( $BCK_IMG -evaluate multiply %.2f \) \( $B
 DELAY=$((5*60))
 
 PID_FILE="/tmp/dynamic_wallpaper_daemon@$(whoami)"
-LATLNG="$(echo "$LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
+LATLNG="$(echo "$WMRC_LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
 
 start() {
 
 
 	[ -f "$(printf "$BCK_IMG" 'day')" ] && [ -f "$(printf "$BCK_IMG" 'night')" ] || \
-    	error "Wallpaper images are missing!" fatal 2
+    	{
+			error "Wallpaper images are missing!"
+			exit 2
+		}
 
     [ -f "$PID_FILE" ] && ps "$(cat "$PID_FILE")" >/dev/null && \
-    	error "Dynamic wallpaper daemon is already running!" fatal 3
+    	{
+			error "Dynamic wallpaper daemon is already running!"
+			exit 3
+		}
 
 	daemon &
 
@@ -32,7 +38,10 @@ stop() {
   PID="$(cat "$PID_FILE")"
 
   ps "$PID" >/dev/null ||
-    error "Dynamic wallpaper daemon is not running!" fatal 4
+    {
+		error "Dynamic wallpaper daemon is not running!"
+		exit 4
+	}
 
   kill -9 "$PID"
 
@@ -42,6 +51,7 @@ daemon() {
 
 	while true; do
 
+		info "Setting dynamic wallpaper"
 		api
 		background
 		sleep "$DELAY"
@@ -60,6 +70,9 @@ api() {
 		sunrise="$(echo "$api_response" | jq -r '.results.sunrise' | xargs date +%s -d)"
 		sunset="$(echo "$api_response" | jq -r '.results.sunset' | xargs date +%s -d)"
 	fi
+
+	debug 'Sunrise' "$sunrise"
+	debug 'Sunset' "$sunset"
 
 }
 
@@ -87,7 +100,7 @@ background() {
 	case "$part" in
 		'night'|'day')
 			command="$(printf "DISPLAY=$DISPLAY feh --bg-fill $BCK_IMG\n" "$part")";
-			break;;
+			;;
 		'sunrise')
 			day_mul="$(echo "scale=2;($now-($sunrise-$fade_period/2))/$fade_period" | bc)";
 			night_mul="$(echo "scale=2;(1-$day_mul)" | bc)";
@@ -97,7 +110,7 @@ background() {
 				"/tmp/dynamic_wallpaper.$USER.png" \
 				"/tmp/dynamic_wallpaper.$USER.png"
 			)";
-			break;;
+			;;
 		'sunset')
 			night_mul="$(echo "scale=2;($now-($sunset-$fade_period/2))/$fade_period" | bc)";
 			day_mul="$(echo "scale=2;(1-$night_mul)" | bc)";
@@ -107,7 +120,7 @@ background() {
 				"/tmp/dynamic_wallpaper.$USER.png" \
 				"/tmp/dynamic_wallpaper.$USER.png"
 			)";
-			break;;
+			;;
 	esac
 
 	eval "$command"

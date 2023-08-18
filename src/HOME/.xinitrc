@@ -32,7 +32,7 @@ export XDG_SESSION_TYPE=x11
 ! command -v wmrc >/dev/null && \
     >&2 echo "wmrc not found in PATH!" && exit 1
 
-DEPS="$(wmrc check deps | tr '\n' ' ')"
+DEPS="$(wmrc check-deps | tr '\n' ' ')"
 
 [ -n "$DEPS" ] && \
     >&2 echo "wmrc has missing dependencies:\n$DEPS" && exit 1

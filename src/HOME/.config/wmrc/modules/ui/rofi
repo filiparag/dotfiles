@@ -81,7 +81,10 @@ character() {
   CHARACTER_FILE="$HOME/.cache/characters.txt"
 
   [ -f "$CHARACTER_FILE" ] || \
-    error "Character list file '$CHARACTER_FILE' is missing!" fatal 2
+    {
+      error "Character list file '$CHARACTER_FILE' is missing!"
+      exit 2
+    }
 
   SEL="$(
     rofi -dmenu -p 'character' -i \

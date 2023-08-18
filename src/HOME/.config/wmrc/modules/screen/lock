@@ -12,10 +12,16 @@ generate_individual() {
 
   BCK_IMG="$HOME/Pictures/lockscreen.png"
   [ -f "$BCK_IMG" ] || \
-    error "Lockscreen image '$BCK_IMG' is missing!" fatal 3
+    {
+      error "Lockscreen image '$BCK_IMG' is missing!"
+      exit 3
+    }
 
   mkdir -p "$CACHE_DIR" || \
-    error "Unable create lockscreen chache directory!" fatal 4
+    {
+      error "Unable create lockscreen chache directory!"
+      exit 4
+    }
 
   MONITORS="$(xrandr --listmonitors |
             perl -n -e'/\d+: \+[^ ]+ (\d+)\/(\d+)x(\d+)\/(\d+)\+(\d+)\+(\d+)/
@@ -83,7 +89,10 @@ generate_composite() {
 lock() {
 
   [ -z "$(pgrep -u "$(whoami)" i3lock)" ] || \
-    error "Lockscreen is already running!" fatal 2
+    {
+      error "Lockscreen is already running!"
+      exit 2
+    }
 
   generate_composite
 
@@ -127,7 +136,10 @@ smart_lock() {
 start() {
 
   [ -z "$(pgrep -u "$(whoami)" xidlehook)" ] || \
-    error "Lockscreen daemon is already running!" fatal 2
+    {
+      error "Lockscreen daemon is already running!"
+      exit 2
+    }
 
   generate_composite
 
@@ -154,7 +166,10 @@ start() {
 stop() {
 
   [ -z "$(pgrep -u "$(whoami)" xidlehook)" ] && \
-    error "Lockscreen daemon is not running!" fatal 3
+    {
+      error "Lockscreen daemon is not running!"
+      exit 3
+    }
 
   killall -u "$(whoami)" -9 xidlehook > /dev/null
 

@@ -5,8 +5,10 @@ export WMRC_DEPENDENCIES='feh'
 start() {
 
   BCK_IMG="$HOME/Pictures/wallpaper.png"
-  [ -f "$BCK_IMG" ] || \
-    error "Wallpaper image '$BCK_IMG' is missing!" fatal 2
+  if ! [ -f "$BCK_IMG" ]; then
+    error "Wallpaper image '$BCK_IMG' is missing!"
+    exit 2
+  fi
 
   DISPLAY=$DISPLAY feh --bg-fill "$BCK_IMG"
 

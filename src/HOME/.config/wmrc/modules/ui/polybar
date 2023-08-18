@@ -2,13 +2,17 @@
 
 export WMRC_DEPENDENCIES='polybar pgrep xrandr'
 
-PID_FILE="/tmp/polybar@$(whoami)"
+PID_FILE="/tmp/polybar@$(whoami)${DISPLAY}"
 
 start() {
 
   if [ -f "$PID_FILE" ]; then
-    cat "$PID_FILE" | xargs kill -0 && \
-      error "Polybar is already running!" fatal 2
+    kill -0 "$(cat "$PID_FILE")" && \
+    {
+      error "Polybar is already running!"
+      exit 2
+
+    }
   fi
 
   local WLP
@@ -69,7 +73,7 @@ start() {
 
     MONITOR="$M" WLP="$WLP" ENP="$ENP" MNT="$MNT" ML="$MOD_L" MC="$MOD_C" MR="$MOD_R" NOTIF="$NOTIF" polybar --reload "main" &
 
-    echo $! >> "$PID_FILE"
+    echo "$!" > "$PID_FILE"
 
   done
 
