@@ -2,8 +2,8 @@
 
 export WMRC_DEPENDENCIES='feh'
 
-start() {
-
+init() {
+  info 'Set static wallpaper'
   BCK_IMG="$HOME/Pictures/wallpaper.png"
   if ! [ -f "$BCK_IMG" ]; then
     error "Wallpaper image '$BCK_IMG' is missing!"

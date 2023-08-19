@@ -28,7 +28,8 @@ app_list() {
 
       APPLIST="$APPLIST\n$(echo "$APPS" |
               grep -P "^ *$A( |$)" ||
-              warn "Application '$A' is not listed!")"
+              warn "Application not listed" "$A"
+      )"
 
     done
 
@@ -54,13 +55,14 @@ start() {
 
     if [ -n "$(command -v "$EXE")" ]; then
       if pgrep -u "$(whoami)" "$EXE" >/dev/null; then
-        warn "Application '$EXE' is already running!"
+        warn "Application already running" "$EXE"
         continue
       else
+        info "Starting application" "$EXE"
         $CMD >/dev/null 2>&1 &
       fi
     else
-      warn "Application '$EXE' is not installed!"
+      warn "Application not installed" "$EXE"
     fi
 
   done
@@ -80,7 +82,7 @@ stop() {
     if pgrep -u "$(whoami)" "$EXE" >/dev/null; then
       killall -u "$(whoami)" -9 "$EXE" &
     else
-      warn "Application '$EXE' is not running!"
+      warn "Application not running" "$EXE"
       continue
     fi
 

@@ -3,38 +3,15 @@
 export WMRC_DEPENDENCIES='x0vncserver pgrep'
 
 start() {
-
-  [ -f "$HOME/.vnc/passwd" ] ||
-    {
-      error "Password for VNC server is not set!"
-      exit 2
-    }
-
-  pgrep -u "$(whoami)" x0vncserver >/dev/null &&
-    {
-      error "VNC server is already running!"
-      exit 3
-    }
-
+  if ! [ -f "$HOME/.vnc/passwd" ]; then
+    error "Password for VNC server is not set!"
+    return 1
+  fi
+  if daemon_get_pid; then
+		error "VNC server is already running!"
+		return 1
+	fi
   x0vncserver -CompareFB=1 -FrameRate=24 -SecurityTypes=TLSVnc \
-		--PasswordFile="$HOME/.vnc/passwd" >/dev/null &
-
-  [ -z $? ] ||
-    {
-      error "Error starting VNC server!"
-      exit 4
-    }
-
-}
-
-stop() {
-
-  pgrep -u "$(whoami)" x0vncserver >/dev/null ||
-    {
-      error "VNC server is not running!"
-      exit 5
-    }
-
-  killall -9 x0vncserver >/dev/null &
-
+    --PasswordFile="$HOME/.vnc/passwd" >/dev/null &
+  daemon_set_pid "$!"
 }

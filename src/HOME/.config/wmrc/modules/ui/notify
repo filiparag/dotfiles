@@ -11,7 +11,7 @@ ask() {
       error "$NO_TITLE"
       exit 2
     }
-  echo "[Prompt] $2: $3" | sed 's:<i>::g; s:</i>::g' >&1
+  debug "$(echo "[Prompt] $2: $3" | sed 's:<i>::g; s:</i>::g')"
 
   INDEX=1
   CHOICES=""
@@ -37,7 +37,10 @@ ask() {
 
   INDEX=1
   for P in "$@"; do
-    [ "$INDEX" = "$ANS" ] && echo "$P" && exit
+    if [ "$INDEX" = "$ANS" ]; then
+      debug "Prompt '$1' answered" "$INDEX"
+      return
+    fi
     INDEX=$((INDEX + 1))
   done
 
@@ -50,7 +53,7 @@ info() {
       error "$NO_TITLE"
       exit 2
     }
-  echo "[Info] $1: $2" | sed 's:<i>::g; s:</i>::g' >&1
+  debug "$(echo "[Info] $1: $2" | sed 's:<i>::g; s:</i>::g')"
   dunstify -u low -i "dialog-info" "$1" "$2"
 
 }
@@ -62,7 +65,7 @@ warn() {
       error "$NO_TITLE"
       exit 2
     }
-  echo "[Warning] $1: $2" | sed 's:<i>::g; s:</i>::g' >&1
+  debug "$(echo "[Warning] $1: $2" | sed 's:<i>::g; s:</i>::g')"
   dunstify -u low -i "dialog-warning" "$1" "$2"
 
 }
@@ -74,19 +77,21 @@ err() {
       error "$NO_TITLE"
       exit 2
     }
-  echo "[Error] $1: $2" | sed 's:<i>::g; s:</i>::g' >&2
+  debug "$(echo "[Error] $1: $2" | sed 's:<i>::g; s:</i>::g')"
   dunstify -u low -i "dialog-error" "$1" "$2"
 
 }
 
 pause() {
 
-  pkill -u $USER -USR1 dunst
+  debug "Notifications paused"
+  pkill -u "$USER" -USR1 dunst
 
 }
 
 resume() {
 
-  pkill -u $USER -USR2 dunst
+  debug "Notifications resumed"
+  pkill -u "$USER" -USR2 dunst
 
 }
