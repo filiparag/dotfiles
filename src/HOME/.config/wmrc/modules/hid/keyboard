@@ -11,7 +11,10 @@ layout() {
   #VARIANT=",latinunicode,"
   VARIANT=",latin,"
 
+  info "Set keyboard layout"
   setxkbmap -layout "$LANGUAGES" -variant "$VARIANT" -option grp:alt_shift_toggle
+
+  info "Turn on Num Lock"
   numlockx on &
 
 }
@@ -31,17 +34,21 @@ keybinds() {
       FILE_SELECT="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
 
       for FILE in $FILE_SENSITIVITY; do
+        info "Set TrackPoint sensitivity"
         sudo su -c "echo -n 220 > $FILE"
       done
 
       for FILE in $FILE_SELECT; do
+        info "Turn of TrackPoint tap select"
         sudo su -c "echo -n 0 > $FILE"
       done
 
       # Turn of power and lid logo LEDs
-      [ -e "/proc/acpi/ibm/led" ] &&
+      if [ -e "/proc/acpi/ibm/led" ]; then
+        info "Turn of LEDs"
         sudo su -c "echo '0 off' > /proc/acpi/ibm/led"
         sudo su -c "echo '0' > /sys/devices/platform/thinkpad_acpi/leds/tpacpi::lid_logo_dot/brightness"
+      fi
     else
 
       error "User '$(whoami)' is not allowed to run sudo!"
@@ -51,6 +58,7 @@ keybinds() {
     WAIT=$(sleep 2)
 
     # Change key bindings
+    info "Change key bindings"
     xmodmap -e "keycode 112 = Home"
     xmodmap -e "keycode 117 = End"
     xmodmap -e "keycode 107 = Menu"
@@ -61,7 +69,7 @@ keybinds() {
 
 }
 
-start() {
+init() {
 
   layout
   keybinds

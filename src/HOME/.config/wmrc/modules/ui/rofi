@@ -3,20 +3,18 @@
 export WMRC_DEPENDENCIES='rofi xdotool xclip perl xdg-open'
 
 start() {
-
+  info "Show rofi menu"
   rofi -no-lazy-grab -modi drun,run,window,ssh,combi \
     -combi-modi drun,window,run,ssh \
     -columns 2 \
     -show combi \
     -show-icons true \
     -terminal "$TERMINAL"
-
 }
 
 calc() {
-
+  info "Show rofi calculator"
   rofi -no-lazy-grab -modi calc -show calc
-
 }
 
 movewindow() {
@@ -29,6 +27,7 @@ movewindow() {
 
 files() {
 
+  info "Show rofi file browser"
   CURRENT="$HOME"
 
   while [ -n "$CURRENT" ]; do
@@ -66,6 +65,8 @@ files() {
 }
 
 character() {
+
+  info "Show rofi character picker"
 
   # Unicode Emoji generation script:
   # curl https://unicode.org/Public/emoji/15.0/emoji-test.txt | \

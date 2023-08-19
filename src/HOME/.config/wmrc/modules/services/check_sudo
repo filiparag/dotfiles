@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='notify-send sudo'
+
+init() {
+    if ! sudo -v >/dev/null; then
+        notify-send -u critical -w -i config-users \
+            "Insufficient permissions" \
+            "User '$(whoami)' is not allowed to run sudo!"
+        error 'User is not allowed to run sudo' "$(whoami)"
+        return 1
+    fi
+}

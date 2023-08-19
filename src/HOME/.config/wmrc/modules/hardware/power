@@ -4,18 +4,21 @@ export WMRC_DEPENDENCIES='sudo'
 
 off() {
 
+	info "Shut down"
 	sudo shutdown -P now
 
 }
 
 reboot() {
 
+	info "Reboot"
 	sudo shutdown -r now
 
 }
 
 suspend() {
 
-	systemctl suspend
+	info "Suspend"
+	sudo systemctl suspend
 
 }

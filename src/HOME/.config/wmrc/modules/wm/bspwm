@@ -4,6 +4,8 @@ export WMRC_DEPENDENCIES='bspwm bspc xrandr'
 
 preferences() {
 
+  info "Set bswpm preferences"
+
   # Visual options
   bspc config top_padding 				        0
   bspc config border_width                1
@@ -36,6 +38,8 @@ preferences() {
 }
 
 workspaces() {
+
+  info "Show bspwm workspaces"
 
   local MONITORS
   local W

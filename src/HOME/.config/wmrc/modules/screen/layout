@@ -16,8 +16,10 @@ manual() {
 
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
-  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+  if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
+    info 'Set manual screen layout'
     reload_ui
+  fi
 
 }
 
@@ -37,9 +39,10 @@ restore() {
 
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
-  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+  if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
+    info 'Restore previous screen layout'
     reload_ui
-
+  fi
 }
 
 defined() {
@@ -65,9 +68,10 @@ defined() {
 
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
-  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+  if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
+    info 'Set defined screen layout' "$1"
     reload_ui
-
+  fi
 }
 
 monitor() {
@@ -104,10 +108,12 @@ monitor() {
 
 reload_ui() {
 
-  wmrc call "wm/$WMRC_WM"
-  wmrc call ui/polybar restart
-  wmrc call screen/wallpaper_dynamic restart
-  wmrc call screen/lock generate_composite
+  debug 'Reload UI'
+  # call "wm/$WMRC_WM" workspaces
+  # call ui/polybar restart
+  # call screen/wallpaper_dynamic restart
+  # call screen/lock generate_composite
+  wmrc unit reload
 
 }
 
@@ -151,9 +157,9 @@ start() {
   elif [ "$SEL\n" = "$RESTORE" ]; then
     restore
   elif echo "$SEL" | grep -Fq "["; then
-    defined defined "$SEL"
+    defined "$SEL"
   elif echo "$SEL" | grep -Fq "("; then
-    monitor monitor "$SEL"
+    monitor "$SEL"
   fi
 
 }

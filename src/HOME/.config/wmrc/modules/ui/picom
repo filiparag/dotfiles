@@ -3,25 +3,12 @@
 export WMRC_DEPENDENCIES='picom'
 
 start() {
-
-  [ -z "$(pgrep -u "$(whoami)" picom)" ] || \
-    {
-      error "Picom is already running!"
-      exit 2
-    }
-
-  picom &
-
-}
-
-stop() {
-
-  [ -z "$(pgrep -u "$(whoami)" picom)" ] && \
-    {
-      error "Picom is not running!"
-      exit 3
-    }
-
-  killall -u "$(whoami)" -9 picom > /dev/null
-
+  if daemon_get_pid; then
+		error "Picom is already running!"
+		return 1
+	else
+		info "Starting picom"
+		picom &
+		daemon_set_pid "$!"
+	fi
 }

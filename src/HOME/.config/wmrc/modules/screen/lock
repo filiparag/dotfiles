@@ -54,10 +54,12 @@ generate_individual() {
 
     CACHE_IMG="$CACHE_DIR/$W.$H.$MD5_BKG_IMG.png"
 
-    [ -f "$CACHE_IMG" ] || \
+    [ -f "$CACHE_IMG" ] || {
+      debug 'Generating new monitor losckscreen image' "Monitor $M"
       convert "$BCK_IMG" '-resize' "${W}X${H}^" \
               '-gravity' 'Center' '-crop' "${W}X${H}+0+0" \
               '+repage' "$CACHE_IMG"
+    }
 
     [ "$OUTPUT_IMG_WIDTH" -lt $((W+X)) ] && \
       OUTPUT_IMG_WIDTH=$((W+X))
@@ -74,10 +76,12 @@ generate_individual() {
 
 generate_composite() {
 
+
   generate_individual
 
   if ! [ -f "$OUTPUT_IMG" ]; then
 
+    debug 'Generating new composite losckscreen image'
     convert -size "${OUTPUT_IMG_WIDTH}x${OUTPUT_IMG_HEIGHT}" \
       "xc:#101010" "$OUTPUT_IMG"
     convert -colorspace sRGB -type truecolor "$OUTPUT_IMG" $PARAMS "$OUTPUT_IMG"
@@ -87,6 +91,7 @@ generate_composite() {
 }
 
 lock() {
+  info 'Screen lock'
 
   [ -z "$(pgrep -u "$(whoami)" i3lock)" ] || \
     {
@@ -103,6 +108,7 @@ lock() {
 }
 
 smart_lock() {
+  info 'Smart screen lock'
 
   LANG="$(xkb-switch -p)"
   CAPS="$(xset -q |
@@ -115,16 +121,20 @@ smart_lock() {
     xdotool key Caps_Lock
   fi
 
+  generate_composite
+
   if [ "$2" != "screen_on" ]; then
     sleep 0.2
     xset dpms force off
   fi
 
-  wmrc call ui/notify pause
+  info 'Pausing notifications'
+  call ui/notify pause
 
   lock 'lock' 'wait'
 
-  wmrc call ui/notify resume
+  info 'Resuming notifications'
+  call ui/notify resume
 
   xkb-switch -s "$LANG"
   if [ "$CAPS" = "on" ]; then
@@ -134,13 +144,13 @@ smart_lock() {
 }
 
 start() {
-
-  [ -z "$(pgrep -u "$(whoami)" xidlehook)" ] || \
-    {
-      error "Lockscreen daemon is already running!"
-      exit 2
-    }
-
+  if daemon_get_pid; then
+		error "Lockscreen daemon is already running!"
+		return 1
+	fi
+  info "Starting lockscreen auto lock daemon"
+  blank_timeout="${1:-300}"
+  lock_timeout="${2:-305}"
   generate_composite
 
   local BLANK_TIMEOUT
@@ -151,30 +161,17 @@ start() {
   LOCK_TIMEOUT=305
 
   if lspci | grep ' VGA ' | cut -d" " -f 1 | xargs -i lspci -v -s {} | grep -q '5700 XT'; then
-    BLANK_TIMEOUT=999999999
+    blank_timeout=999999999
   fi
 
   xset s off -dpms &
-
 	xidlehook \
 		--not-when-fullscreen \
 		--not-when-audio \
-		--timer $BLANK_TIMEOUT \
+		--timer "$blank_timeout" \
 			"xset dpms force off" '' \
-		--timer $LOCK_TIMEOUT \
+		--timer "$lock_timeout" \
 			"wmrc call screen/lock smart_lock" '' \
-		>/dev/null &
-
-}
-
-stop() {
-
-  [ -z "$(pgrep -u "$(whoami)" xidlehook)" ] && \
-    {
-      error "Lockscreen daemon is not running!"
-      exit 3
-    }
-
-  killall -u "$(whoami)" -9 xidlehook > /dev/null
-
+		> /dev/null &
+  daemon_set_pid "$!"
 }
