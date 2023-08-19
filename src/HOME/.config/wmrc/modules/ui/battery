@@ -14,8 +14,8 @@ daemon() {
 
   while true; do
 
-    CURR_LEVEL=$(cat /sys/class/power_supply/BAT0/capacity)
-    CURR_STATUS=$(cat /sys/class/power_supply/BAT0/status)
+    CURR_LEVEL=$(cat /sys/class/power_supply/$WMRC_BAT/capacity)
+    CURR_STATUS=$(cat /sys/class/power_supply/$WMRC_BAT/status)
     CURR_TIMEST=$(date +%s)
 
     if [ $CURR_LEVEL -le $WARN_LEVEL ] && \
@@ -41,7 +41,7 @@ daemon() {
 
 start() {
 
-  [ -d "/sys/class/power_supply/BAT0" ] ||
+  [ -d "/sys/class/power_supply/$WMRC_BAT" ] ||
     {
       error "System has no battery!"
       exit 2
