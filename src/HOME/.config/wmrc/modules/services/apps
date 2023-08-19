@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: pgrep
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='pgrep'
 
 APPS='unclutter -idle 1
       redshift-qt
@@ -22,7 +22,7 @@ app_list() {
 
       APPLIST="$APPLIST\n$(echo "$APPS" |
               grep -P "^ *$A( |$)" ||
-              error "Application '$A' is not listed!")"
+              warn "Application '$A' is not listed!")"
 
     done
 
@@ -48,13 +48,13 @@ start() {
 
     if [ -n "$(command -v "$EXE")" ]; then
       if pgrep -u "$(whoami)" "$EXE" >/dev/null; then
-        error "Application '$EXE' is already running!"
+        warn "Application '$EXE' is already running!"
         continue
       else
         $CMD >/dev/null 2>&1 &
       fi
     else
-      error "Application '$EXE' is not installed!"
+      warn "Application '$EXE' is not installed!"
     fi
 
   done
@@ -74,12 +74,10 @@ stop() {
     if pgrep -u "$(whoami)" "$EXE" >/dev/null; then
       killall -u "$(whoami)" -9 "$EXE" &
     else
-      error "Application '$EXE' is not running!"
+      warn "Application '$EXE' is not running!"
       continue
     fi
 
   done
 
 }
-
-. "$WMRC_MODULES/init"

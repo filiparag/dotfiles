@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: rofi, xdotool, xclip, perl, xdg-open
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='rofi xdotool xclip perl xdg-open'
 
 start() {
 
@@ -32,7 +32,7 @@ files() {
   CURRENT="$HOME"
 
   while [ -n "$CURRENT" ]; do
-    
+
     LL="$(find "$CURRENT" -maxdepth 1 \
         -not -path "$CURRENT" \
         -not -name '.*' \
@@ -89,7 +89,10 @@ character() {
   CHARACTER_FILE="$HOME/.cache/characters.txt"
 
   [ -f "$CHARACTER_FILE" ] || \
-    error "Character list file '$CHARACTER_FILE' is missing!" fatal 2
+    {
+      error "Character list file '$CHARACTER_FILE' is missing!"
+      exit 2
+    }
 
   SEL="$(
     rofi -dmenu -p 'character' -i \
@@ -107,5 +110,3 @@ character() {
   fi
 
 }
-
-. "$WMRC_MODULES/init"

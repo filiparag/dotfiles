@@ -1,6 +1,6 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: xprop
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='xprop'
 
 # https://github.com/JopStro/bspswallow/blob/master/alternative/bspswallow
 
@@ -59,7 +59,7 @@ swallow() {
       [ "$(get_class "$swallowingid")" = 'Alacritty' ] && \
       [ "$(get_class "$swallowerid")" != 'xev' ] || \
         return
-    
+
     echo "$swallowerid $swallowingid" >> "/tmp/swallowids.$(whoami)"
     bspc node "$swallowingid" --flag hidden=on
   fi
@@ -101,13 +101,19 @@ run() {
 start() {
 
   [ -z "$(pgrep -u "$(whoami)" bspwm)" ] &&
-    error "Bspwm is not running!" fatal 2
+    {
+      error "Bspwm is not running!"
+      exit 2
+    }
 
   touch "/tmp/swallow.$(whoami)"
 
   if [ -s "/tmp/swallow.$(whoami)" ]; then
     kill -0 "$(cat "/tmp/swallow.$(whoami)")" 2>/dev/null && \
-      error "Swallow is already running!" fatal 2
+      {
+        error "Swallow is already running!"
+        exit 2
+      }
   fi
 
 
@@ -121,8 +127,9 @@ start() {
 stop() {
 
   kill -9 "$(cat "/tmp/swallow.$(whoami)")" 2>/dev/null || \
-    error "Swallow is not running!" fatal 3
+    {
+      error "Swallow is not running!"
+      exit 3
+    }
 
 }
-
-. "$WMRC_MODULES/init"

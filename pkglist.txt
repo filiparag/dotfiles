@@ -107,7 +107,6 @@ rsync
 safeeyes
 signal-desktop
 starship
-sublime-text-4
 sudo
 sxhkd
 sydf

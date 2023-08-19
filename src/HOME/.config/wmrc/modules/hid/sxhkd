@@ -1,11 +1,14 @@
-#! /usr/bin/env dash
-# WMRC_DEPS: pgrep, sxhkd
-# WMRC_FLAGS:
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='pgrep sxhkd'
 
 reload() {
 
   [ -z "$(pgrep -u "$(whoami)" sxhkd)" ] && \
-    error "Sxhkd is not running!" fatal 2
+    {
+      error "Sxhkd is not running!"
+      exit 2
+    }
 
   pkill -USR1 -x sxhkd
 
@@ -14,7 +17,10 @@ reload() {
 start() {
 
   [ -z "$(pgrep -u "$(whoami)" sxhkd)" ] || \
-    error "Sxhkd is already running!" fatal 2
+    {
+      error "Sxhkd is already running!"
+      exit 2
+    }
 
   sxhkd &
 
@@ -23,10 +29,11 @@ start() {
 stop() {
 
   [ -z "$(pgrep -u "$(whoami)" sxhkd)" ] && \
-    error "Sxhkd is not running!" fatal 3
+    {
+      error "Sxhkd is not running!"
+      exit 3
+    }
 
   killall -u "$(whoami)" -9 sxhkd > /dev/null
 
 }
-
-. "$WMRC_MODULES/init"
