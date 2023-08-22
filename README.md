@@ -12,7 +12,7 @@
 - user account with [`sudo`](https://wiki.archlinux.org/index.php/Sudo#Example_entries) privileges
 
 ### Steps
-```bash
+```shell
 # Clone dotfiles repository
 git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
 
@@ -27,12 +27,20 @@ make copy       # place copies of files
 reboot
 ```
 
+**Updating dotfiles**
+
+After every repository update, reload dotfiles and install dependencies:
+
+```shell
+dotfiles reload
+```
+
 ## Usage and customization
 
 ### Keyboard shortcuts
 
 Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)
-This manual can also be found in `/usr/share/doc/dotfiles/shortcuts.md` after installing dotfiles.
+This manual can also be opened with `dotfiles docs` after installing dotfiles.
 
 Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhkd/sxhkdrc)
 
@@ -68,8 +76,8 @@ vncpasswd
 # Allow incoming VNC connections
 sudo ufw allow in 5900/tcp
 
-# Restart wmrc VNC module
-wmrc call services/vnc start
+# Start VNC module
+wmrc start services/vnc
 ```
 
 ### Hardware-specific modifications
