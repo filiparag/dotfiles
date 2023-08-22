@@ -3,6 +3,7 @@
 export WMRC_DEPENDENCIES='polybar pgrep xrandr'
 
 export DAEMON_PID
+export _pid_file
 
 start() {
 
@@ -12,14 +13,6 @@ start() {
 	fi
 
   info "Starting polybar"
-
-  local WLP
-  local ENP
-  local MNT
-  local MONITORS
-  local M_PRIMARY
-  local M_ALL
-  local M
 
   WLP="$(ip -o link show | awk -F': ' '{print $2}' | grep -E '^(wlp|wlan)')"
 	ENP="$(ip -o link show | awk -F': ' '{print $2}' | grep -E '^(enp|end|eth)')"
@@ -35,9 +28,10 @@ start() {
       MONITORS="$M_ALL";;
     *)
       for M in $(echo "$@" | cut -d' ' -f2- | sed "s/ /\n/g"); do
-        echo "$M_ALL" | grep -q "^$M$" && \
+        if echo "$M_ALL" | grep -q "^$M$"; then
           MONITORS="$MONITORS $M" || \
-          error "Monitor '$M' is not connected!"
+          warn "Monitor '$M' is not connected!"
+        fi
       done;;
   esac
 
@@ -69,7 +63,31 @@ start() {
       NOTIF="none"
     fi
 
-    MONITOR="$M" WLP="$WLP" ENP="$ENP" MNT="$MNT" ML="$MOD_L" MC="$MOD_C" MR="$MOD_R" NOTIF="$NOTIF" polybar --reload "main" &
+    export WLP
+    export ENP
+    export MNT
+    export WIDTH
+    export HEIGHT
+    export MONITOR="$M"
+    export ML="$MOD_L"
+    export MC="$MOD_C"
+    export MR="$MOD_R"
+    export NOTIF="$NOTIF"
+
+    LOG_FILE="$(echo "$_pid_file" | sed "s/\.pid$/::$M.log/")"
+
+    if [ "$M" = "$M_PRIMARY" ]; then
+      info "Adding bar to primary monitor" "$M"
+    else
+      info "Adding bar to auxiliary monitor" "$M"
+    fi
+
+    debug 'Modules left' "$MOD_L"
+    debug 'Modules middle' "$MOD_C"
+    debug 'Modules right' "$MOD_R"
+    debug 'Notification position' "$NOTIF"
+
+    polybar --reload "main" 1>"$LOG_FILE" 2>"$LOG_FILE" &
 
     daemon_set_pid "$!"
 
@@ -83,10 +101,11 @@ stop() {
     error "Polybar is not running!"
 
   info "Stopping polybar"
-
   daemon_kill
-  killall -u "$(whoami)" -9 polybar > /dev/null
-  xargs kill -9 < "$DAEMON_PID"
-  rm -f "$DAEMON_PID"
+  killall -u "$(whoami)" -9 polybar 2> /dev/null
+  if test -f "$DAEMON_PID"; then
+    xargs kill -9 < "$DAEMON_PID"
+    rm -f "$DAEMON_PID"
+  fi
 
 }
