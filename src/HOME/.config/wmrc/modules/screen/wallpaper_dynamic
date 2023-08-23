@@ -46,6 +46,7 @@ api() {
 background() {
 	fade_period=3600
 	now="$(date -u +%s)"
+	prev_part="$part"
 	part='night'
 	if [ "$now" -gt $((sunset - fade_period / 2)) ]; then
 		if [ "$now" -lt $((sunset + fade_period / 2)) ]; then
@@ -56,6 +57,12 @@ background() {
 			part='sunrise'
 		else
 			part='day'
+		fi
+	fi
+	if [ "$part" = 'day' ] || [ "$part" = 'night' ]; then
+		if [ "$part" = "$prev_part" ]; then
+			debug "Skiping dynamic wallpaper update"
+			return 0
 		fi
 	fi
 	command=''
@@ -88,6 +95,6 @@ background() {
 			)";
 			;;
 	esac
-	info "Setting dynamic wallpaper" "$part"
+	info "Updating dynamic wallpaper" "$part"
 	eval "$command"
 }

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='viper'
+
+start() {
+  if daemon_get_pid; then
+    error "Viper equalizer is already running"
+    return 1
+  fi
+  info "Starting Viper equalizer"
+  viper start
+}
+
+stop() {
+  if ! daemon_get_pid; then
+    error "Viper equalizer is not running"
+    return 1
+  fi
+  info "Stopping Viper equalizer"
+  viper stop
+}
+
+restart() {
+  if ! daemon_get_pid; then
+    warn "Viper equalizer is not running"
+    error "Starting Viper equalizer"
+  else
+    info "Restarting Viper equalizer"
+  fi
+  viper restart
+}
+
+daemon_get_pid() {
+  DAEMON_PID="$(
+    viper status |
+      awk 'match($0, /pid ([0-9]+)./,line){print line[1]}'
+  )"
+  if ! ps "$DAEMON_PID" >/dev/null 2>/dev/null; then
+    debug 'Daemon is not running'
+    return 1
+  else
+    debug 'Get daemon pid' "$DAEMON_PID"
+  fi
+}

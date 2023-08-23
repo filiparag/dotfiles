@@ -162,12 +162,24 @@ remove_from_project() {
 
 run_makefile() {
     project_base_directory
-    test -r "$HOME/.cache/dotfiles.ini" || \
-        panic "Dotfile configuration cache is missing: $HOME/.cache/dotfiles.ini"
-    . "$HOME/.cache/dotfiles.ini"
+    test -r "$HOME/.config/dotfiles.ini" || \
+        panic "Dotfile configuration file is missing: $HOME/.config/dotfiles.ini"
+    . "$HOME/.config/dotfiles.ini"
     cd "$project" || \
         panic "Unable to change directory: $project"
-    make "$type"
+    make ".reload-$DOTFILES_TYPE"
+}
+
+open_manual() {
+    if ! [ -f /usr/share/doc/dotfiles/manual.html ]; then
+        project_base_directory
+        test -r "$HOME/.config/dotfiles.ini" || \
+            panic "Dotfile configuration file is missing: $HOME/.config/dotfiles.ini"
+        cd "$project" || \
+            panic "Unable to change directory: $project"
+        make ".docs"
+    fi
+    xdg-open /usr/share/doc/dotfiles/manual.html
 }
 
 print_usage() {
@@ -175,6 +187,7 @@ print_usage() {
   add <path>  add file or directory to project
   rm <path>   remove file or directory from project
   reload      rerun project installation
+  docs        open dotfiles manual
   help        print help
 \n'
     project_base_directory
@@ -188,6 +201,8 @@ case "$1" in
         remove_from_project "$2";;
     reload)
         run_makefile;;
+    docs)
+        open_manual;;
     help|'--help')
         print_usage;;
     *)
