@@ -123,7 +123,7 @@ smart_lock() {
 
   generate_composite
 
-  if [ "$2" != "screen_on" ]; then
+  if [ "$1" != "screen_on" ]; then
     sleep 0.2
     xset dpms force off
   fi
