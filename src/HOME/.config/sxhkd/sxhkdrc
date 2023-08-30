@@ -276,9 +276,9 @@ super + shift + e : Return
 # Reload config
 super + alt + r
 	if wmrc unit reload; then \
-		wmrc call ui/notify info "wmrc" "Desktop configuration reloaded successfully."; \
+		wmrc call services/notifications notify -u low -i software-update-available 'wmrc' 'Desktop configuration reloaded successfully.'; \
 	else \
-		wmrc call ui/notify info "wmrc" "An error occurred while reloading desktop configuration.\n$ERR"; \
+		wmrc call services/notifications notify -u low -i error 'wmrc' 'An error occurred while reloading desktop configuration.'; \
 	fi
 
 ## System lock and power

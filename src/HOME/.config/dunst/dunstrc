@@ -15,7 +15,7 @@
     icon_position = left
     min_icon_size = 24
     max_icon_size = 24
-    icon_folders = /usr/share/icons/Paper/24x24/apps/:/usr/share/icons/Paper/24x24/categories/:/usr/share/icons/Paper/24x24/web/:/usr/share/icons/Paper/24x24/actions/:/usr/share/icons/Paper/24x24/status/:/usr/share/icons/Paper/24x24/animations/:/usr/share/icons/Paper/24x24/panel/:/usr/share/icons/Paper/24x24/emblems/:/usr/share/icons/Paper/24x24/mimetypes/:/usr/share/icons/Paper/24x24/places/:/usr/share/icons/Paper/24x24/devices/:/usr/share/icons/Paper/24x24/emotes
+    icon_path = /usr/share/icons/Paper/24x24/actions/:/usr/share/icons/Paper/24x24/animations/:/usr/share/icons/Paper/24x24/apps/:/usr/share/icons/Paper/24x24/categories/:/usr/share/icons/Paper/24x24/devices/:/usr/share/icons/Paper/24x24/emblems/:/usr/share/icons/Paper/24x24/emotes/:/usr/share/icons/Paper/24x24/mimetypes/:/usr/share/icons/Paper/24x24/panel/:/usr/share/icons/Paper/24x24/places/:/usr/share/icons/Paper/24x24/status/:/usr/share/icons/Paper/24x24/web/
 
     # The format of the message. Possible variables are:
     #   %a  appname

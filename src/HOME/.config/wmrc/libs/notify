@@ -1,0 +1,68 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='notify-send'
+
+export _module
+PROMPT_DEFAULT_EXPIRATION=300000 #milliseconds
+
+notify() {
+    _log_level=""
+    _actions=""
+    _app_name=""
+    _action=""
+    _urgency=""
+    _expire_time=""
+    _icon=""
+    _category=""
+    _replace_id=""
+    _print_id=""
+    _wait=""
+    while getopts l:a:A:u:t:i:c:r:pw arg; do
+        case "$arg" in
+            l) _log_level="$OPTARG";;
+            a) _app_name="--app-name '$OPTARG'";;
+            A) _action="$_action --action '$OPTARG'";
+               _actions="$_actions${_actions:+|}$OPTARG"
+               ;;
+            u) _urgency="--urgency '$OPTARG'";;
+            t) _expire_time="--expire-time '$OPTARG'";;
+            i) _icon="--icon '$OPTARG'";;
+            c) _category="--category '$OPTARG'";;
+            r) _replace_id="--replace-id '$OPTARG'";;
+            p) _print_id='--print-id';;
+            w) _wait='--wait';;
+            *) return 1;;
+        esac
+    done
+    _kwargs="$_app_name $_action $_urgency $_expire_time $_icon $_category $_replace_id $_print_id $_wait"
+    shift "$((OPTIND - 1))"
+    _log_level="${_log_level:-info}"
+    if ! echo "$_log_level" | grep -q 'error\|warn\|info\|debug' ; then
+        error 'Invalid notification log level' "$_log_level"
+        return 1
+    fi
+    if [ -z "$1" ]; then
+        error 'Empty notification title'
+        return 1
+    fi
+    info 'Displaying notification' "$1"
+    NOTIFY_OUTPUT="$(
+        eval "$_log_level '$1' '$2' '${_actions:+[}$_actions${_actions:+]}'; notify-send $_kwargs '$1' '$2'"
+    )"
+}
+
+prompt() {
+    if ! notify -a "wmrc::$_module" -i dialog-question -t "$PROMPT_DEFAULT_EXPIRATION" -w "$@"; then
+        error 'Error displaying notification'
+    fi
+    if [ -n "$NOTIFY_OUTPUT" ]; then
+        NOTIFY_OUTPUT="$(
+            echo "$_actions" | sed 's/|/\n/g' | \
+            awk -v choice="$NOTIFY_OUTPUT" 'NR == choice + 1 {print $0}'
+        )"
+        info 'Prompt answer' "$NOTIFY_OUTPUT"
+    else
+        warn 'Prompt not answered'
+        return 1
+    fi
+}

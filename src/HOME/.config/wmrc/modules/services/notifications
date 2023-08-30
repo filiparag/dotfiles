@@ -1,0 +1,31 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='dunst'
+export WMRC_LIBRARIES='notify'
+
+start() {
+    if daemon_get_pid; then
+        error "Dunst notification server is already running!"
+        return 1
+    fi
+    dunst &
+    daemon_set_pid "$!"
+}
+
+pause() {
+    if daemon_get_pid; then
+        info "Notifications paused"
+        kill -USR1 "$DAEMON_PID"
+    else
+        warn "Dunst notification server is not running!"
+    fi
+}
+
+resume() {
+    if daemon_get_pid; then
+        info "Notifications resumed"
+        kill -USR2 "$DAEMON_PID"
+    else
+        warn "Dunst notification server is not running!"
+    fi
+}

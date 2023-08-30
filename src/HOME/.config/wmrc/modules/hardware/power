@@ -1,24 +1,19 @@
 #!/bin/sh
 
 export WMRC_DEPENDENCIES='sudo'
+export WMRC_LIBRARIES='notify'
 
 off() {
-
-	info "Shut down"
+	notify -u critical -i system-shutdown "Shutting down system"
 	sudo shutdown -P now
-
 }
 
 reboot() {
-
-	info "Reboot"
+	notify -u critical -i system-reboot "Rebooting system"
 	sudo shutdown -r now
-
 }
 
 suspend() {
-
-	info "Suspend"
+	info "Suspending system"
 	sudo systemctl suspend
-
 }

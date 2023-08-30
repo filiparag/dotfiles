@@ -101,7 +101,7 @@ lock() {
 
   generate_composite
 
-  [ "$2" = "wait" ] && WAIT="-n"
+  [ "$1" = "wait" ] && WAIT="-n"
 
   i3lock -u -i "$OUTPUT_IMG" -t -e "$WAIT"
 
@@ -123,18 +123,20 @@ smart_lock() {
 
   generate_composite
 
-  if [ "$2" != "screen_on" ]; then
+  if [ "$1" != "screen_on" ]; then
     sleep 0.2
     xset dpms force off
   fi
 
   info 'Pausing notifications'
-  call ui/notify pause
+  call services/notifications pause
+  safeeyes --disable
 
   lock 'lock' 'wait'
 
   info 'Resuming notifications'
-  call ui/notify resume
+  call services/notifications resume
+  safeeyes --enable
 
   xkb-switch -s "$LANG"
   if [ "$CAPS" = "on" ]; then

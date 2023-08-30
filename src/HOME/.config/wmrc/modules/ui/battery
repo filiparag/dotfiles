@@ -1,6 +1,7 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='notify-send'
+export WMRC_DEPENDENCIES=''
+export WMRC_LIBRARIES='notify'
 
 daemon() {
   info "Started low battery daemon"
@@ -18,13 +19,13 @@ daemon() {
 
     debug "Check battery level"
 
-    if [ $CURR_LEVEL -le $WARN_LEVEL ] && \
-       [ $CURR_TIMEST -ge $(( NOTIFY_TPREV + NOTIFY_DELAY )) ] && \
+    if [ "$CURR_LEVEL" -le "$WARN_LEVEL" ] && \
+       [ "$CURR_TIMEST" -ge "$(( NOTIFY_TPREV + NOTIFY_DELAY ))" ] && \
        [ "$CURR_STATUS" = "Discharging" ]; then
 
       NOTIFY_TPREV="$CURR_TIMEST"
 
-      notify-send -u low -t $(( NOTIFY_TIME * 1000 )) \
+      notify -u low -t $(( NOTIFY_TIME * 1000 )) \
         -i battery-empty-charging "Low battery" "Only $CURR_LEVEL% charge remaining!"
 
       warn "Low battery level" "$CURR_LEVEL%"
