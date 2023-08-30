@@ -71,11 +71,17 @@ super + e
 
 # Print screen (capture region)
 {super + p, Print}
+	mkdir -p "~/Pictures/Screenshots" && \
 	flameshot gui
 
 # Print screen to clipboard (focused monitor)
 {super + shift + p, shift + Print}
+	mkdir -p "~/Pictures/Screenshots" && \
 	flameshot screen -c
+
+# Record screen
+{super + alt + p, alt + Print}
+	peek
 
 ## Window control
 
@@ -255,18 +261,6 @@ super + alt + {@Home,@End}
 super + @F1
 	bspc node -f @parent
 
-# Move selected nodes
-super + @F2
-	wmrc call wm/bspwm move_node
-
-# Swap desktops
-super + @F3
-	wmrc call wm/bspwm swap_desktop
-
-# Swap monitors
-super + @F4
-	wmrc call wm/bspwm swap_monitor
-
 ## Bspwm
 
 # Quit bspwm
@@ -276,9 +270,11 @@ super + shift + e : Return
 # Reload config
 super + alt + r
 	if wmrc unit reload; then \
-		wmrc call services/notifications notify -u low -i software-update-available 'wmrc' 'Desktop configuration reloaded successfully.'; \
+		wmrc call services/notifications notify -u low -i software-update-available \
+			'wmrc' 'Desktop configuration reloaded successfully.'; \
 	else \
-		wmrc call services/notifications notify -u low -i error 'wmrc' 'An error occurred while reloading desktop configuration.'; \
+		wmrc call services/notifications notify -u low -i error \
+			'wmrc' 'An error occurred while reloading desktop configuration.'; \
 	fi
 
 ## System lock and power
@@ -307,31 +303,35 @@ super + l
 
 # Change volume using standard keys for default sink
 super + {Prior, Next}
-	pactl set-sink-volume "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" {+,-}1%
+	wmrc call hardware/audio speakers_volume_{increase,decrease}
 
 # Change volume using media keys for default sink
 {XF86AudioRaiseVolume,XF86AudioLowerVolume}
-	pactl set-sink-volume "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" {+,-}1%
+	wmrc call hardware/audio speakers_volume_{increase,decrease}
 
 # Toggle volume using standard keys for default sink
 super + Insert
-	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
+	wmrc call hardware/audio speakers_toggle_mute
 
 # Toggle volume using media keys for default sink
 XF86AudioMute
-	pactl set-sink-mute "$(pactl info | grep 'Default Sink:' | sed 's/.*: //')" toggle
+	wmrc call hardware/audio speakers_toggle_mute
 
-# Change brightness using media keys
+# Change internal monitor brightness using media keys
 super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	wmrc call screen/backlight {dec,inc} 20
+	wmrc call screen/backlight {decrease,increase} internal
 
-# Change brightness using backlight keys
+# Change monitor brightness using backlight keys
 {XF86MonBrightnessDown,XF86MonBrightnessUp}
-	wmrc call screen/backlight {dec,inc} 20
+	wmrc call screen/backlight {decrease,increase}
 
-# Set brightess to low / high using media keys
+# Change external monitor brightness using standard keys
+super + alt + {Prior, Next}
+	wmrc call screen/backlight {increase,decrease}
+
+# Set internal monitor brightess to low / high using media keys
 ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
-	wmrc call screen/backlight equ {0,100}
+	wmrc call screen/backlight set_to {0,100}
 
 # Select monitor layout
 super + {o, XF86AudioMicMute}
@@ -343,19 +343,22 @@ super + XF86AudioMute
 
 # Toggle mute microphone
 {super + shift + Insert, XF86AudioMicMute}
-	pactl set-source-mute "$(pactl info | grep 'Default Source:' | sed 's/.*: //')" toggle
+	wmrc call hardware/audio microphone_toggle_mute
 
 # Playerctl previous track in playlist
 {super + @F10, XF86AudioPrev}
-	playerctl -a previous
+	playerctl -a previous && \
+	wmrc call services/notifications notify -u low -i music-player 'Playing previous track'
 
 # Playerctl next track in playlist
 {super + @F11, XF86AudioNext}
-	playerctl -a next
+	playerctl -a next && \
+	wmrc call services/notifications notify -u low -i music-player 'Playing next track'
 
 # Playerctl toggle pause playback
 {super + @F12, XF86AudioPlay}
-	playerctl -a play-pause
+	playerctl -a play-pause && \
+	wmrc call services/notifications notify -u low -i music-player 'Toggling media playback'
 
 ## Appearance
 

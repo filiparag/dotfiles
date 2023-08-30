@@ -1,14 +1,11 @@
 #!/bin/sh
 
 export WMRC_DEPENDENCIES='arandr xrandr perl rofi'
+export WMRC_LIBRARIES='notify'
 
 SCREENLAYOUT="$HOME/.screenlayout"
 
 manual() {
-
-  local LAYOUT_OLD
-  local LAYOUT_NEW
-  local WAIT
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
 
@@ -17,16 +14,13 @@ manual() {
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
   if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
-    info 'Set manual screen layout'
+    notify -i display 'Set manual screen layout'
     reload_ui
   fi
 
 }
 
 restore() {
-
-  local LAYOUT_OLD
-  local LAYOUT_NEW
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
 
@@ -40,16 +34,12 @@ restore() {
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
   if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
-    info 'Restore previous screen layout'
+    notify -i display 'Restore previous screen layout'
     reload_ui
   fi
 }
 
 defined() {
-
-  local LAYOUT_OLD
-  local LAYOUT_NEW
-  local SCRIPT
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
 
@@ -69,18 +59,12 @@ defined() {
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
   if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
-    info 'Set defined screen layout' "$1"
+    notify -i display 'Set defined screen layout' "$1"
     reload_ui
   fi
 }
 
 monitor() {
-
-  local LAYOUT_OLD
-  local LAYOUT_NEW
-  local NEW_LAYOUT
-  local OFF
-  local ON
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
 
@@ -90,40 +74,32 @@ monitor() {
             grep -Fv "$(echo "$SEL" | sed 's/ (.*//')" |
             sed -z 's/\n/ /g')"
   ON="$(echo "$SEL" |
-          perl -n -e'/^([_-a-zA-Z0-9]+).* (\d+x\d+)/ &&
+          perl -n -e'/^([^ ]+).* (\d+x\d+)/ &&
           print "--output $1 --primary --mode $2 --pos 0x0 --rotate normal"')"
 
-  NEW_LAYOUT="xrandr $OFF $ON"
-  echo "#! /usr/bin/env dash\n$NEW_LAYOUT" > "$SCREENLAYOUT/.restore.sh"
+  NEW_LAYOUT="xrandr $ON $OFF"
+  printf "#!/bin/sh\n%s" "$NEW_LAYOUT" > "$SCREENLAYOUT/.restore.sh"
   chmod +x "$SCREENLAYOUT/.restore.sh"
 
   $NEW_LAYOUT
 
   LAYOUT_NEW="$(xrandr --listmonitors | sha1sum)"
 
-  [ "$LAYOUT_OLD" = "$LAYOUT_NEW" ] || \
+  if [ "$LAYOUT_OLD" != "$LAYOUT_NEW" ]; then
+    notify -i display 'Set generic monitor layout' "$SEL"
     reload_ui
+  fi
 
 }
 
 reload_ui() {
 
   debug 'Reload UI'
-  # call "wm/$WMRC_WM" workspaces
-  # call ui/polybar restart
-  # call screen/wallpaper_dynamic restart
-  # call screen/lock generate_composite
   wmrc unit reload
 
 }
 
 start() {
-
-  local DEFINED
-  local MONITORS
-  local MANUAL
-  local LAYOUT
-  local SEL
 
   DEFINED="$(find "$SCREENLAYOUT" -type f \
           -name "*.sh" -printf "%P\n" | \
@@ -133,10 +109,43 @@ start() {
             m/^([-_a-zA-Z0-9]+) connected.*\n *(\d+)x(\d+)/gm')"
 
   for D in $DEFINED; do
-    L="$D [ $(sed 's/--output/\n/g' "$SCREENLAYOUT/$D.sh" | \
-            perl -n -e'/^ *([-_a-zA-Z0-9]+) (--primary )?--mode (\d+)x(\d+) --pos (\d+)x(\d+)/ && \
-            print "$1 $3x$4 $5:$6 $2 | "') ]"
-    LAYOUT="$LAYOUT$(echo "$L" | sed 's/  / /g; s/--//g; s/| \]/\]/')\n"
+    L="$(
+      awk \
+      'BEGIN {
+        display=0;
+        mode=0;
+        primary=0;
+        name="";
+      }
+      /^xrandr/ {
+        for (i=1;i<=NF;++i) {
+          if ($i=="--output") {
+            display=1;
+          } else if (display) {
+            name=$i;
+            display=0;
+          } else if (name!="" && $i=="--mode") {
+            mode=1;
+          } else if (name!="" && $i=="--primary") {
+            primary=1;
+          } else if (name!="" && mode) {
+            res[name]=$i;
+            prim[name]=(primary) ? " primary " : " ";
+            name="";
+            mode=0;
+            primary=0;
+          }
+        }
+      }
+      END {
+        for (d in res) {
+          match(res[d],/^"([^_]+).*/,r);
+          printf("%s%s%s ", d, prim[d], r[1]);
+        }
+      }' "$SCREENLAYOUT/$D.sh"
+    )"
+    echo "$L"
+    LAYOUT="$LAYOUT$D [ $L]\n"
   done
 
   MANUAL="Manual temporary layout configuration\n"

@@ -47,7 +47,7 @@ notify() {
     fi
     info 'Displaying notification' "$1"
     NOTIFY_OUTPUT="$(
-        eval "$_log_level '$1' '$2' '${_actions:+[}$_actions${_actions:+]}'; notify-send $_kwargs '$1' '$2'"
+        eval "$_log_level '$1' ${2:+\'}$2${2:+\'} '${_actions:+[}$_actions${_actions:+]}'; notify-send $_kwargs '$1' '$2'"
     )"
 }
 

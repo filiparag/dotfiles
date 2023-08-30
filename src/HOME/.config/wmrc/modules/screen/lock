@@ -101,13 +101,20 @@ lock() {
 
   generate_composite
 
-  [ "$1" = "wait" ] && WAIT="-n"
-
-  i3lock -u -i "$OUTPUT_IMG" -t -e "$WAIT"
+  i3lock -u -i "$OUTPUT_IMG" -t -e -n &
+  _i3lock_pid="$!"
+  daemon_set_pid "$_i3lock_pid"
+  wait "$_i3lock_pid"
 
 }
 
 smart_lock() {
+
+  if daemon_get_pid; then
+    error 'Smart lockscreen is already running'
+    return 1
+  fi
+
   info 'Smart screen lock'
 
   LANG="$(xkb-switch -p)"
@@ -123,8 +130,11 @@ smart_lock() {
 
   generate_composite
 
-  if [ "$1" != "screen_on" ]; then
+  if [ "$1" = "screen_on" ]; then
+    xset dpms force on
+  else
     sleep 0.2
+    info 'Turn off monitors'
     xset dpms force off
   fi
 
@@ -132,7 +142,7 @@ smart_lock() {
   call services/notifications pause
   safeeyes --disable
 
-  lock 'lock' 'wait'
+  lock 'lock'
 
   info 'Resuming notifications'
   call services/notifications resume
@@ -145,23 +155,4 @@ smart_lock() {
 
 }
 
-start() {
-  if daemon_get_pid; then
-		error "Lockscreen daemon is already running!"
-		return 1
-	fi
-  info "Starting lockscreen auto lock daemon"
-  blank_timeout="${1:-300}"
-  lock_timeout="${2:-305}"
-  generate_composite
-  xset s off -dpms &
-	xidlehook \
-		--not-when-fullscreen \
-		--not-when-audio \
-		--timer "$blank_timeout" \
-			"xset dpms force off" '' \
-		--timer "$lock_timeout" \
-			"wmrc call screen/lock smart_lock" '' \
-		> /dev/null &
-  daemon_set_pid "$!"
-}
+

@@ -1,0 +1,43 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='pactl'
+export WMRC_LIBRARIES='notify'
+
+WMRC_NOTIFICATION_TIMEOUT="${WMRC_NOTIFICATION_TIMEOUT:-1000}" #milliseconds
+WMRC_VOLUME_STEP="${WMRC_VOLUME_STEP:-1}"
+
+default_source() {
+    pactl info | grep 'Default Source:' | sed 's/.*: //'
+}
+
+default_sink() {
+    pactl info | grep 'Default Sink:' | sed 's/.*: //'
+}
+
+speakers_volume_increase() {
+	pactl set-sink-volume "$(default_sink)" "+$WMRC_VOLUME_STEP%"
+}
+
+speakers_volume_decrease() {
+	pactl set-sink-volume "$(default_sink)" "-$WMRC_VOLUME_STEP%"
+}
+
+microphone_toggle_mute() {
+    pactl set-source-mute "$(default_source)" "${1:-toggle}"
+	_muted="$(pactl get-source-mute "$(default_source)" | cut -d' ' -f2)"
+	if [ "$_muted" = 'yes' ]; then
+		notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i microphone-sensitivity-muted 'Microphone muted'
+	elif [ "$_muted" = 'no' ]; then
+		notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i microphone-sensitivity-high 'Microphone active'
+	fi
+}
+
+speakers_toggle_mute() {
+    pactl set-sink-mute "$(default_sink)" "${1:-toggle}"
+	_muted="$(pactl get-sink-mute "$(default_sink)" | cut -d' ' -f2)"
+	if [ "$_muted" = 'yes' ]; then
+		notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i audio-volume-muted 'Speakers muted'
+	elif [ "$_muted" = 'no' ]; then
+		notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i audio-volume-high 'Speakers active'
+	fi
+}
