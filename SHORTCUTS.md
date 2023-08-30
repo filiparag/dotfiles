@@ -42,6 +42,8 @@ Print screen (capture region) `{super + p, Print}`
 
 Print screen to clipboard (focused monitor) `{super + shift + p, shift + Print}`
 
+Record screen `{super + alt + p, alt + Print}`
+
 
 ## Window control
 
@@ -69,11 +71,11 @@ Move focused window to desktop on current monitor `super + shift + {0-9}`
 
 Move focused window to neighbouring desktop on current monitor `super + shift + {@Home,@End}`
 
-Toggle monocle mode for focused window `super + f `
+Toggle monocle mode for focused window `super + f`
 
 Sift through windows in monocle mode `super + {comma,period}`
 
-Toggle fullscreen mode for focused window `super + shift + f `
+Toggle fullscreen mode for focused window `super + shift + f`
 
 Swap places of current and last focused window `super + w`
 
@@ -114,12 +116,6 @@ Move through neighbouring desktops on all monitors `super + alt + {@Home,@End}`
 
 Select parent node `super + @F1`
 
-Move selected nodes `super + @F2`
-
-Swap desktops `super + @F3`
-
-Swap monitors `super + @F4`
-
 
 ## Bspwm
 
@@ -151,11 +147,13 @@ Toggle volume using standard keys for default sink `super + Insert`
 
 Toggle volume using media keys for default sink `XF86AudioMute`
 
-Change brightness using media keys `super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
+Change internal monitor brightness using media keys `super + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
 
-Change brightness using backlight keys `{XF86MonBrightnessDown,XF86MonBrightnessUp}`
+Change monitor brightness using backlight keys `{XF86MonBrightnessDown,XF86MonBrightnessUp}`
 
-Set brightess to low / high using media keys `ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
+Change external monitor brightness using standard keys `super + alt + {Prior, Next}`
+
+Set internal monitor brightess to low / high using media keys `ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
 
 Select monitor layout `super + {o, XF86AudioMicMute}`
 

@@ -1,7 +1,5 @@
 # Dotfiles for Arch Linux
 
-https://gist.github.com/bitingsock/e8a56446ad9c1ed92d872aeb38edf124
-https://github.com/rvaiya/keyd
 
 ## Preview
 
