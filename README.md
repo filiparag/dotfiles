@@ -1,5 +1,8 @@
 # Dotfiles for Arch Linux
 
+https://gist.github.com/bitingsock/e8a56446ad9c1ed92d872aeb38edf124
+https://github.com/rvaiya/keyd
+
 ## Preview
 
 ![screenshot](./screenshot.gif "Screenshot showcase made on 2021-01-08")
@@ -33,6 +36,7 @@ After every repository update, reload dotfiles and install dependencies:
 
 ```shell
 dotfiles reload
+make dependencies
 ```
 
 ## Usage and customization

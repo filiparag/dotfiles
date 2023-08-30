@@ -6,7 +6,7 @@ WORKDIR			:= $(shell mktemp -d -t 'dotfiles-XXXXX')
 WORKFILE		:= $(shell sudo mktemp -t 'dotfiles-XXXXX.tar')
 SRCDIR			:= $(shell realpath ./src/)
 
-.PHONY: symlink
+.PHONY: dependencies symlink
 
 copy: .bootstrap .configure .prepare-copy .rename .chown .package .install .cleanup .docs .post-install
 	@echo 'export DOTFILES_TYPE=copy' >> ${HOMEDIR}/.config/dotfiles.ini
