@@ -28,6 +28,8 @@ make copy       # place copies of files
 reboot
 ```
 
+**Note:** Running make targets for installing dotfiles will replace existing configuration files in the filesystem. Be sure to back them up beforehand.
+
 **Updating dotfiles**
 
 After every repository update, reload dotfiles and install dependencies:

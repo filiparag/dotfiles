@@ -48,12 +48,17 @@ detect_external() {
 }
 
 set_to() {
-    _value="${1:-$WMRC_BACKLIGHT_DEFAULT}"
-    if has_monitor internal && [ "$2" != 'external' ]; then
+    if [ "$1" != 'internal' ] && [ "$1" != 'external' ]; then
+        _value="${1:-$WMRC_BACKLIGHT_DEFAULT}"
+        shift 1
+    else
+        _value="$WMRC_BACKLIGHT_DEFAULT"
+    fi
+    if has_monitor internal && [ "$1" != 'external' ]; then
         xbacklight -set "$_value"
         info 'Set internal backlight' "$_value"
     fi
-    if has_monitor external && [ "$2" != 'internal' ]; then
+    if has_monitor external && [ "$1" != 'internal' ]; then
         if ddcutil_write "$_value"; then
             info 'Set external backlight' "$_value"
         else
@@ -63,12 +68,17 @@ set_to() {
 }
 
 increase() {
-    _step="${1:-$WMRC_BACKLIGHT_STEP}"
-    if has_monitor internal && [ "$2" != 'external' ]; then
-        xbacklight -inc "$_step"
-        info 'Increase internal backlight' "$(xbackglight -get)"
+    if [ "$1" != 'internal' ] && [ "$1" != 'external' ]; then
+        _step="${1:-$WMRC_BACKLIGHT_STEP}"
+        shift 1
+    else
+        _step="$WMRC_BACKLIGHT_STEP"
     fi
-    if has_monitor external && [ "$2" != 'internal' ]; then
+    if has_monitor internal && [ "$1" != 'external' ]; then
+        xbacklight -inc "$_step"
+        info 'Increase internal backlight' "$(xbacklight -get)"
+    fi
+    if has_monitor external && [ "$1" != 'internal' ]; then
         _current="$(cat "$external_file")"
         _current="$((_current+_step))"
         if ddcutil_write "$_current"; then
@@ -81,12 +91,17 @@ increase() {
 }
 
 decrease() {
-    _step="${1:-$WMRC_BACKLIGHT_STEP}"
-    if has_monitor internal && [ "$2" != 'external' ]; then
-        xbacklight -dec "$_step"
-        info 'Decrease internal backlight' "$(xbackglight -get)"
+    if [ "$1" != 'internal' ] && [ "$1" != 'external' ]; then
+        _step="${1:-$WMRC_BACKLIGHT_STEP}"
+    shift 1
+    else
+    _step="$WMRC_BACKLIGHT_STEP"
     fi
-    if has_monitor external && [ "$2" != 'internal' ]; then
+    if has_monitor internal && [ "$1" != 'external' ]; then
+        xbacklight -dec "$_step"
+        info 'Decrease internal backlight' "$(xbacklight -get)"
+    fi
+    if has_monitor external && [ "$1" != 'internal' ]; then
         _current="$(cat "$external_file")"
         _current="$((_current-_step))"
         if ddcutil_write "$_current"; then
