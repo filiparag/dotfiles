@@ -1,0 +1,25 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='sudo'
+export WMRC_LIBRARIES='notify'
+
+WMRC_BATTERY_CHARGE_START="${WMRC_BATTERY_CHARGE_START:-80}"
+WMRC_BATTERY_CHARGE_STOP="${WMRC_BATTERY_CHARGE_STOP:-85}"
+
+limit() {
+    echo "$WMRC_BATTERY_CHARGE_START" | sudo tee /sys/class/power_supply/*/charge_control_start_threshold >/dev/null
+    echo "$WMRC_BATTERY_CHARGE_START" | sudo tee /sys/class/power_supply/*/charge_start_threshold >/dev/null
+    echo "$WMRC_BATTERY_CHARGE_STOP" | sudo tee /sys/class/power_supply/*/charge_control_end_threshold >/dev/null
+    echo "$WMRC_BATTERY_CHARGE_STOP" | sudo tee /sys/class/power_supply/*/charge_stop_threshold >/dev/null
+    notify -u low -i battery-medium-charging 'Limit battery charging' \
+        "Start threshold: $WMRC_BATTERY_CHARGE_START%\nStop threshold: $WMRC_BATTERY_CHARGE_STOP%"
+}
+
+full() {
+    echo 0 | sudo tee /sys/class/power_supply/*/charge_control_start_threshold >/dev/null
+    echo 0 | sudo tee /sys/class/power_supply/*/charge_start_threshold >/dev/null
+    echo 100 | sudo tee /sys/class/power_supply/*/charge_control_end_threshold >/dev/null
+    echo 100 | sudo tee /sys/class/power_supply/*/charge_stop_threshold >/dev/null
+    notify -u low -i battery-full-charging 'Full battery charging' \
+        "Start threshold: 100%\nStop threshold: 100%"
+}

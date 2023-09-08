@@ -2,10 +2,10 @@
 
 export WMRC_DEPENDENCIES='setxkbmap numlockx xmodmap sudo'
 
-layout() {
+WMRC_TRACKPOINT_SENSITIVITY_X230="${WMRC_TRACKPOINT_SENSITIVITY_X230:-220}"
+WMRC_TRACKPOINT_SENSITIVITY_X13="${WMRC_TRACKPOINT_SENSITIVITY_X13:-30}"
 
-  local LANGUAGES
-  local VARIANT
+layout() {
 
   LANGUAGES="us,rs,rs"
   #VARIANT=",latinunicode,"
@@ -26,16 +26,14 @@ keybinds() {
     if sudo -v >/dev/null; then
 
       # TrackPoint sensitivity
-      local FILE_SENSITIVITY
-      local FILE_SELECT
-      local FILE
-
       FILE_SENSITIVITY="$(find /sys/devices/platform/i8042/ -name 'sensitivity')"
       FILE_SELECT="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
 
+      MODEL="$(cut -d' ' -f2 /sys/devices/virtual/dmi/id/product_family)"
+
       for FILE in $FILE_SENSITIVITY; do
         info "Set TrackPoint sensitivity"
-        sudo su -c "echo -n 220 > $FILE"
+        eval "echo \$WMRC_TRACKPOINT_SENSITIVITY_$MODEL" | sudo tee "$FILE" >/dev/null
       done
 
       for FILE in $FILE_SELECT; do
@@ -55,7 +53,7 @@ keybinds() {
 
     fi
 
-    WAIT=$(sleep 2)
+    sleep 1
 
     # Change key bindings
     info "Change key bindings"

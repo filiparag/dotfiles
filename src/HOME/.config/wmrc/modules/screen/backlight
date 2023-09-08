@@ -8,6 +8,7 @@ WMRC_BACKLIGHT_STEP="${WMRC_BACKLIGHT_STEP:-10}"
 
 internal_vendor="$(find /sys/class/backlight/ -mindepth 1 -maxdepth 1 -printf '%P' | head -n 1)"
 internal_file="/sys/class/backlight/$internal_vendor/brightness"
+internal_file_max="/sys/class/backlight/$internal_vendor/max_brightness"
 external_file="/tmp/wmrc::$(echo "$_module" | sed 's,/,::,g')@$(whoami)${DISPLAY}.brightness"
 
 init() {
@@ -50,13 +51,17 @@ detect_external() {
 set_to() {
     if [ "$1" != 'internal' ] && [ "$1" != 'external' ]; then
         _value="${1:-$WMRC_BACKLIGHT_DEFAULT}"
-        shift 1
+        shift 1 2>/dev/null
     else
         _value="$WMRC_BACKLIGHT_DEFAULT"
     fi
     if has_monitor internal && [ "$1" != 'external' ]; then
-        xbacklight -set "$_value"
-        info 'Set internal backlight' "$_value"
+        _max="$(cat "$internal_file_max")"
+        _value="$((_value*_max/100))"
+        _internal="$((_value<_max?_value:_max))"
+        _internal="$((_value>0?_value:0))"
+        echo "$_internal" | sudo tee "$internal_file" >/dev/null
+        info 'Set internal backlight' "$_internal"
     fi
     if has_monitor external && [ "$1" != 'internal' ]; then
         if ddcutil_write "$_value"; then
@@ -70,13 +75,18 @@ set_to() {
 increase() {
     if [ "$1" != 'internal' ] && [ "$1" != 'external' ]; then
         _step="${1:-$WMRC_BACKLIGHT_STEP}"
-        shift 1
+        shift 1 2>/dev/null
     else
         _step="$WMRC_BACKLIGHT_STEP"
     fi
     if has_monitor internal && [ "$1" != 'external' ]; then
-        xbacklight -inc "$_step"
-        info 'Increase internal backlight' "$(xbacklight -get)"
+        _current="$(cat "$internal_file")"
+        _max="$(cat "$internal_file_max")"
+        _internal="$((_current+_step*_max/100))"
+        _internal="$((_internal<_max?_internal:_max))"
+        _internal="$((_internal>0?_internal:0))"
+        echo "$_internal" | sudo tee "$internal_file" >/dev/null
+        info 'Increase internal backlight' "$_internal"
     fi
     if has_monitor external && [ "$1" != 'internal' ]; then
         _current="$(cat "$external_file")"
@@ -93,13 +103,18 @@ increase() {
 decrease() {
     if [ "$1" != 'internal' ] && [ "$1" != 'external' ]; then
         _step="${1:-$WMRC_BACKLIGHT_STEP}"
-    shift 1
+        shift 1 2>/dev/null
     else
-    _step="$WMRC_BACKLIGHT_STEP"
+        _step="$WMRC_BACKLIGHT_STEP"
     fi
     if has_monitor internal && [ "$1" != 'external' ]; then
-        xbacklight -dec "$_step"
-        info 'Decrease internal backlight' "$(xbacklight -get)"
+        _current="$(cat "$internal_file")"
+        _max="$(cat "$internal_file_max")"
+        _internal="$((_current-_step*_max/100))"
+        _internal="$((_internal<_max?_internal:_max))"
+        _internal="$((_internal>0?_internal:0))"
+        echo "$_internal" | sudo tee "$internal_file" >/dev/null
+        info 'Decrease internal backlight' "$_internal"
     fi
     if has_monitor external && [ "$1" != 'internal' ]; then
         _current="$(cat "$external_file")"
