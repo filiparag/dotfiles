@@ -133,6 +133,7 @@ unclutter
 unp
 unrar
 unzip
+usbutils
 vim
 viper4linux-git
 vlc

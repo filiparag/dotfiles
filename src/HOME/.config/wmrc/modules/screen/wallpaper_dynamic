@@ -4,7 +4,7 @@ export WMRC_DEPENDENCIES='feh convert jq curl bc printf xargs'
 
 BCK_IMG="$HOME/Pictures/wallpaper-%s.png"
 COMPOSITE="convert -colorspace Gray \( $BCK_IMG -evaluate multiply %.2f \) \( $BCK_IMG -evaluate multiply %.2f \) -compose plus -composite %s"
-DELAY=$((5*60))
+DELAY="$((150))"
 
 LATLNG="$(echo "$WMRC_LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
 

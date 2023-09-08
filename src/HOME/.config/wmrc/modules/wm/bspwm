@@ -118,3 +118,12 @@ init() {
   echo "$DISPLAY" > "/tmp/x11_$USER"
 
 }
+
+start() {
+  if daemon_get_pid; then
+		error "Bspwm is already running!"
+		return 1
+	fi
+  daemon_set_pid "$$"
+  exec bspwm
+}

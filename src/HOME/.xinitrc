@@ -1,4 +1,4 @@
-#! /usr/bin/env dash
+#!/bin/sh
 
 userresources=$HOME/.Xresources
 usermodmap=$HOME/.Xmodmap
@@ -24,7 +24,7 @@ if [ -f "$usermodmap" ]; then
 fi
 
 dbus-update-activation-environment --systemd DISPLAY
-eval $(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)
+eval "$(/usr/bin/gnome-keyring-daemon --start --components=pkcs11,secrets,ssh)"
 export SSH_AUTH_SOCK
 
 export XDG_SESSION_TYPE=x11
@@ -32,9 +32,10 @@ export XDG_SESSION_TYPE=x11
 ! command -v wmrc >/dev/null && \
     >&2 echo "wmrc not found in PATH!" && exit 1
 
-DEPS="$(wmrc check-deps | tr '\n' ' ')"
+deps="$(wmrc check-deps)"
+if [ -n "$deps" ]; then
+    >&2 echo "$deps"
+    exit 1
+fi
 
-[ -n "$DEPS" ] && \
-    >&2 echo "wmrc has missing dependencies:\n$DEPS" && exit 1
-
-exec "$(wmrc var WM)"
+exec wmrc start "wm/$(wmrc var WM)"

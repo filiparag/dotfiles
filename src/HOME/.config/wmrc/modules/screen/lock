@@ -101,10 +101,8 @@ lock() {
 
   generate_composite
 
-  i3lock -u -i "$OUTPUT_IMG" -t -e -n &
-  _i3lock_pid="$!"
-  daemon_set_pid "$_i3lock_pid"
-  wait "$_i3lock_pid"
+  daemon_set_pid "$$"
+  i3lock -u -i "$OUTPUT_IMG" -t -e -n
 
 }
 
