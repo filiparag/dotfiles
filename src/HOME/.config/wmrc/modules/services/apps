@@ -14,6 +14,7 @@ APPS='unclutter -idle 1
       mail-notification
       ayatana-webmail
       safeeyes
+      libinput-gestures-setup start
       xhost +si:localuser:$USER
       '
 

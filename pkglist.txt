@@ -53,6 +53,7 @@ kdeconnect
 keepassxc
 otf-latin-modern
 otf-latinmodern-math
+libinput-gestures
 libnotify
 linux
 linux-firmware

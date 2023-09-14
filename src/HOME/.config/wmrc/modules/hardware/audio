@@ -15,11 +15,11 @@ default_sink() {
 }
 
 speakers_volume_increase() {
-	pactl set-sink-volume "$(default_sink)" "+$WMRC_VOLUME_STEP%"
+	pactl set-sink-volume "$(default_sink)" "+${1:-WMRC_VOLUME_STEP}%"
 }
 
 speakers_volume_decrease() {
-	pactl set-sink-volume "$(default_sink)" "-$WMRC_VOLUME_STEP%"
+	pactl set-sink-volume "$(default_sink)" "-${1:-WMRC_VOLUME_STEP}%"
 }
 
 microphone_toggle_mute() {
