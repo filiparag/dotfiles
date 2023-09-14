@@ -1,3 +1,4 @@
+Server = https://mirror1.sox.rs/archlinux/$repo/os/$arch
 Server = https://europe.mirror.pkgbuild.com/$repo/os/$arch
 Server = https://archimonde.ts.si/archlinux/$repo/os/$arch
 Server = https://at.arch.mirror.kescher.at/$repo/os/$arch

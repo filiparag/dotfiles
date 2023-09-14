@@ -80,6 +80,19 @@ function __abbr_os_debian -d 'Package manager abbrevations for Debian'
 
 end
 
+function __abbr_os_fedora -d 'Package manager abbrevations for Fedora'
+
+    set pkgmgr "$su_cmd"'dnf'
+
+    abbr --add ys "$pkgmgr install" # Install package
+    abbr --add yss "$pkgmgr search" # Search repository
+    abbr --add yi "$pkgmgr info" # Package info
+    abbr --add y "$pkgmgr update && $pkgmgr upgrade" # Update and upgrade
+    abbr --add yr "$pkgmgr remove" # Remove package
+    abbr --add yc "$pkgmgr clean" # Clean cache
+
+end
+
 # Abbrevations
 
 if status --is-interactive
