@@ -6,11 +6,19 @@ export WMRC_LIBRARIES='notify'
 WMRC_BATTERY_CHARGE_START="${WMRC_BATTERY_CHARGE_START:-80}"
 WMRC_BATTERY_CHARGE_STOP="${WMRC_BATTERY_CHARGE_STOP:-85}"
 
-limit() {
+test_battery() {
     if ! find /sys/class/power_supply/ -type l -name 'BAT*' | grep -qv '^$'; then
         warn 'No battery found'
-        return 1
+        exit 1
     fi
+    if ! find /sys/class/power_supply/*/charge_start_threshold 1>/dev/null 2>/dev/null; then
+        warn "Battery doesn't support charge limits"
+        exit 1
+    fi
+}
+
+limit() {
+    test_battery
     echo "$WMRC_BATTERY_CHARGE_START" | sudo tee /sys/class/power_supply/*/charge_control_start_threshold >/dev/null
     echo "$WMRC_BATTERY_CHARGE_START" | sudo tee /sys/class/power_supply/*/charge_start_threshold >/dev/null
     echo "$WMRC_BATTERY_CHARGE_STOP" | sudo tee /sys/class/power_supply/*/charge_control_end_threshold >/dev/null
@@ -20,10 +28,7 @@ limit() {
 }
 
 full() {
-    if ! find /sys/class/power_supply/ -type l -name 'BAT*' | grep -qv '^$'; then
-        warn 'No battery found'
-        return 1
-    fi
+    test_battery
     echo 0 | sudo tee /sys/class/power_supply/*/charge_control_start_threshold >/dev/null
     echo 0 | sudo tee /sys/class/power_supply/*/charge_start_threshold >/dev/null
     echo 100 | sudo tee /sys/class/power_supply/*/charge_control_end_threshold >/dev/null
