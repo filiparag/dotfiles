@@ -30,7 +30,7 @@ end
 if status --is-login
     if test -z "$DISPLAY" -a "$XDG_VTNR" -eq 1
         # exec startx -- -keeptty
-	# __graphical_environments
-	__graphical_environment_bspwm
+        # __graphical_environments
+        __graphical_environment_bspwm
     end
 end

@@ -22,3 +22,4 @@ start() {
         > /dev/null &
     daemon_set_pid "$!"
 }
+

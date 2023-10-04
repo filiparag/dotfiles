@@ -71,12 +71,12 @@ super + e
 
 # Print screen (capture region)
 {super + p, Print}
-	mkdir -p "~/Pictures/Screenshots" && \
+	mkdir -p "$HOME/Pictures/Screenshots" && \
 	flameshot gui
 
 # Print screen to clipboard (focused monitor)
 {super + shift + p, shift + Print}
-	mkdir -p "~/Pictures/Screenshots" && \
+	mkdir -p "$HOME/Pictures/Screenshots" && \
 	flameshot screen -c
 
 # Record screen
@@ -335,6 +335,10 @@ ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}
 
 # Select monitor layout
 super + {o, XF86AudioMicMute}
+	wmrc call screen/layout start
+
+# Select monitor layout using media key
+XF86Display
 	wmrc call screen/layout start
 
 # Launch Pulseaudio control interface
