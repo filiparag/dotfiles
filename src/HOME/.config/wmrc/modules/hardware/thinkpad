@@ -27,12 +27,12 @@ configure_trackpoint() {
 	detect_model
 	file_sensitivity="$(find /sys/devices/platform/i8042/ -name 'sensitivity')"
 	file_select="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
-	info "Set TrackPoint sensitivity"
+	info 'Set TrackPoint sensitivity'
 	for file in $file_sensitivity; do
 		debug 'Set sensitivity' "$file"
 		eval "echo \$WMRC_TRACKPOINT_SENSITIVITY_$thinkpad_model" | sudo tee "$file" >/dev/null
 	done
-	info "Turn off TrackPoint tap select"
+	info 'Turn off TrackPoint tap select'
 	for file in $file_select; do
 		debug 'Turn off tap select' "$file"
 		printf '0' | sudo tee "$file" >/dev/null
@@ -40,9 +40,9 @@ configure_trackpoint() {
 }
 
 turn_off_leds() {
-	info "Turn off LEDs"
+	info 'Turn off LEDs'
 	# Legacy
-	if [ -e "/proc/acpi/ibm/led" ]; then
+	if [ -e '/proc/acpi/ibm/led' ]; then
 		debug 'Turn off power LED'
 		echo '0 off' | sudo tee /proc/acpi/ibm/led >/dev/null
 	fi
@@ -56,7 +56,22 @@ turn_off_leds() {
 	done
 }
 
-start() {
+keyboard_backlight() {
+	info 'Turn off keyboard backlight'
+	file='/sys/devices/platform/thinkpad_acpi/leds/tpacpi::kbd_backlight/brightness'
+	if [ -e "$file" ]; then
+		echo "${1:-2}" | sudo tee "$file" >/dev/null
+	fi
+}
+
+get_attention() {
+	info 'Get user attention'
+	if [ -e '/proc/acpi/ibm/led' ]; then
+		echo '0 blink' | sudo tee /proc/acpi/ibm/led >/dev/null
+	fi
+}
+
+init() {
 	configure_trackpoint
 	turn_off_leds
 }

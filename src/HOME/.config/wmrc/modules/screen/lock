@@ -142,6 +142,7 @@ smart_lock() {
 
   lock 'lock'
 
+  call hardware/auto_suspend stop
   info 'Resuming notifications'
   call services/notifications resume
   safeeyes --enable
