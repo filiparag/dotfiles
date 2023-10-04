@@ -32,11 +32,11 @@ reboot
 
 **Updating dotfiles**
 
-After every repository update, reload dotfiles and install dependencies:
+After every repository update, install dependencies and reload dotfiles:
 
 ```shell
+dotfiles deps
 dotfiles reload
-make dependencies
 ```
 
 ## Usage and customization

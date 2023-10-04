@@ -132,6 +132,8 @@ Shut down `super + shift + @Delete : Return`
 
 Reboot `super + shift + ctrl + @Delete : Return`
 
+Hibernate `super + alt + @Delete`
+
 Lock the device using physlock `XF86Launch1`
 
 Lock screen and turn off screen `super + l`
@@ -156,6 +158,8 @@ Change external monitor brightness using standard keys `super + alt + {Prior, Ne
 Set internal monitor brightess to low / high using media keys `ctrl + {XF86AudioLowerVolume,XF86AudioRaiseVolume}`
 
 Select monitor layout `super + {o, XF86AudioMicMute}`
+
+Select monitor layout using media key `XF86Display`
 
 Launch Pulseaudio control interface `super + XF86AudioMute`
 

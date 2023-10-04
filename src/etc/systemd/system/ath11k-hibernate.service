@@ -1,0 +1,11 @@
+[Unit]
+Description=Unload Qualcomm WiFi
+Before=hibernate.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/rmmod ath11k_pci
+ExecStart=/usr/bin/rmmod ath11k
+
+[Install]
+WantedBy=hibernate.target

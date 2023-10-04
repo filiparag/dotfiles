@@ -1,0 +1,14 @@
+[Unit]
+Description=System resume event
+After=sleep.target suspend.target hibernate.target
+
+[Service]
+User=%I
+Type=forking
+Environment=DISPLAY=:0
+ExecStartPost=/usr/bin/wmrc unit resume &
+ExecStart=/usr/bin/true
+
+[Install]
+WantedBy=sleep.target suspend.target hibernate.target
+

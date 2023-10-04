@@ -13,6 +13,11 @@ reboot() {
 	sudo shutdown -r now
 }
 
+hibernate() {
+	info "Hibernating system"
+	sudo systemctl hibernate
+}
+
 suspend() {
 	info "Suspending system"
 	sudo systemctl suspend

@@ -1,75 +1,34 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='setxkbmap numlockx xmodmap sudo'
+export WMRC_DEPENDENCIES='setxkbmap numlockx xmodmap'
 
-WMRC_TRACKPOINT_SENSITIVITY_X230="${WMRC_TRACKPOINT_SENSITIVITY_X230:-220}"
-WMRC_TRACKPOINT_SENSITIVITY_X13="${WMRC_TRACKPOINT_SENSITIVITY_X13:-30}"
+WMRC_KEYBOARD_LANGUAGES="${WMRC_KEYBOARD_LANGUAGES:-us,rs,rs}"
+WMRC_KEYBOARD_VARIANTS="${WMRC_KEYBOARD_VARIANTS:-,latin,}"
 
 layout() {
-
-  LANGUAGES="us,rs,rs"
-  #VARIANT=",latinunicode,"
-  VARIANT=",latin,"
-
-  info "Set keyboard layout"
-  setxkbmap -layout "$LANGUAGES" -variant "$VARIANT" -option grp:alt_shift_toggle
-
+  info "Set keyboard layout" "$WMRC_KEYBOARD_LANGUAGES"
+  setxkbmap \
+    -layout "$WMRC_KEYBOARD_LANGUAGES" \
+    -variant "$WMRC_KEYBOARD_VARIANTS" \
+    -option grp:alt_shift_toggle
   info "Turn on Num Lock"
-  numlockx on &
-
+  numlockx on
 }
 
 keybinds() {
-
-  if grep -q "ThinkPad" "/sys/devices/virtual/dmi/id/product_family"; then
-
-    if sudo -v >/dev/null; then
-
-      # TrackPoint sensitivity
-      FILE_SENSITIVITY="$(find /sys/devices/platform/i8042/ -name 'sensitivity')"
-      FILE_SELECT="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
-
-      MODEL="$(cut -d' ' -f2 /sys/devices/virtual/dmi/id/product_family)"
-
-      for FILE in $FILE_SENSITIVITY; do
-        info "Set TrackPoint sensitivity"
-        eval "echo \$WMRC_TRACKPOINT_SENSITIVITY_$MODEL" | sudo tee "$FILE" >/dev/null
-      done
-
-      for FILE in $FILE_SELECT; do
-        info "Turn of TrackPoint tap select"
-        sudo su -c "echo -n 0 > $FILE"
-      done
-
-      # Turn of power and lid logo LEDs
-      if [ -e "/proc/acpi/ibm/led" ]; then
-        info "Turn of LEDs"
-        sudo su -c "echo '0 off' > /proc/acpi/ibm/led"
-        sudo su -c "echo '0' > /sys/devices/platform/thinkpad_acpi/leds/tpacpi::lid_logo_dot/brightness"
-      fi
-    else
-
-      error "User '$(whoami)' is not allowed to run sudo!"
-
-    fi
-
-    sleep 1
-
-    # Change key bindings
-    info "Change key bindings"
+  if call hardware/thinkpad detect_model; then
+    info "Change key bindings for ThinkPad"
     xmodmap -e "keycode 112 = Home"
     xmodmap -e "keycode 117 = End"
     xmodmap -e "keycode 107 = Menu"
     xmodmap -e "keycode 110 = Prior"
     xmodmap -e "keycode 115 = Next"
-
+  else
+    info "No keybidings changed"
   fi
-
 }
 
 init() {
-
-  layout
   keybinds
-
+  layout
 }

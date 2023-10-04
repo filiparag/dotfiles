@@ -1,0 +1,11 @@
+[Unit]
+Description=Load Qualcomm WiFi
+After=hibernate.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/modprobe ath11k_pci
+ExecStart=/usr/bin/modprobe ath11k
+
+[Install]
+WantedBy=hibernate.target

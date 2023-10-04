@@ -291,6 +291,10 @@ super + shift + @Delete : Return
 super + shift + ctrl + @Delete : Return
 	wmrc call hardware/power reboot
 
+# Hibernate
+super + alt + @Delete
+	wmrc unit hibernate
+
 # Lock the device using physlock
 XF86Launch1
 	physlock -m -d

@@ -167,18 +167,11 @@ run_makefile() {
     . "$HOME/.config/dotfiles.ini"
     cd "$project" || \
         panic "Unable to change directory: $project"
-    make ".reload-$DOTFILES_TYPE"
+    make "${1:-.reload-$DOTFILES_TYPE}"
 }
 
 open_manual() {
-    if ! [ -f /usr/share/doc/dotfiles/manual.html ]; then
-        project_base_directory
-        test -r "$HOME/.config/dotfiles.ini" || \
-            panic "Dotfile configuration file is missing: $HOME/.config/dotfiles.ini"
-        cd "$project" || \
-            panic "Unable to change directory: $project"
-        make ".docs"
-    fi
+    run_makefile ".docs"
     xdg-open /usr/share/doc/dotfiles/manual.html
 }
 
@@ -187,6 +180,7 @@ print_usage() {
   add <path>  add file or directory to project
   rm <path>   remove file or directory from project
   reload      rerun project installation
+  deps        reinstall all package dependencies
   docs        open dotfiles manual
   help        print help
 \n'
@@ -201,6 +195,8 @@ case "$1" in
         remove_from_project "$2";;
     reload)
         run_makefile;;
+    deps)
+        run_makefile 'dependencies';;
     docs)
         open_manual;;
     help|'--help')
