@@ -12,6 +12,7 @@ binutils
 bspwm
 ccache
 code
+code-features
 croc
 cronie
 dash
@@ -170,4 +171,4 @@ xorg-xrandr
 xorg-xset
 xorg-xwininfo
 xprintidle
-youtube-dl
+yt-dlp
