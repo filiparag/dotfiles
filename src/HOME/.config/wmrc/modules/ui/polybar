@@ -14,12 +14,18 @@ start() {
 
   info "Starting polybar"
 
-  WLP="$(ip -o link show | awk -F': ' '{print $2}' | grep -E '^(wlp|wlan)')"
-	ENP="$(ip -o link show | awk -F': ' '{print $2}' | grep -E '^(enp|end|eth)')"
+  WLP="$(ip -o link show | awk -F': ' '{print $2}' | grep -E '^(wlp|wlan)' | head -n 1)"
+	ENP="$(ip -o link show | awk -F': ' '{print $2}' | grep -E '^(enp|end|eth)' | head -n 1)"
 	MNT="$(lsblk | awk '/\//{printf "mount-"NR-2" = "$7"\n"}')"
+
+  info 'Wireless network' "${WLP:-not detected}"
+  info 'Wired network' "${ENP:-not detected}"
 
   M_PRIMARY="$(xrandr --query | grep " primary" | cut -d" " -f1)"
   M_ALL="$(xrandr --query | grep " connected" | cut -d" " -f1)"
+
+  info 'Primary monitor' "${M_PRIMARY:-not configured}"
+  info 'All monitors' "${M_ALL:-not detected}"
 
   case "$2" in
     primary)
@@ -42,14 +48,17 @@ start() {
 
     if [ "$M" = "$M_PRIMARY" ]; then
       if [ "$WIDTH" -ge 3440 ]; then
+        BAR_TYPE='wide'
         MOD_L="bspwm window"
         MOD_C="playerctl"
         MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date"
       elif [ "$WIDTH" -ge 1920 ]; then
+        BAR_TYPE='medium'
         MOD_L="bspwm window"
         MOD_C=""
         MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date"
       else
+        BAR_TYPE='narrow'
         MOD_L="bspwm"
         MOD_C=""
         MOD_R="battery wireless wired cpu memory fan temperature pulseaudio keyboard date"
@@ -77,9 +86,9 @@ start() {
     LOG_FILE="$(echo "$_pid_file" | sed "s/\.pid$/::$M.log/")"
 
     if [ "$M" = "$M_PRIMARY" ]; then
-      info "Adding bar to primary monitor" "$M"
+      info "Adding $BAR_TYPE bar to primary monitor" "$M"
     else
-      info "Adding bar to auxiliary monitor" "$M"
+      info "Adding $BAR_TYPE bar to auxiliary monitor" "$M"
     fi
 
     debug 'Modules left' "$MOD_L"

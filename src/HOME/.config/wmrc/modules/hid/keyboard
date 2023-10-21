@@ -29,6 +29,6 @@ keybinds() {
 }
 
 init() {
-  keybinds
   layout
+  keybinds
 }
