@@ -1,0 +1,41 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='xsetwacom xrandr awk'
+
+init() {
+    if xsetwacom list devices | grep -q 'Wacom Intuos M Pen stylus'; then
+        info 'Detected Wacom stylus'
+	    xsetwacom set 'Wacom Intuos M Pen stylus' PressureCurve 0 50 100 10
+        map="$(
+            xrandr | awk \
+            'match($0, /^.+ connected primary ([0-9]+)x([0-9]+)([+-][0-9]+)([+-][0-9]+)/, a) {
+                w=int(a[1]);
+                h=int(a[2]);
+                x=int(a[3]);
+                y=int(a[4]);
+                if (w/h>1.6) {
+                    H=h;
+                    W=h*(16/10);
+
+                } else {
+                    W=w;
+                    H=w/(16/10);
+                }
+                X=(w-W)/2;
+                Y=(h-H)/2;
+                printf("%ix%i%s%i%s%i",
+                W, H,
+                (x>=0) ? "+" : "-", X,
+                (y>=0) ? "+" : "-", Y);
+            }'
+        )"
+        xsetwacom set 'Wacom Intuos M Pen stylus' MapToOutput "$map"
+    fi
+    if xsetwacom list devices | grep -q 'Wacom Intuos M Pen pad'; then
+        info 'Detected Wacom pad'
+        xsetwacom set 'Wacom Intuos M Pad pad' Button 1 'key +ctrl z'
+        xsetwacom set 'Wacom Intuos M Pad pad' Button 2 'key +ctrl +shift z'
+        xsetwacom set 'Wacom Intuos M Pad pad' Button 3 'key +shift F9'
+        xsetwacom set 'Wacom Intuos M Pad pad' Button 8 'key F9'
+    fi
+}

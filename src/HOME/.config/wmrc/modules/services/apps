@@ -15,6 +15,7 @@ APPS='unclutter -idle 1
       ayatana-webmail
       safeeyes
       libinput-gestures-setup start
+      gromit-mpx
       xhost +si:localuser:$USER
       '
 

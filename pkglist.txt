@@ -41,6 +41,7 @@ git
 git-lfs
 gnome-keyring
 gnome-system-monitor
+gromit-mpx
 gst-plugin-viper4linux-git
 gvfs
 gvfs-mtp
@@ -154,6 +155,7 @@ xf86-input-libinput
 xf86-video-amdgpu
 xf86-video-intel
 xf86-video-vesa
+xf86-input-wacom
 xidlehook
 xkb-switch
 xorg-server
