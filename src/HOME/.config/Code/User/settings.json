@@ -10,11 +10,7 @@
   "workbench.iconTheme": "vscode-icons",
   "workbench.editor.untitled.hint": "hidden",
   "editor.suggestSelection": "first",
-  "editor.rulers": [
-    80,
-    100,
-    120
-  ],
+  "editor.rulers": [80, 100, 120],
   "editor.formatOnSave": true,
   "editor.lineHeight": 20,
   "explorer.autoReveal": true,
@@ -35,73 +31,4 @@
   "terminal.integrated.defaultProfile.linux": "fish",
   "terminal.integrated.shellIntegration.decorationsEnabled": "never",
   "terminal.integrated.inheritEnv": false,
-  ///////////////////////
-  "extensionAllowedProposedApi": [
-    "ms-vsliveshare.vsliveshare",
-    "ms-vscode.node-debug",
-    "ms-vscode.node-debug2"
-  ],
-  "shellcheck.executablePath": "/usr/bin/shellcheck",
-  "python.showStartPage": false,
-  "rust-analyzer.checkOnSave.command": "clippy",
-  "rust-analyzer.checkOnSave": true,
-  "rust-analyzer.check.command": "clippy",
-  "files.trimTrailingWhitespace": true,
-  "editor.linkedEditing": true,
-  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  "files.exclude": {
-    "**/.venv": true
-  },
-  "terminal.integrated.commandsToSkipShell": [
-    "language-julia.interrupt"
-  ],
-  "terraform.telemetry.enabled": false,
-  "julia.symbolCacheDownload": true,
-  "julia.enableTelemetry": false,
-  "latex-workshop.latex.tools": [
-    {
-      "name": "latexmk",
-      "command": "latexmk",
-      "args": [
-        "-shell-escape",
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "-pdf",
-        "-outdir=%OUTDIR%",
-        "%DOC%"
-      ],
-      "env": {}
-    }
-  ],
-  "C_Cpp.intelliSenseEngine": "disabled",
-  "[cpp]": {
-    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
-  },
-  "clangd.arguments": [
-    "--clang-tidy",
-    "--pretty",
-    "--background-index"
-  ],
-  "clang-tidy.compilerArgs": [
-    "-std=c++20",
-    "-fopenmp"
-  ],
-  "svelte.enable-ts-plugin": false,
-  "svelte.ask-to-enable-ts-plugin": false,
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[svelte]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "lldb.suppressUpdateNotifications": true,
-  "python.venvPath": "/tmp/venv",
-  "workbench.editor.empty.hint": "hidden"
 }

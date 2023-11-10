@@ -1,41 +1,143 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='xsetwacom xrandr awk'
+export WMRC_DEPENDENCIES='xsetwacom xrandr awk bspc jq'
 
-init() {
-    if xsetwacom list devices | grep -q 'Wacom Intuos M Pen stylus'; then
-        info 'Detected Wacom stylus'
-	    xsetwacom set 'Wacom Intuos M Pen stylus' PressureCurve 0 50 100 10
-        map="$(
-            xrandr | awk \
-            'match($0, /^.+ connected primary ([0-9]+)x([0-9]+)([+-][0-9]+)([+-][0-9]+)/, a) {
-                w=int(a[1]);
-                h=int(a[2]);
-                x=int(a[3]);
-                y=int(a[4]);
-                if (w/h>1.6) {
-                    H=h;
-                    W=h*(16/10);
+detect_device() {
+    if [ -z "$1" ]; then
+        error 'Device type not provided'
+    fi
+    xsetwacom list devices | awk -v type="$1" '
+        $0 ~ sprintf("type: %s", type) {
+            for(i=1;i<NF;++i) {
+                if($i!="id:")
+                    printf("%s",$i);
+                else
+                    break;
+                if($(i+1)!="id:")
+                    printf(" ");
+            }
+            printf("\n");
+        }'
+}
 
-                } else {
-                    W=w;
-                    H=w/(16/10);
-                }
-                X=(w-W)/2;
-                Y=(h-H)/2;
-                printf("%ix%i%s%i%s%i",
-                W, H,
-                (x>=0) ? "+" : "-", X,
-                (y>=0) ? "+" : "-", Y);
-            }'
-        )"
-        xsetwacom set 'Wacom Intuos M Pen stylus' MapToOutput "$map"
+detect_pad() {
+    if [ -z "$WACOM_PAD" ]; then
+        WACOM_PAD="$(detect_device 'PAD')"
+        if [ -z "$WACOM_PAD" ]; then
+            debug 'No Wacom pad detected'
+            return 1
+        else
+            info 'Detected Wacom pad' "$WACOM_PAD"
+        fi
     fi
-    if xsetwacom list devices | grep -q 'Wacom Intuos M Pen pad'; then
-        info 'Detected Wacom pad'
-        xsetwacom set 'Wacom Intuos M Pad pad' Button 1 'key +ctrl z'
-        xsetwacom set 'Wacom Intuos M Pad pad' Button 2 'key +ctrl +shift z'
-        xsetwacom set 'Wacom Intuos M Pad pad' Button 3 'key +shift F9'
-        xsetwacom set 'Wacom Intuos M Pad pad' Button 8 'key F9'
+}
+
+detect_stylus() {
+    if [ -z "$WACOM_STYLUS" ]; then
+        WACOM_STYLUS="$(detect_device 'STYLUS')"
+        if [ -z "$WACOM_STYLUS" ]; then
+            debug 'No Wacom stylus detected'
+            return 1
+        else
+            info 'Detected Wacom stylus' "$WACOM_STYLUS"
+        fi
     fi
+}
+
+set_pressure() {
+    if ! detect_stylus; then
+        return 1
+    fi
+    curve="${1:-0 50 100 10}"
+    info 'Set pen pressure curve' "$curve"
+    eval "xsetwacom set '$WACOM_STYLUS' PressureCurve '$curve'"
+}
+
+set_center_area() {
+    if ! detect_stylus; then
+        return 1
+    fi
+    map="$(
+        xrandr | awk \
+        'match($0, /^.+ connected primary ([0-9]+)x([0-9]+)([+-][0-9]+)([+-][0-9]+)/, a) {
+            w=int(a[1]);
+            h=int(a[2]);
+            x=int(a[3]);
+            y=int(a[4]);
+            if (w/h>1.6) {
+                H=h;
+                W=h*(16/10);
+
+            } else {
+                W=w;
+                H=w/(16/10);
+            }
+            X=(w-W)/2;
+            Y=(h-H)/2;
+            printf("%ix%i%s%i%s%i",
+            W, H,
+            (x>=0) ? "+" : "-", X,
+            (y>=0) ? "+" : "-", Y);
+        }'
+    )"
+    info 'Map stylus to output' "$map"
+    xsetwacom set "$WACOM_STYLUS" MapToOutput "$map"
+}
+
+bind_buttons() {
+    detect_pad
+    detect_stylus
+    if [ -z "$WACOM_PAD" ] && [ -z "$WACOM_STYLUS" ]; then
+        error 'No Wacom input device detected'
+        return 0
+    fi
+    profile="$1"
+    case "$profile" in
+        'rnote')
+            # xsetwacom set "$WACOM_STYLUS" Button 1 'button 1';
+            # xsetwacom set "$WACOM_STYLUS" Button 2 'button 2';
+            # xsetwacom set "$WACOM_STYLUS" Button 3 'button 3';
+            xsetwacom set "$WACOM_PAD" Button 1 'key +ctrl z';
+            xsetwacom set "$WACOM_PAD" Button 2 'key +ctrl +shift z';
+            xsetwacom set "$WACOM_PAD" Button 3 'key +ctrl l';
+            xsetwacom set "$WACOM_PAD" Button 8 'button 1';;
+        *)
+            profile='Gromit-MPX (default)'
+            # xsetwacom set "$WACOM_STYLUS" Button 1 'button 1';
+            # xsetwacom set "$WACOM_STYLUS" Button 2 'button 2';
+            # xsetwacom set "$WACOM_STYLUS" Button 3 'button 3';
+            xsetwacom set "$WACOM_PAD" Button 1 'key F8';
+            xsetwacom set "$WACOM_PAD" Button 2 'key +shift F8';
+            xsetwacom set "$WACOM_PAD" Button 3 'key +shift F9';
+            xsetwacom set "$WACOM_PAD" Button 8 'key F9';
+    esac
+    info 'Rebound buttons for profile' "$profile"
+}
+
+start() {
+    if daemon_get_pid; then
+		error "Wacom focus daemon is already running!"
+		return 1
+	fi
+    detect_pad
+    detect_stylus
+    if [ -z "$WACOM_PAD" ] && [ -z "$WACOM_STYLUS" ]; then
+        error 'No Wacom input device detected'
+        return 0
+    fi
+    set_pressure ''
+    set_center_area ''
+    focus_daemon
+}
+
+focus_daemon() {
+    last_node_class=""
+    bspc subscribe node_focus | while read -r line; do
+        node_class="$(echo "$line" | cut -d' ' -f4 | xargs -I{} bspc query -T -n {}  | jq -r '.client.className')"
+        if [ "$last_node_class" != "$node_class" ]; then
+            last_node_class="$node_class"
+            bind_buttons "$node_class"
+        fi
+    done &
+    daemon_set_pid $!
 }
