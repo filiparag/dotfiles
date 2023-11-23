@@ -47,7 +47,7 @@ dependencies: .bootstrap
 	@find ${WORKDIR} -not -type d -exec rm -f {} \;
 	@cat dirlist.txt | xargs -I{} rm -rf ${WORKDIR}/{}
 	@cat dirlist.txt | xargs -I{} ln -s ${SRCDIR}/{} ${WORKDIR}/{}
-	@awk 'BEGIN { printf("cd ${SRCDIR} && find * -type f") } { printf(" -not -path \"%s/*\" ", $$0) } END { print "-exec ln -s ${SRCDIR}/{} ${WORKDIR}/{} \\;" }' dirlist.txt > ${WORKDIR}/symlink.sh
+	@awk 'BEGIN { printf("cd ${SRCDIR} && find * \\( -type f -o -type l \\)") } { printf(" -not -path \"%s/*\" ", $$0) } END { print "-exec ln -s ${SRCDIR}/{} ${WORKDIR}/{} \\;" }' dirlist.txt > ${WORKDIR}/symlink.sh
 	@sh ${WORKDIR}/symlink.sh && rm -f ${WORKDIR}/symlink.sh
 
 .prepare-copy:
