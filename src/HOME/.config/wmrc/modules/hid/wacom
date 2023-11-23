@@ -67,7 +67,6 @@ set_center_area() {
             if (w/h>1.6) {
                 H=h;
                 W=h*(16/10);
-
             } else {
                 W=w;
                 H=w/(16/10);
@@ -93,7 +92,14 @@ bind_buttons() {
     fi
     profile="$1"
     case "$profile" in
+        'Inkscape')
+            set_pressure '0 0 10 15'
+            xsetwacom set "$WACOM_PAD" Button 1 'key +ctrl z';
+            xsetwacom set "$WACOM_PAD" Button 2 'key +ctrl +shift z';
+            xsetwacom set "$WACOM_PAD" Button 3 'key s';
+            xsetwacom set "$WACOM_PAD" Button 8 'key c';;
         'rnote')
+            set_pressure
             # xsetwacom set "$WACOM_STYLUS" Button 1 'button 1';
             # xsetwacom set "$WACOM_STYLUS" Button 2 'button 2';
             # xsetwacom set "$WACOM_STYLUS" Button 3 'button 3';
@@ -103,6 +109,7 @@ bind_buttons() {
             xsetwacom set "$WACOM_PAD" Button 8 'button 1';;
         *)
             profile='Gromit-MPX (default)'
+            set_pressure
             # xsetwacom set "$WACOM_STYLUS" Button 1 'button 1';
             # xsetwacom set "$WACOM_STYLUS" Button 2 'button 2';
             # xsetwacom set "$WACOM_STYLUS" Button 3 'button 3';
@@ -137,6 +144,7 @@ focus_daemon() {
         if [ "$last_node_class" != "$node_class" ]; then
             last_node_class="$node_class"
             bind_buttons "$node_class"
+            info "$node_class"
         fi
     done &
     daemon_set_pid $!
