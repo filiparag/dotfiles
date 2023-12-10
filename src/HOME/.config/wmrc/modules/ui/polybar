@@ -27,6 +27,16 @@ start() {
   info 'Primary monitor' "${M_PRIMARY:-not configured}"
   info 'All monitors' "${M_ALL:-not detected}"
 
+  for temp_label in /sys/class/hwmon/hwmon*/temp*_label; do
+    if grep -qiE 'Tctl|CPU' "$temp_label"; then
+      TMP="$(echo "$temp_label" | sed 's/label$/input/')"
+      ln -sf "$TMP" /tmp/.polybar_cpu_temp_hwmon
+      break
+    fi
+  done
+
+  info 'CPU temperature sensor' "${TMP:-not detected}"
+
   case "$2" in
     primary)
       MONITORS="$M_PRIMARY";;
@@ -74,6 +84,7 @@ start() {
 
     export WLP
     export ENP
+    export TMP
     export MNT
     export WIDTH
     export HEIGHT
