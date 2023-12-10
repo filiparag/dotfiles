@@ -163,6 +163,7 @@ xorg-server-common
 xorg-setxkbmap
 xorg-xbacklight
 xorg-xev
+xorg-xhost
 xorg-xinit
 xorg-xinput
 xorg-xkbcomp

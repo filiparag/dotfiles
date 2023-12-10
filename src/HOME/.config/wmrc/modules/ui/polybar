@@ -49,19 +49,19 @@ start() {
     if [ "$M" = "$M_PRIMARY" ]; then
       if [ "$WIDTH" -ge 3440 ]; then
         BAR_TYPE='wide'
-        MOD_L="bspwm window"
+        MOD_L="bspwm window_wide"
         MOD_C="playerctl"
-        MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date"
+        MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date tray"
       elif [ "$WIDTH" -ge 1920 ]; then
         BAR_TYPE='medium'
-        MOD_L="bspwm window"
+        MOD_L="bspwm window_narrow"
         MOD_C=""
-        MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date"
+        MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date tray"
       else
         BAR_TYPE='narrow'
         MOD_L="bspwm"
         MOD_C=""
-        MOD_R="battery wireless wired cpu memory fan temperature pulseaudio keyboard date"
+        MOD_R="battery wireless wired cpu memory fan temperature pulseaudio keyboard date tray"
       fi
       [ "$WIDTH" -ge 1920 ] && \
       NOTIF="right"

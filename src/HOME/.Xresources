@@ -1,81 +1,47 @@
-URxvt.font:     			xft:Source Code Pro-11:hinting=True;antialias:True
-URxvt.italicFont: 			xft:Source Code Pro-11:italic;hinting=True;antialias:True
-URxvt.boldFont: 			xft:Source Code Pro-11:bold;hinting=True;antialias:True
+URxvt.font:			xft:Source Code Pro-11:hinting=True;antialias:True
+URxvt.italicFont:	xft:Source Code Pro-11:italic;hinting=True;antialias:True
+URxvt.boldFont:		xft:Source Code Pro-11:bold;hinting=True;antialias:True
 
-! Scaling DPI: 85 default
-Xft.dpi:        			96
-Xft.antialias:  			true
-Xft.rgba:       			rgb
-Xft.hinting:    			true
-Xft.hintstyle:  			hintslight
-Xft.lcdfilter:  			lcddefault
-
-URxvt.iso14755:             false
-URxvt.lineSpace:            1
-URxvt.letterSpace: 			0
-urxvt.cursorBlink:          1
-URxvt.cursorColor:  		#FFFFFF
-URxvt*cursorUnderline:      true
-URxvt*fading:               20
-URxvt.scrollBar:            false
-URxvt*externalBorder:       0
-URxvt.internalBorder:       8
-URxvt*scrollTtyOutput:      false
-URxvt*scrollWithBuffer:     false
-URxvt*scrollTtyKeypress:    true
-URxvt*visualBell:           true
-URxvt*saveLines:            65535
-URxvt*hold:                 true
-URxvt.depth:        		24
-URxvt.geometry: 			80x23
-
-! URxvt perl extension
-URxvt.perl-ext-common:      default,matcher,font-size
-
-URxvt.keysym.C-Down:     	font-size:decrease
-URxvt.keysym.C-Up:      	font-size:increase
-URxvt.keysym.C-equal:     	resize-font:reset
-URxvt.keysym.C-zero:	  	resize-font:show
-URxvt.resize-font.step: 	1
-
-URxvt.url-launcher: /usr/bin/xdg-open
-URxvt.matcher.button: 1
-URxvt.matcher.rend.0: Uline Bold fg5
-
+Xft.dpi:			96
+Xft.antialias:		true
+Xft.rgba:			rgb
+Xft.hinting:		true
+Xft.hintstyle:		hintslight
+Xft.lcdfilter:		lcddefault
 
 ! special
-*.foreground:   			#c5c5c5
-*.background:   			#131313
-*.cursorColor:  			#c5c5c5
+*.foreground:		#c5c5c5
+*.background:		#131313
+*.cursorColor:		#c5c5c5
 
 ! black
-*.color0:       			#1c1c1c
-*.color8:       			#666666
+*.color0:			#1c1c1c
+*.color8:			#666666
 
 ! red
-*.color1:       			#ff005b
-*.color9:       			#ff00a0
+*.color1:			#ff005b
+*.color9:			#ff00a0
 
 ! green
-*.color2:       			#cee318
-*.color10:      			#ccff00
+*.color2:			#cee318
+*.color10:			#ccff00
 
 ! yellow
-*.color3:       			#ffe755
-*.color11:      			#ff9f00
+*.color3:			#ffe755
+*.color11:			#ff9f00
 
 ! blue
-*.color4:       			#048ac7
-*.color12:      			#48c6ff
+*.color4:			#048ac7
+*.color12:			#48c6ff
 
 ! magenta
-*.color5:       			#833c9f
-*.color13:      			#be67e1
+*.color5:			#833c9f
+*.color13:			#be67e1
 
 ! cyan
-*.color6:       			#0ac1cd
-*.color14:      			#63e7f0
+*.color6:			#0ac1cd
+*.color14:			#63e7f0
 
 ! white
-*.color7:       			#e5e5e5
-*.color15:      			#f3f3f3
+*.color7:			#e5e5e5
+*.color15:			#f3f3f3
