@@ -29,6 +29,7 @@ set -g -x LANGUAGE 'en_US.UTF-8'
 set -g -x LANG 'en_US.UTF-8'
 
 # Cargo
+set -x PATH "$PATH:$HOME/.cargo/bin"
 set -g -x CARGO_TARGET_DIR "$HOME/.cargo/target"
 
 # Valgrind
@@ -37,3 +38,5 @@ set -x DEBUGINFOD_URLS 'https://debuginfod.archlinux.org'
 # Firefox
 set -x MOZ_USE_XINPUT2 1
 
+# Quartus
+set -g -x PATH "$PATH:/opt/intelFPGA/21.1/quartus/bin"

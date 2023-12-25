@@ -41,7 +41,9 @@ dependencies: .bootstrap
 		printf "[filiparag]\nSigLevel = Optional TrustAll\nServer = https://pkg.filiparag.com/archlinux/\n" | sudo tee -a /etc/pacman.conf || \
 		true; \
 	fi
-	@paru -Sy --needed - < pkglist.txt
+	@paru -Syu
+	@paru -S --needed - < pkglist.txt
+	@paru -S aur/qt5-styleplugins aur/qt6gtk2
 
 .prepare-symlink: .prepare-copy
 	@find ${WORKDIR} -not -type d -exec rm -f {} \;

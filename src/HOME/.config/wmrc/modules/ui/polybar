@@ -78,7 +78,7 @@ start() {
     else
       MOD_L="bspwm"
       MOD_C="playerctl"
-      MOD_R="updates pulseaudio host date"
+      MOD_R="host pulseaudio keyboard date"
       NOTIF="none"
     fi
 
