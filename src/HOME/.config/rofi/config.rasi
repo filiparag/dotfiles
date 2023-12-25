@@ -17,7 +17,7 @@ configuration {
   bw: 0;
   fullscreen: false;
   show-icons: false;
-  terminal: "urxvt";
+  terminal: "alacritty";
   sidebar-mode: false;
 }
 

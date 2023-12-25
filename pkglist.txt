@@ -83,7 +83,7 @@ numlockx
 openresolv
 openssh
 openssl-1.1
-paper-icon-theme-git
+paper-icon-theme
 paprefs
 paru-bin
 pavucontrol
@@ -125,8 +125,8 @@ tmux
 tree
 ttf-dejavu
 ttf-font-awesome
-ttf-iosevka
-ttf-material-design-icons-git
+ttf-iosevka-nerd
+ttf-material-design-icons-webfont
 ttf-ms-fonts
 ttf-roboto
 ttf-roboto-mono
