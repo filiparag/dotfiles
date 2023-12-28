@@ -1,0 +1,108 @@
+[colors.bright]
+black = "0x666666"
+blue = "0x48c6ff"
+cyan = "0x63e7f0"
+green = "0xccff00"
+magenta = "0xbe67e1"
+red = "0xff00a0"
+white = "0xf3f3f3"
+yellow = "0xff9f00"
+
+[colors.cursor]
+cursor = "0xffffff"
+
+[colors.normal]
+black = "0x1c1c1c"
+blue = "0x048ac7"
+cyan = "0x0ac1cd"
+green = "0xcee318"
+magenta = "0x833c9f"
+red = "0xff005b"
+white = "0xe5e5e5"
+yellow = "0xffe755"
+
+[colors.primary]
+background = "0x131313"
+dim_foreground = "0x9a9a9a"
+foreground = "0xdadada"
+
+[cursor]
+style = "Underline"
+unfocused_hollow = false
+
+[env]
+TERM = "xterm-256color"
+
+[font.normal]
+family = "Source Code Pro"
+style = "Regular"
+
+[font.offset]
+x = 0
+y = 6
+
+[[keyboard.bindings]]
+action = "Paste"
+key = "V"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "Copy"
+key = "C"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "PasteSelection"
+key = "Insert"
+mods = "Shift"
+
+[[keyboard.bindings]]
+action = "ResetFontSize"
+key = "Key0"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "IncreaseFontSize"
+key = "Equals"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "DecreaseFontSize"
+key = "Minus"
+mods = "Control"
+
+[[keyboard.bindings]]
+action = "ClearHistory"
+key = "L"
+mods = "Control|Shift"
+
+[[keyboard.bindings]]
+action = "ToggleFullscreen"
+key = "F11"
+
+[hints]
+
+[[hints.enabled]]
+command = "xdg-open"
+hyperlinks = true
+post_processing = true
+persist = false
+mouse = { mods = "Control", enabled = true }
+regex = "(ipfs:|ipns:|magnet:|mailto:|gemini://|gopher://|https://|http://|news:|file:|git://|ssh:|ftp://)[^\u0000-\u001F\u007F-\u009F<>\"\\s{-}\\^⟨⟩`]+"
+
+
+[scrolling]
+history = 100000
+
+[window]
+startup_mode = "Maximized"
+dynamic_title = true
+opacity = 1.0
+
+[window.dimensions]
+columns = 88
+lines = 23
+
+[window.padding]
+x = 10
+y = 10
