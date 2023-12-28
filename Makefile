@@ -1,21 +1,25 @@
-PREFIX			?= /
+PREFIX		?= /
 DEFAULT_USER	:= filiparag
 DEFAULT_NAME	:= Filip Parag
 DEFAULT_EMAIL	:= filip@parag.rs
-WORKDIR			:= $(shell mktemp -d -t 'dotfiles-XXXXX')
-WORKFILE		:= $(shell sudo mktemp -t 'dotfiles-XXXXX.tar')
-SRCDIR			:= $(shell realpath ./src/)
+WORKDIR		:= $(shell mktemp -d -t 'dotfiles-XXXXX')
+WORKFILE	:= $(shell sudo mktemp -t 'dotfiles-XXXXX.tar')
+SRCDIR		:= $(shell realpath ./src/)
+MAKEFILE	:= $(shell realpath ./Makefile)
 
 .PHONY: dependencies symlink
 
-copy: .bootstrap .configure .prepare-copy .rename .chown .package .install .cleanup .docs .post-install
-	@echo 'export DOTFILES_TYPE=copy' >> ${HOMEDIR}/.config/dotfiles.ini
+copy: .bootstrap .type-copy .configure .prepare-copy .rename-copy .save-config .chown .package .install .cleanup .docs .post-install
+symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-symlink .save-config .chown .package .install .cleanup .docs .post-install
 
-symlink: .bootstrap .configure .prepare-symlink .rename .chown .package .install .cleanup .docs .post-install
-	@echo 'export DOTFILES_TYPE=symlink' >> ${HOMEDIR}/.config/dotfiles.ini
-
-.reload-copy: .prepare-copy .rename .chown .package .install .cleanup .docs .post-install
+.reload-copy: .prepare-copy .rename-copy .chown .package .install .cleanup .docs .post-install
 .reload-symlink: .prepare-symlink .rename-home .chown .package .install .cleanup .docs .post-install
+
+.type-copy:
+	$(eval DOTFILES_TYPE=copy)
+
+.type-symlink:
+	$(eval DOTFILES_TYPE=symlink)
 
 .bootstrap:
 	@sudo pacman -Sy --needed git dialog coreutils findutils pciutils
@@ -28,12 +32,6 @@ symlink: .bootstrap .configure .prepare-symlink .rename .chown .package .install
 	@$(eval HOMEDIR=$(shell dialog --title 'Configuration' --inputbox "Home directory" 8 30 "$(shell echo ~${USERNAME})" --output-fd 1))
 	@$(eval USER_NAME=$(shell dialog --title 'Configuration' --inputbox "Full name" 8 30 "${DEFAULT_NAME}" --output-fd 1))
 	@$(eval USER_EMAIL=$(shell dialog --title 'Configuration' --inputbox "Email" 8 30 "${DEFAULT_EMAIL}" --output-fd 1))
-	@mkdir -p ${HOMEDIR}/.config
-	@echo 'export USERNAME="${USERNAME}"' > ${HOMEDIR}/.config/dotfiles.ini
-	@echo 'export GROUP="${GROUP}"' >> ${HOMEDIR}/.config/dotfiles.ini
-	@echo 'export HOMEDIR="${HOMEDIR}"' >> ${HOMEDIR}/.config/dotfiles.ini
-	@echo 'export USER_NAME="${USER_NAME}"' >> ${HOMEDIR}/.config/dotfiles.ini
-	@echo 'export USER_EMAIL="${USER_EMAIL}"' >> ${HOMEDIR}/.config/dotfiles.ini
 
 dependencies: .bootstrap
 	@if ! grep -q 'filiparag' /etc/pacman.conf; then \
@@ -45,6 +43,9 @@ dependencies: .bootstrap
 	@paru -S --needed - < pkglist.txt
 	@paru -S aur/qt5-styleplugins aur/qt6gtk2
 
+.prepare-copy:
+	@cp -Rpd ${SRCDIR}/* ${WORKDIR}/
+
 .prepare-symlink: .prepare-copy
 	@find ${WORKDIR} -not -type d -exec rm -f {} \;
 	@cat dirlist.txt | xargs -I{} rm -rf ${WORKDIR}/{}
@@ -52,10 +53,7 @@ dependencies: .bootstrap
 	@awk 'BEGIN { printf("cd ${SRCDIR} && find * \\( -type f -o -type l \\)") } { printf(" -not -path \"%s/*\" ", $$0) } END { print "-exec ln -s ${SRCDIR}/{} ${WORKDIR}/{} \\;" }' dirlist.txt > ${WORKDIR}/symlink.sh
 	@sh ${WORKDIR}/symlink.sh && rm -f ${WORKDIR}/symlink.sh
 
-.prepare-copy:
-	@cp -Rpd ${SRCDIR}/* ${WORKDIR}/
-
-.rename:
+.rename-copy:
 	@find ${WORKDIR} -type f -not -name 'pacman.conf' -exec sed -i 's|${DEFAULT_USER}|${USERNAME}|g' {} \;
 	@find ${WORKDIR} -type f -exec sed -i 's|${DEFAULT_NAME}|${USER_NAME}|g' {} \;
 	@find ${WORKDIR} -type f -exec sed -i 's|${DEFAULT_EMAIL}|${USER_EMAIL}|g' {} \;
@@ -63,9 +61,29 @@ dependencies: .bootstrap
 	@dirname ${WORKDIR}/${HOMEDIR} | xargs mkdir -p
 	@mv ${WORKDIR}/HOME ${WORKDIR}/${HOMEDIR}
 
+.rename-symlink:
+	@sed -i 's/^DEFAULT_USER.*/DEFAULT_USER	:= ${USERNAME}/' ${MAKEFILE}
+	@sed -i 's/^DEFAULT_NAME.*/DEFAULT_NAME	:= ${USER_NAME}/' ${MAKEFILE}
+	@sed -i 's/^DEFAULT_EMAIL.*/DEFAULT_EMAIL	:= ${USER_EMAIL}/' ${MAKEFILE}
+	@find ${SRCDIR} -type f -not -name 'pacman.conf' -exec sed -i 's|${DEFAULT_USER}|${USERNAME}|g' {} \;
+	@find ${SRCDIR} -type f -exec sed -i 's|${DEFAULT_NAME}|${USER_NAME}|g' {} \;
+	@find ${SRCDIR} -type f -exec sed -i 's|${DEFAULT_EMAIL}|${USER_EMAIL}|g' {} \;
+	@[ '${DEFAULT_EMAIL}' != '${USER_EMAIL}' ] && sed -i '/signingkey/d' ${SRCDIR}/HOME/.gitconfig || true
+	@dirname ${WORKDIR}/${HOMEDIR} | xargs mkdir -p
+	@mv ${WORKDIR}/HOME ${WORKDIR}/${HOMEDIR}
+
 .rename-home:
 	@dirname ${WORKDIR}/${HOMEDIR} | xargs mkdir -p
 	@mv ${WORKDIR}/HOME ${WORKDIR}/${HOMEDIR}
+
+.save-config:
+	@mkdir -p ${WORKDIR}/${HOMEDIR}/.config
+	@echo 'export DOTFILES_TYPE="${DOTFILES_TYPE}"' > ${WORKDIR}/${HOMEDIR}/.config/dotfiles.ini
+	@echo 'export USERNAME="${USERNAME}"' >> ${WORKDIR}/${HOMEDIR}/.config/dotfiles.ini
+	@echo 'export GROUP="${GROUP}"' >> ${WORKDIR}/${HOMEDIR}/.config/dotfiles.ini
+	@echo 'export HOMEDIR="${HOMEDIR}"' >> ${WORKDIR}/${HOMEDIR}/.config/dotfiles.ini
+	@echo 'export USER_NAME="${USER_NAME}"' >> ${WORKDIR}/${HOMEDIR}/.config/dotfiles.ini
+	@echo 'export USER_EMAIL="${USER_EMAIL}"' >> ${WORKDIR}/${HOMEDIR}/.config/dotfiles.ini
 
 .chown:
 	@sudo -E find ${WORKDIR} -mindepth 1 -not -path '${WORKDIR}/${HOMEDIR}*' -exec chown root:root {} \;
