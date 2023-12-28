@@ -1,15 +1,16 @@
 # Dotfiles for Arch Linux
 
+This repository comprises an extensive assortment of modular scripts and configuration files built upon [ArchLinux](https://wiki.archlinux.org/title/Arch_Linux) and [bspwm](https://github.com/baskerville/bspwm). Its objective is to deliver a stable, clutter-free, and ergonomic desktop environment tailored for advanced users.
 
-## Preview
+All updates and enhancements aim to avoid unnecessary breaking changes, aligning closely with the rolling-release nature of the underlying system, while requiring minimal maintenance.
 
-![screenshot](./screenshot.gif "Screenshot showcase made on 2021-01-08")
+![screenshots](./screenshot.gif "Screenshot showcase made on 2021-01-08")
 
 ## Installation
 
 ### Prerequisites
 - [base Arch Linux](https://wiki.archlinux.org/index.php/Installation_guide) installed
-- at least 8 GiB of free space on root partition
+- at least 8 GiB of free space on system partition
 - user account with [`sudo`](https://wiki.archlinux.org/index.php/Sudo#Example_entries) privileges
 
 ### Steps
@@ -44,12 +45,13 @@ dotfiles reload
 
 ## Usage and customization
 
-### Keyboard shortcuts
+### Shortcuts
 
-Shortcuts manual: [`~/.dotfiles/SHORTCUTS.md`](./SHORTCUTS.md)
-This manual can also be opened with `dotfiles docs` after installing dotfiles.
+Keyboard shortcuts [manual](./SHORTCUTS.md) can be opened with `dotfiles docs` after installing dotfiles.
 
-Shortcut configuration is in [`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhkd/sxhkdrc)
+Keyboard shortcuts configuration:[`~/.config/sxhkd/sxhkdrc`](./src/HOME/.config/sxhkd/sxhkdrc)
+
+Touchpad gestures configuration: [`~/.config/libinput-gestures.conf`](./src/HOME/.config/libinput-gestures.conf)
 
 ### Configuring the environment
 
@@ -57,14 +59,12 @@ Window manager configuration ([wmrc](https://github.com/filiparag/wmrc/)):
 [`~/.config/wmrc/rc.conf`](./src/HOME/.config/wmrc/rc.conf)
 
 Startup applications and daemons are listed in `APPS` variable in
-[`~/.config/wmrc/modules/services/apps`](./src/HOME/.config/wmrc/modules/services/apps)
+[`~/.config/wmrc/modules/services/apps`](./src/HOME/.config/wmrc/modules/services/apps#L5)
 
 User-specific environment variables:
 [`~/.config/fish/conf.d/user.fish`](./src/HOME/.config/fish/conf.d/user.fish)
 
-Git configuration: [`~/.gitconfig`](./src/HOME/.gitconfig)
-
-Wallpaper and lockscreen images are located in `~/Pictures` directory
+Wallpaper and lockscreen images are located in [`~/Pictures`](./src/HOME/Pictures) directory.
 
 To set default monitor setup, create desired layout using `arandr`
 and save it as `~/.screenlayout/Default.sh`
@@ -72,8 +72,9 @@ and save it as `~/.screenlayout/Default.sh`
 ### Security and remote access
 
 By default, all incoming network traffic is blocked except for:
-- *SSH*: port `22/TCP` with public key authentication only
-- *Syncthing*: ports `22000/TCP` and `21027/UDP`
+- *SSH*: port `22/tcp` with public key authentication only
+- *Syncthing*: ports `22000/tcp` and `21027/udp`
+- *KDE Connect*: port range `1714:1764/tcp+udp`
 
 To enable [VNC server](https://wiki.archlinux.org/index.php/TigerVNC), run:
 ``` bash
@@ -89,26 +90,24 @@ wmrc start services/vnc
 
 ### Hardware-specific modifications
 
-#### Xorg video drivers
-
-If you are using Nvidia GPU:
-
-- install appropriate [`xf86-video-`](https://wiki.archlinux.org/index.php?title=Xorg#Driver_installation) driver
-- make sure you have proper configuration file in [`/etc/X11/xorg.conf.d/`](./src/etc/X11/xorg.conf.d/)
-
 #### Battery life optimization
 
-Provided [TLP](https://wiki.archlinux.org/index.php/TLP) configuration file
-is optimized for ThinkPad X230: [`/etc/tlp.conf`](./src/etc/tlp.conf)
+Provided [auto-cpufreq](https://github.com/AdnanHodzic/auto-cpufreq) configuration [file](./src/etc/auto-cpufreq.conf)
+is optimized for CPUs with Energy-Performance Preference support. It is recommended to enable it on battery-powered devices.
 
 To enable it, run:
 ```bash
 # Install
-sudo pacman -S tlp
+paru -S auto-cpufreq
 
-# Run at startup as a service
-sudo systemctl enable tlp.service
-
-# Start immediately
-sudo tlp start
+# Enable and start service
+sudo systemctl enable --now auto-cpufreq
 ```
+
+#### X11 video drivers
+
+By default, dotfiles come bundled with configuration and open-source drivers for [Intel](https://archlinux.org/packages/extra/x86_64/xf86-video-intel/) and [AMD](https://archlinux.org/packages/extra/x86_64/xf86-video-amdgpu/) graphics cards. If your hardware isn't supported by those:
+
+- install appropriate [video driver](https://wiki.archlinux.org/index.php?title=Xorg#Driver_installation)
+- make sure you have proper configuration file in [`/etc/X11/xorg.conf.d/`](./src/etc/X11/xorg.conf.d/)
+
