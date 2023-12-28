@@ -7,7 +7,7 @@ WORKFILE	:= $(shell sudo mktemp -t 'dotfiles-XXXXX.tar')
 SRCDIR		:= $(shell realpath ./src/)
 MAKEFILE	:= $(shell realpath ./Makefile)
 
-.PHONY: dependencies symlink
+.PHONY: dependencies optional-dependencies symlink
 
 copy: .bootstrap .type-copy .configure .prepare-copy .rename-copy .save-config .chown .package .install .cleanup .docs .post-install
 symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-symlink .save-config .chown .package .install .cleanup .docs .post-install
@@ -40,8 +40,24 @@ dependencies: .bootstrap
 		true; \
 	fi
 	@paru -Syu
-	@paru -S --needed - < pkglist.txt
+	@paru -S --needed - < pkglist.required.txt
 	@paru -S aur/qt5-styleplugins aur/qt6gtk2
+
+optional-dependencies: .bootstrap
+	$(eval OPT_DEPS_CMD=$(shell awk -F'\t' ' \
+	BEGIN { \
+		printf("dialog --title \"Optional dependencies\" --checklist \"Selection of apps not required for basic functionality\"  0 0 0 "); \
+	} \
+	{ \
+		name = $$1; \
+		$$1 = ""; \
+		printf("%s \"%s\" on ", name, $$0); \
+	} \
+	END { \
+		printf(" --output-fd 1\n"); \
+	}' pkglist.optional.txt))
+	@$(eval OPT_DEPS=$(shell ${OPT_DEPS_CMD}))
+	@paru -S --needed ${OPT_DEPS}
 
 .prepare-copy:
 	@cp -Rpd ${SRCDIR}/* ${WORKDIR}/
@@ -149,8 +165,10 @@ dependencies: .bootstrap
 	@sudo systemctl enable --now cronie
 	@sudo systemctl enable --now NetworkManager
 	@sudo systemctl enable --now avahi-daemon
-	@sudo systemctl enable --now "syncthing@${USERNAME}"
-	@sudo systemctl enable --now syncthing-resume
+	@if test -f /etc/systemd/system/syncthing@.service; then \
+		sudo systemctl enable --now "syncthing@${USERNAME}"; \
+		sudo systemctl enable --now syncthing-resume; \
+	else true; fi
 	@sudo systemctl enable --now systemd-resolved
 	@sudo systemctl enable --now systemd-timesyncd
 	@sudo systemctl enable --now ufw
@@ -165,6 +183,8 @@ dependencies: .bootstrap
 	@sudo usermod -aG input,kvm,optical,rfkill,uucp "${USERNAME}"
 	@test -e /usr/bin/vi || sudo ln -s /usr/bin/vim /usr/bin/vi
 	@test -e /usr/bin/firefox || sudo ln -s /usr/bin/firefox-developer-edition /usr/bin/firefox
-	@sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-	@sudo flatpak override --env GTK_THEME=Adwaita:dark
+	@if command -v flatpak &>/dev/null; then \
+		sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; \
+		sudo flatpak override --env GTK_THEME=Adwaita:dark; \
+	else true; fi
 	@gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'

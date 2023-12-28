@@ -180,7 +180,7 @@ print_usage() {
   add <path>  add file or directory to project
   rm <path>   remove file or directory from project
   reload      rerun project installation
-  deps        reinstall all package dependencies
+  deps        reinstall all required package dependencies
   docs        open dotfiles manual
   help        print help
 \n'

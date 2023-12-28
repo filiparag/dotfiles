@@ -20,6 +20,9 @@ git clone https://github.com/filiparag/dotfiles.git && cd dotfiles
 # Install dependencies
 make dependencies
 
+# Choose and install optional dependencies
+make optional-dependencies
+
 # Install dotfiles for your user (pick one)
 make symlink    # place symlinks to files (recommended)
 make copy       # place copies of files
