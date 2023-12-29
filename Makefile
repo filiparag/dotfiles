@@ -9,11 +9,11 @@ MAKEFILE	:= $(shell realpath ./Makefile)
 
 .PHONY: dependencies optional-dependencies symlink
 
-copy: .bootstrap .type-copy .configure .prepare-copy .rename-copy .save-config .chown .package .install .cleanup .docs .post-install
-symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-symlink .save-config .chown .package .install .cleanup .docs .post-install
+copy: .bootstrap .type-copy .configure .prepare-copy .rename-copy .save-config .chown .package .install .cleanup .docs .post-install .post-install-optional
+symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-symlink .save-config .chown .package .install .cleanup .docs .post-install .post-install-optional
 
-.reload-copy: .prepare-copy .rename-copy .chown .package .install .cleanup .docs .post-install
-.reload-symlink: .prepare-symlink .rename-home .chown .package .install .cleanup .docs .post-install
+.reload-copy: .prepare-copy .rename-copy .chown .package .install .cleanup .docs .post-install .post-install-optional
+.reload-symlink: .prepare-symlink .rename-home .chown .package .install .cleanup .docs .post-install .post-install-optional
 
 .type-copy:
 	$(eval DOTFILES_TYPE=copy)
@@ -165,26 +165,30 @@ optional-dependencies: .bootstrap
 	@sudo systemctl enable --now cronie
 	@sudo systemctl enable --now NetworkManager
 	@sudo systemctl enable --now avahi-daemon
-	@if test -f /etc/systemd/system/syncthing@.service; then \
-		sudo systemctl enable --now "syncthing@${USERNAME}"; \
-		sudo systemctl enable --now syncthing-resume; \
-	else true; fi
 	@sudo systemctl enable --now systemd-resolved
 	@sudo systemctl enable --now systemd-timesyncd
 	@sudo systemctl enable --now ufw
 	@sudo ufw default deny incoming
 	@sudo ufw default allow outgoing
 	@sudo ufw allow ssh
-	@sudo ufw allow syncthing
-	@sudo ufw allow 1714:1764/udp
-	@sudo ufw allow 1714:1764/tcp
 	@sudo ufw enable
 	@sudo chsh -s /usr/bin/fish "${USERNAME}"
 	@sudo usermod -aG input,kvm,optical,rfkill,uucp "${USERNAME}"
 	@test -e /usr/bin/vi || sudo ln -s /usr/bin/vim /usr/bin/vi
 	@test -e /usr/bin/firefox || sudo ln -s /usr/bin/firefox-developer-edition /usr/bin/firefox
+	@gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
+.post-install-optional:
+	@if command -v syncthing; then \
+		sudo systemctl enable --now "syncthing@${USERNAME}"; \
+		sudo systemctl enable --now syncthing-resume; \
+		sudo ufw allow syncthing; \
+	else true; fi
 	@if command -v flatpak &>/dev/null; then \
 		sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo; \
 		sudo flatpak override --env GTK_THEME=Adwaita:dark; \
 	else true; fi
-	@gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+	@if command -v kdeconnect-app &>/dev/null; then \
+		sudo ufw allow 1714:1764/udp; \
+		sudo ufw allow 1714:1764/tcp; \
+	else true; fi
