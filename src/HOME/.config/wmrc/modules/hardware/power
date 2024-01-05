@@ -4,21 +4,28 @@ export WMRC_DEPENDENCIES='sudo'
 export WMRC_LIBRARIES='notify'
 
 off() {
-	notify -u critical -i system-shutdown "Shutting down system"
+	notify -u critical -i system-shutdown 'Shutting down system'
 	sudo shutdown -P now
 }
 
 reboot() {
-	notify -u critical -i system-reboot "Rebooting system"
+	notify -u critical -i system-reboot 'Rebooting system'
 	sudo shutdown -r now
 }
 
 hibernate() {
-	info "Hibernating system"
+	notify -u critical -i system-reboot 'Hibernating system'
 	sudo systemctl hibernate
 }
 
 suspend() {
-	info "Suspending system"
+	info 'Suspending system'
 	sudo systemctl suspend
+}
+
+init() {
+	info 'Disable unprivileged shutdown'
+	sudo systemd-inhibit \
+		--why='Prevent unprivileged shutdown' \
+		--mode=block tail -f /dev/null &
 }
