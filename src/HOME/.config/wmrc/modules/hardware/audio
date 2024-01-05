@@ -14,6 +14,34 @@ default_sink() {
     pactl info | grep 'Default Sink:' | sed 's/.*: //'
 }
 
+reverse_sink_channels() {
+	_default_sink="$(pactl get-default-sink)"
+	_sink_name="${1:-$_default_sink}"
+	_reverse_sink_name="${_sink_name}-reversed"
+	if echo "${_default_sink}" | grep -q '\-reversed$'; then
+		info 'Reverse channel sink in use' "${_reverse_sink_name}"
+		return 0
+	elif ! pacmd list-sinks | grep -q "name: <${_sink_name}>"; then
+		warn 'Sink does not exist' "${_sink_name}"
+		return 0
+	elif pacmd list-sinks | grep -q "name: <${_reverse_sink_name}>\|device.master_device = \"${_sink_name}\""; then
+		info 'Reverse channel sink already exists' "${_reverse_sink_name}"
+	else
+		info 'Creating reverse channel sink' "${_sink_name}"
+		if ! pactl load-module module-remap-sink \
+			sink_name="${_reverse_sink_name}" \
+			master="${_sink_name}" \
+			channels=2 \
+			master_channel_map=front-right,front-left \
+			channel_map=front-left,front-right; then
+			error 'Unable to create reverse channel sink' "${_sink_name}"
+			return 1
+		fi
+	fi
+	info 'Set default sink' "${_reverse_sink_name}"
+	pactl set-default-sink "${_reverse_sink_name}"
+}
+
 speakers_volume_increase() {
 	pactl set-sink-volume "$(default_sink)" "+${1:-$WMRC_VOLUME_STEP}%"
 }
@@ -40,4 +68,8 @@ speakers_toggle_mute() {
 	elif [ "$_muted" = 'no' ]; then
 		notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i audio-volume-high 'Speakers active'
 	fi
+}
+
+init() {
+	reverse_sink_channels 'alsa_output.pci-0000_0c_00.6.iec958-stereo' || true
 }
