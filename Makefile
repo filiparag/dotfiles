@@ -10,11 +10,11 @@ MAKEFILE	:= $(shell realpath ./Makefile)
 
 .PHONY: dependencies optional-dependencies symlink
 
-copy: .bootstrap .type-copy .configure .prepare-copy .rename-copy .save-config .chown .package .install .cleanup .docs .post-install .post-install-optional
-symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-symlink .save-config .chown .package .install .cleanup .docs .post-install .post-install-optional
+copy: .bootstrap .type-copy .configure .prepare-copy .rename-firefox-profile .rename-copy .save-config .chown .package .install .cleanup .docs .post-install .post-install-optional
+symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-firefox-profile .rename-symlink .save-config .chown .package .install .cleanup .docs .post-install .post-install-optional
 
-.reload-copy: .prepare-copy .rename-copy .chown .package .install .cleanup .docs .post-install .post-install-optional
-.reload-symlink: .prepare-symlink .rename-home .chown .package .install .cleanup .docs .post-install .post-install-optional
+.reload-copy: .prepare-copy .rename-firefox-profile .rename-copy .chown .package .install .cleanup .docs .post-install .post-install-optional
+.reload-symlink: .prepare-symlink .rename-firefox-profile .rename-home .chown .package .install .cleanup .docs .post-install .post-install-optional
 
 .type-copy:
 	$(eval DOTFILES_TYPE=copy)
@@ -88,6 +88,12 @@ optional-dependencies: .bootstrap
 	[ '${DEFAULT_EMAIL}' != '${USER_EMAIL}' ] && sed -i '/signingkey/d' ${SRCDIR}/HOME/.gitconfig || true
 	dirname ${WORKDIR}/${HOMEDIR} | xargs mkdir -p
 	mv ${WORKDIR}/HOME ${WORKDIR}/${HOMEDIR}
+
+.rename-firefox-profile:
+	if [ -f ${HOMEDIR}/.mozilla/firefox/profiles.ini ]; then \
+		FIREFOX_PROFILE="$$(awk -F '=' '$$1=="Default"{if(!p){print $$2;p=1}}END{if(!p)print "dotfiles.default"}' ${HOMEDIR}/.mozilla/firefox/profiles.ini)"; \
+		mv ${WORKDIR}/HOME/.mozilla/firefox/profile.default "${WORKDIR}/HOME/.mozilla/firefox/$$FIREFOX_PROFILE"; \
+	fi
 
 .rename-home:
 	dirname ${WORKDIR}/${HOMEDIR} | xargs mkdir -p
@@ -180,7 +186,7 @@ optional-dependencies: .bootstrap
 	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
 .post-install-optional:
-	if command -v syncthing; then \
+	if command -v syncthing &>/dev/null; then \
 		sudo systemctl enable --now "syncthing@${USERNAME}"; \
 		sudo systemctl enable --now syncthing-resume; \
 		sudo ufw allow syncthing; \

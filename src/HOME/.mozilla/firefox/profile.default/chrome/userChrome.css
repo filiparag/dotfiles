@@ -1,0 +1,30 @@
+:root {
+  --tab-border-radius: 0px !important;
+  --NavbarWidth: 36;
+  --TabsHeight: 30;
+  --TabsBorder: 0;
+}
+
+#forward-button,
+#back-button {
+  display: none;
+}
+
+.tab-close-button {
+  visibility: hidden;
+}
+
+tab:hover .tab-close-button {
+  visibility: visible;
+}
+
+#personal-bookmarks {
+  transition: 0.15s;
+  filter: saturate(0) contrast(0.8);
+}
+
+#personal-bookmarks:hover,
+#personal-bookmarks:focus-within {
+  transition: 0.15s;
+  filter: saturate(1) contrast(1);
+}

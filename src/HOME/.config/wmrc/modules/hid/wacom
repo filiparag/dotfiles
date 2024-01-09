@@ -87,7 +87,7 @@ bind_buttons() {
     detect_pad
     detect_stylus
     if [ -z "$WACOM_PAD" ] && [ -z "$WACOM_STYLUS" ]; then
-        error 'No Wacom input device detected'
+        warn 'No Wacom input device detected'
         return 0
     fi
     profile="$1"
@@ -129,7 +129,7 @@ start() {
     detect_pad
     detect_stylus
     if [ -z "$WACOM_PAD" ] && [ -z "$WACOM_STYLUS" ]; then
-        error 'No Wacom input device detected'
+        warn 'No Wacom input device detected'
         return 0
     fi
     set_pressure ''
