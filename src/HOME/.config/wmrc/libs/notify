@@ -6,17 +6,18 @@ export _module
 PROMPT_DEFAULT_EXPIRATION=300000 #milliseconds
 
 notify() {
-    _log_level=""
-    _actions=""
-    _app_name=""
-    _action=""
-    _urgency=""
-    _expire_time=""
-    _icon=""
-    _category=""
-    _replace_id=""
-    _print_id=""
-    _wait=""
+    _log_level=''
+    _actions=''
+    _app_name=''
+    _action=''
+    _urgency=''
+    _expire_time=''
+    _icon=''
+    _category=''
+    _replace_id=''
+    _print_id=''
+    _wait=''
+    OPTIND=''
     while getopts l:a:A:u:t:i:c:r:pw arg; do
         case "$arg" in
             l) _log_level="$OPTARG";;

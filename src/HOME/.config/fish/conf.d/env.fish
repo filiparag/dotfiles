@@ -39,4 +39,4 @@ set -x DEBUGINFOD_URLS 'https://debuginfod.archlinux.org'
 set -x MOZ_USE_XINPUT2 1
 
 # Quartus
-set -g -x PATH "$PATH:/opt/intelFPGA/21.1/quartus/bin"
+set -g -x PATH "$PATH:/opt/intelFPGA/23.1/quartus/bin"

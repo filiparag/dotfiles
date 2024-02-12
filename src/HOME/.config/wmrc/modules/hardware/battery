@@ -1,10 +1,11 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='sudo'
+export WMRC_DEPENDENCIES='sudo awk upower stdbuf'
 export WMRC_LIBRARIES='notify'
 
 WMRC_BATTERY_CHARGE_START="${WMRC_BATTERY_CHARGE_START:-80}"
 WMRC_BATTERY_CHARGE_STOP="${WMRC_BATTERY_CHARGE_STOP:-85}"
+WMRC_BATTERY_STATE_TIMEOUT="${WMRC_BATTERY_STATE_TIMEOUT:-1500}" #milliseconds
 
 test_battery() {
     if ! find /sys/class/power_supply/ -type l -name 'BAT*' | grep -qv '^$'; then
@@ -35,4 +36,111 @@ full() {
     echo 100 | sudo tee /sys/class/power_supply/*/charge_stop_threshold >/dev/null
     notify -u low -i battery-full-charging 'Full battery charging' \
         "Start threshold: 100%\nStop threshold: 100%"
+}
+
+start() {
+  if ! upower --enumerate | grep -qi 'battery'; then
+    warn "Battery not present, exiting daemon!"
+    return 1
+  fi
+  if daemon_get_pid; then
+		error "Charge event daemon is already running!"
+		return 1
+	fi
+  daemon &
+  daemon_set_pid "$!"
+}
+
+daemon() {
+    previous_state=''
+    previous_online=''
+    stdbuf -oL upower --monitor |
+    while IFS= read -r line
+    do
+        type="$(
+            echo "$line" | awk \
+            '$2 == "device" {
+                type = $4;
+                sub(/.*\//,"",type);
+                sub(/_[^_]*$/,"",type);
+                print type;
+            }'
+        )"
+        device="$(
+            echo "$line" | awk \
+            '$2 == "device" {
+                print $4;
+            }'
+        )"
+        if [ -z "$type" ] || [ -z "$device" ]; then
+            continue
+        fi
+        if [ "$type" = 'battery' ]; then
+            state="$(
+                upower --show-info "$device" | awk \
+                '$1 == "state:" { print $2; }'
+            )"
+            if [ "$previous_state" != "$state" ]; then
+                info "Battery state changed" "$state"
+                notify_battery_state "$state"
+            fi
+            previous_state="$state"
+        elif [ "$type" = 'line_power' ]; then
+            online="$(
+                upower --show-info "$device" | awk \
+                '$1 == "online:" { print $2; }'
+            )"
+            if [ "$previous_online" != "$online" ]; then
+                info "Charger online status changed" "$online"
+                notify_line_power_state "$online"
+            fi
+            previous_online="$online"
+        fi
+    done
+}
+
+notify_battery_state() {
+    case "$1" in
+        'unknown')
+            notify -u low -i battery-caution \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery state unknown'
+            ;;
+        'charging')
+            notify -u low -i battery-medium-charging \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery charging'
+            ;;
+        'discharging')
+            notify -u low -i battery-low \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery discharging'
+            ;;
+        'empty')
+            notify -u low -i battery-empty \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery empty'
+            ;;
+        'fully-charged')
+            notify -u low -i battery-full \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery fully charged'
+            ;;
+        'pending-charge')
+            notify -u low -i battery-good \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery pending charge'
+            ;;
+        'pending-discharge')
+            notify -u low -i battery-good \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Battery pending discharge'
+            ;;
+    esac
+}
+
+notify_line_power_state() {
+    case "$1" in
+        'yes')
+            notify -u low -i ac-adapter \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Charger connected'
+            ;;
+        'no')
+            notify -u low -i ac-adapter \
+                -t "$WMRC_BATTERY_STATE_TIMEOUT" 'Charger disconnected'
+            ;;
+    esac
 }
