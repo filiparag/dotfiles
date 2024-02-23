@@ -132,7 +132,7 @@ if status --is-interactive
     abbr --add gl 'git log'
     abbr --add gp 'git push'
     abbr --add gpt 'git push --tags'
-    abbr --add gpf 'git push --force'
+    abbr --add gpf 'git push --force-with-lease'
     abbr --add gps 'git push --set-upstream origin' #(git rev-parse --abbrev-ref HEAD)
     abbr --add gcl 'git clone'
     abbr --add gcls 'git clone git@github.com:'
