@@ -4,10 +4,7 @@
     "long_break_interval": 70,
     "long_breaks": [
         {
-            "name": "Walk for a while"
-        },
-        {
-            "name": "Lean back at your seat and relax"
+            "name": "Long break"
         }
     ],
     "meta": {
@@ -101,37 +98,19 @@
         }
     ],
     "postpone_duration": 5,
-    "pre_break_warning_time": 10,
+    "pre_break_warning_time": 5,
     "random_order": true,
     "rpc_port": 7200,
     "short_break_duration": 20,
     "short_break_interval": 35,
     "short_breaks": [
         {
-            "name": "Tightly close your eyes"
-        },
-        {
-            "name": "Roll your eyes a few times to each side"
-        },
-        {
-            "name": "Rotate your eyes in clockwise direction"
-        },
-        {
-            "name": "Rotate your eyes in counterclockwise direction"
-        },
-        {
-            "name": "Blink your eyes"
-        },
-        {
-            "name": "Focus on a point in the far distance"
-        },
-        {
-            "name": "Have some water"
+            "name": "Short break"
         }
     ],
-    "shortcut_disable_time": 2,
+    "shortcut_disable_time": 1,
     "shortcut_postpone": 65,
     "shortcut_skip": 9,
-    "strict_break": false,
+    "strict_break": true,
     "use_rpc_server": true
 }

@@ -50,4 +50,7 @@ case "$class" in
 	thunderbird)
 		echo "desktop=0"
 		;;
+	Windscribe2)
+		echo "state=floating"
+		;;
 esac

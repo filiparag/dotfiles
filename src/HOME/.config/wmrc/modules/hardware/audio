@@ -71,5 +71,5 @@ speakers_toggle_mute() {
 }
 
 init() {
-	reverse_sink_channels 'alsa_output.pci-0000_0c_00.6.iec958-stereo' || true
+	reverse_sink_channels 'bluez_sink.FC_E8_06_D1_ED_C5.a2dp_sink' || true
 }
