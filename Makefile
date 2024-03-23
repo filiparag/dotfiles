@@ -165,7 +165,9 @@ optional-dependencies: .bootstrap
 		print "</body>\n</html>\n" \
 	}' | sudo tee /usr/share/doc/dotfiles/manual.html 1>/dev/null
 
-.post-install:
+.post-install: .post-install-services .post-install-firewall .post-install-user .post-install-apps
+
+.post-install-services:
 	sudo systemctl daemon-reload
 	sudo systemctl enable "resume@${USERNAME}"
 	sudo systemctl enable --now sshd
@@ -175,15 +177,21 @@ optional-dependencies: .bootstrap
 	sudo systemctl enable --now systemd-resolved
 	sudo systemctl enable --now systemd-timesyncd
 	sudo systemctl enable --now ufw
+
+.post-install-firewall:
 	sudo ufw default deny incoming
 	sudo ufw default allow outgoing
 	sudo ufw allow ssh
 	sudo ufw enable
+
+.post-install-user:
 	sudo chsh -s /usr/bin/fish "${USERNAME}"
 	sudo usermod -aG input,kvm,optical,rfkill,uucp "${USERNAME}"
+	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+
+.post-install-apps:
 	test -e /usr/bin/vi || sudo ln -s /usr/bin/vim /usr/bin/vi
 	test -e /usr/bin/firefox || sudo ln -s /usr/bin/firefox-developer-edition /usr/bin/firefox
-	gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 
 .post-install-optional:
 	if command -v syncthing &>/dev/null; then \
