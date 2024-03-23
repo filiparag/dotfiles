@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Action
+Profiles=profile_id
+Name=Open in Visual Studio Code
+Icon=code
+
+[X-Action-Profile profile_id]
+MimeTypes=inode/directory;all/allfiles
+Exec=code '%f'

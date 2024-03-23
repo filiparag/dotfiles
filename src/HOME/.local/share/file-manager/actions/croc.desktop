@@ -5,5 +5,5 @@ Name=Share with croc
 Icon=emblem-shared-symbolic
 
 [X-Action-Profile profile_id]
-MimeTypes=all/all
+MimeTypes=all/allfiles
 Exec=alacritty -e croc send '%f'

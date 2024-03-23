@@ -5,5 +5,5 @@ Name=Share with KDE Connect
 Icon=kdeconnect
 
 [X-Action-Profile profile_id]
-MimeTypes=all/all
+MimeTypes=all/allfiles
 Exec=kdeconnect-handler '%f'
