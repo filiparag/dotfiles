@@ -6,4 +6,4 @@ Icon=code
 
 [X-Action-Profile profile_id]
 MimeTypes=inode/directory;all/allfiles
-Exec=code '%f'
+Exec=code %F

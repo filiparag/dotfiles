@@ -6,4 +6,4 @@ Icon=kdeconnect
 
 [X-Action-Profile profile_id]
 MimeTypes=all/allfiles
-Exec=kdeconnect-handler '%f'
+Exec=kdeconnect-handler %F

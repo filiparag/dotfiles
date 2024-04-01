@@ -6,4 +6,4 @@ Icon=terminal
 
 [X-Action-Profile profile_id]
 MimeTypes=inode/directory
-Exec=alacritty --working-directory '%f'
+Exec=alacritty --working-directory %F

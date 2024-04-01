@@ -6,4 +6,4 @@ Icon=emblem-shared-symbolic
 
 [X-Action-Profile profile_id]
 MimeTypes=all/allfiles
-Exec=alacritty -e croc send '%f'
+Exec=alacritty -e croc send %F
