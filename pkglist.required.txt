@@ -14,11 +14,11 @@ dash
 ddcutil
 dnsmasq
 dunst
+engrampa
 eog
 evince
 feh
 ffmpeg
-file-roller
 firefox-developer-edition
 fish
 fzf
