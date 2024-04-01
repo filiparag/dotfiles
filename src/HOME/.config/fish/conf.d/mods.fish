@@ -129,7 +129,7 @@ if status --is-interactive
     abbr --add ga 'git add'
     abbr --add gc "git commit$sign_upper -m"
     abbr --add gca "git commit$sign_upper --amend"
-    abbr --add gl 'git log'
+    abbr --add gl 'git log --graph --decorate'
     abbr --add gp 'git push'
     abbr --add gpt 'git push --tags'
     abbr --add gpf 'git push --force-with-lease'
