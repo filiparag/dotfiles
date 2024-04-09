@@ -3,8 +3,9 @@
 # Set our umask
 umask 027
 
-# Append our default paths
-appendpath () {
+# Append "$1" to $PATH when not already in.
+# This function API is accessible to scripts in /etc/profile.d
+append_path () {
     case ":$PATH:" in
         *:"$1":*)
             ;;
@@ -13,30 +14,33 @@ appendpath () {
     esac
 }
 
-export QT_QPA_PLATFORMTHEME="qt5ct"
-export QT_PLATFORMTHEME="qt5ct"
-export QT_PLATFORM_PLUGIN="qt5ct"
-export QT_AUTO_SCREEN_SCALE_FACTOR=0
-export EDITOR=/usr/bin/vim
+# Append our default paths
+append_path '/usr/local/sbin'
+append_path '/usr/local/bin'
+append_path '/usr/bin'
 
-appendpath '/usr/local/sbin'
-appendpath '/usr/local/bin'
-appendpath '/usr/bin'
-unset appendpath
-
+# Force PATH to be environment
 export PATH
 
 # Load profiles from /etc/profile.d
 if test -d /etc/profile.d/; then
-	for profile in /etc/profile.d/*.sh; do
-		test -r "$profile" && . "$profile"
-	done
-	unset profile
+    for profile in /etc/profile.d/*.sh; do
+        test -r "$profile" && . "$profile"
+    done
+    unset profile
 fi
 
-# Source global bash config
-if test "$PS1" && test "$BASH" && test -z ${POSIXLY_CORRECT+x} && test -r /etc/bash.bashrc; then
-	. /etc/bash.bashrc
+# Unload our profile API functions
+unset -f append_path
+
+# Source global bash config, when interactive but not posix or sh mode
+if test "$BASH" &&\
+   test "$PS1" &&\
+   test -z "$POSIXLY_CORRECT" &&\
+   test "${0#-}" != sh &&\
+   test -r /etc/bash.bashrc
+then
+    . /etc/bash.bashrc
 fi
 
 # Termcap is outdated, old, and crusty, kill it.
@@ -44,3 +48,10 @@ unset TERMCAP
 
 # Man is much better than us at figuring this out
 unset MANPATH
+
+# Additional exports
+export QT_QPA_PLATFORMTHEME="qt5ct"
+export QT_PLATFORMTHEME="qt5ct"
+export QT_PLATFORM_PLUGIN="qt5ct"
+export QT_AUTO_SCREEN_SCALE_FACTOR=0
+export EDITOR=/usr/bin/vim

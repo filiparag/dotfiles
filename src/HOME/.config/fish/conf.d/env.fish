@@ -23,11 +23,6 @@ set -g -x _JAVA_OPTIONS '-Dawt.useSystemAAFontSettings=on -Dswing.aatext=true'
 # Sxhkd
 set -g -x SXHKD_SHELL /usr/bin/dash
 
-# Locale
-set -g -x LC_ALL 'en_US.UTF-8'
-set -g -x LANGUAGE 'en_US.UTF-8'
-set -g -x LANG 'en_US.UTF-8'
-
 # Cargo
 set -x PATH "$PATH:$HOME/.cargo/bin"
 set -g -x CARGO_TARGET_DIR "$HOME/.cargo/target"

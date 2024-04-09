@@ -165,7 +165,10 @@ optional-dependencies: .bootstrap
 		print "</body>\n</html>\n" \
 	}' | sudo tee /usr/share/doc/dotfiles/manual.html 1>/dev/null
 
-.post-install: .post-install-services .post-install-firewall .post-install-user .post-install-apps
+.post-install: .post-install-system .post-install-services .post-install-firewall .post-install-user .post-install-apps
+
+.post-install-system:
+	sudo locale-gen
 
 .post-install-services:
 	sudo systemctl daemon-reload
