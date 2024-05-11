@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='dunst'
+export WMRC_DEPENDENCIES='dunst pgrep'
 export WMRC_LIBRARIES='notify'
 
 start() {
@@ -27,5 +27,21 @@ resume() {
         kill -USR2 "$DAEMON_PID"
     else
         warn "Dunst notification server is not running!"
+    fi
+}
+
+daemon_get_pid() {
+    _other_pid="$(pgrep -u "$USER" -o dunst)"
+    if ! test -f "$_pid_file" || ! kill -0 "$(cat "$_pid_file")" >/dev/null 2>/dev/null; then
+        debug 'Daemon spawned by wmrc is not running'
+        if [ -n "$_other_pid" ]; then
+            DAEMON_PID="$_other_pid"
+            debug 'Found daemon pid' "$DAEMON_PID"
+        else
+            return 1
+        fi
+    else
+        DAEMON_PID="$(cat "$_pid_file")"
+        debug 'Get daemon pid' "$DAEMON_PID"
     fi
 }
