@@ -42,7 +42,7 @@ dependencies: .bootstrap
 	fi
 	paru -Syu
 	paru -S --needed - < pkglist.required.txt
-	paru -S aur/qt5-styleplugins aur/qt6gtk2
+	paru -S qt5-styleplugins qt6gtk2
 
 optional-dependencies: .bootstrap
 	$(eval OPT_DEPS_CMD=$(shell awk -F'\t' ' \
