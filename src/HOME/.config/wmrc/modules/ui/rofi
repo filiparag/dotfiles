@@ -1,10 +1,17 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='rofi xdotool xclip perl xdg-open'
+export WMRC_DEPENDENCIES='awk rofi xdotool xclip perl xdg-open'
+
+get_dpi() {
+  dpi="$(awk '$1=="Xft.dpi:"{print $2}' "$HOME/.Xresources")"
+}
 
 start() {
   info "Show rofi menu"
-  rofi -no-lazy-grab -modi drun,run,window,ssh,combi \
+  get_dpi
+  rofi -no-lazy-grab \
+    -dpi "$dpi" \
+    -modi drun,run,window,ssh,combi \
     -combi-modi drun,window,run,ssh \
     -columns 2 \
     -show combi \
@@ -14,13 +21,18 @@ start() {
 
 calc() {
   info "Show rofi calculator"
-  rofi -no-lazy-grab -modi calc -show calc
+  get_dpi
+  rofi -no-lazy-grab \
+      -dpi "$dpi" \
+      -modi calc \
+      -show calc
 }
 
 files() {
 
   info "Show rofi file browser"
   CURRENT="$HOME"
+  get_dpi
 
   while [ -n "$CURRENT" ]; do
 
@@ -37,7 +49,7 @@ files() {
           $i=substr($i,1,1+($i~/^[.]/))} 1' OFS=/)"
 
     SEL="$(echo "$LL" |
-      rofi -dmenu -p "$CUR" -i \
+      rofi -dpi "$dpi" -dmenu -p "$CUR" -i \
       -columns 1)"
 
     [ -z "$SEL" ] && return
@@ -59,6 +71,7 @@ files() {
 character() {
 
   info "Show rofi character picker"
+  get_dpi
 
   # Unicode Emoji generation script:
   # curl https://unicode.org/Public/emoji/15.0/emoji-test.txt | \
@@ -88,7 +101,7 @@ character() {
     }
 
   SEL="$(
-    rofi -dmenu -p 'character' -i \
+    rofi -dpi "$dpi" -dmenu -p 'character' -i \
     -columns 3 \
 		-icon-theme -font "Twitter Color Emoji 11" < "$CHARACTER_FILE"
   )"

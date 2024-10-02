@@ -1,7 +1,7 @@
 {
     "allow_postpone": true,
-    "long_break_duration": 30,
-    "long_break_interval": 70,
+    "long_break_duration": 40,
+    "long_break_interval": 60,
     "long_breaks": [
         {
             "name": "Long break"
@@ -95,20 +95,28 @@
             "enabled": true,
             "id": "mediacontrol",
             "version": "0.0.1"
+        },
+        {
+            "enabled": false,
+            "id": "limitconsecutiveskipping",
+            "settings": {
+                "number_of_allowed_skips_in_a_row": 2
+            },
+            "version": "0.0.1"
         }
     ],
-    "postpone_duration": 5,
+    "postpone_duration": 1,
     "pre_break_warning_time": 5,
     "random_order": true,
     "rpc_port": 7200,
     "short_break_duration": 20,
-    "short_break_interval": 35,
+    "short_break_interval": 20,
     "short_breaks": [
         {
             "name": "Short break"
         }
     ],
-    "shortcut_disable_time": 1,
+    "shortcut_disable_time": 0,
     "shortcut_postpone": 65,
     "shortcut_skip": 9,
     "strict_break": true,

@@ -1,9 +1,13 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='polybar pgrep xrandr'
+export WMRC_DEPENDENCIES='awk polybar pgrep xdpyinfo xrandr'
 
 export DAEMON_PID
 export _pid_file
+
+get_dpi() {
+  dpi="$(awk '$1=="Xft.dpi:"{print $2}' "$HOME/.Xresources")"
+}
 
 start() {
 
@@ -56,13 +60,16 @@ start() {
     WIDTH="$(xrandr --listmonitors | perl -nle "/$M (\d+)/ && print \$1")"
     HEIGHT="$(xrandr --listmonitors | perl -nle "/$M \d+\/\d+x(\d+)/ && print \$1")"
 
+    get_dpi
+    WIDTH_SCALED=$(((WIDTH*96000)/(dpi*1000)))
+
     if [ "$M" = "$M_PRIMARY" ]; then
-      if [ "$WIDTH" -ge 3440 ]; then
+      if [ "$WIDTH_SCALED" -ge 3440 ]; then
         BAR_TYPE='wide'
         MOD_L="bspwm window_wide"
         MOD_C="playerctl"
         MOD_R="battery wireless wired cpu memory fan temperature filesystem pulseaudio keyboard date tray"
-      elif [ "$WIDTH" -ge 1920 ]; then
+      elif [ "$WIDTH_SCALED" -ge 1920 ]; then
         BAR_TYPE='medium'
         MOD_L="bspwm window_narrow"
         MOD_C=""
@@ -73,7 +80,7 @@ start() {
         MOD_C=""
         MOD_R="battery wireless wired cpu memory fan temperature pulseaudio keyboard date tray"
       fi
-      [ "$WIDTH" -ge 1920 ] && \
+      [ "$WIDTH_SCALED" -ge 1920 ] && \
       NOTIF="right"
     else
       MOD_L="bspwm"

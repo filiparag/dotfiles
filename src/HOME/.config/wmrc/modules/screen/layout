@@ -5,6 +5,10 @@ export WMRC_LIBRARIES='notify'
 
 SCREENLAYOUT="$HOME/.screenlayout"
 
+get_dpi() {
+  dpi="$(awk '$1=="Xft.dpi:"{print $2}' "$HOME/.Xresources")"
+}
+
 manual() {
 
   LAYOUT_OLD="$(xrandr --listmonitors | sha1sum)"
@@ -154,8 +158,12 @@ start() {
 
   LAYOUT="$MANUAL$RESTORE$LAYOUT$MONITORS"
 
+  get_dpi
   SEL="$(printf '%b' "$LAYOUT" |
-    rofi -dmenu -p 'monitor layout' -i \
+    rofi \
+    -dpi "$dpi" \
+    -dmenu \
+    -p 'monitor layout' -i \
     -columns 1 \
     -theme style/style_normal_grid.rasi)"
 
