@@ -1,8 +1,8 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='sudo xset'
+export WMRC_DEPENDENCIES='screen/lock hardware/power hardware/thinkpad sudo xset'
 
-WMRC_AUTO_SUSPEND_DELAY="${WMRC_AUTO_SUSPEND_DELAY:-20}"
+WMRC_AUTO_SUSPEND_DELAY="${WMRC_AUTO_SUSPEND_DELAY:-60}"
 
 monitor_inactive() {
 	if xset q | grep -q 'Monitor is Off'; then
@@ -15,23 +15,38 @@ monitor_inactive() {
 	fi
 }
 
+lockscreen_active() {
+	WMRC_LOG_LEVEL=none call screen/lock daemon_get_pid
+}
+
+probe_loop() {
+	info 'Started auto suspend watchdog'
+	call hardware/thinkpad get_attention
+	while true; do
+		sleep "$WMRC_AUTO_SUSPEND_DELAY"
+		debug 'Checking conditions for auto suspend'
+		if lockscreen_active; then
+			info 'Lockscreen inactivity, suspending system'
+		elif monitor_inactive; then
+			info 'Monitor lid closed, suspending system'
+		else
+			info 'Interaction detected'
+			break
+		fi
+		call hardware/power suspend
+	done
+	info 'Stopping daemon'
+	call hardware/thinkpad turn_off_leds
+	exit
+}
+
 start() {
 	if daemon_get_pid; then
 		error 'Auto suspend watchdog is already running!'
 		return 1
 	fi
-	daemon_set_pid "$$"
-	info 'Started auto suspend watchdog'
-	while true; do
-        call hardware/thinkpad get_attention
-		sleep "$WMRC_AUTO_SUSPEND_DELAY"
-		debug 'Checking conditions for auto suspend'
-		if monitor_inactive || wmrc status screen/lock 2>&1 | grep -q 'Process id'; then
-			info 'Screen inactivity, suspending system'
-			wmrc unit suspend
-		fi
-	done
-	stop
+	probe_loop &
+	daemon_set_pid "$!"
 }
 
 stop() {
