@@ -1,13 +1,12 @@
 [Unit]
-Description=System resume event
+Description=Resume event handler for wmrc
 After=sleep.target suspend.target hibernate.target
 
 [Service]
 User=%I
 Type=forking
 Environment=DISPLAY=:0
-ExecStartPost=/usr/bin/wmrc unit resume &
-ExecStart=/usr/bin/true
+ExecStart=/usr/bin/wmrc unit systemd-resume-event
 
 [Install]
 WantedBy=sleep.target suspend.target hibernate.target

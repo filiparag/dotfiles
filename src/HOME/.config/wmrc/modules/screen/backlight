@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='sudo ddcutil'
+export WMRC_DEPENDENCIES='sudo ddcutil xset'
 export _module
 
 WMRC_BACKLIGHT_DEFAULT="${WMRC_BACKLIGHT_DEFAULT:-100}"
@@ -65,6 +65,7 @@ set_to() {
     fi
     if has_monitor external && [ "$1" != 'internal' ]; then
         if ddcutil_write "$_value"; then
+		# ovde fali _value do 100
             info 'Set external backlight' "$_value"
         else
             error 'Failed to set external backlight'
@@ -150,4 +151,14 @@ ddcutil_read() {
         daemon_set_pid "$$"
         ddcutil getvcp 10 | grep -Po 'current value *= *\K.*?(?=,)' > "$external_file"
     fi
+}
+
+off() {
+    xset dpms force off
+    info 'Monitors turned off'
+}
+
+on() {
+    xset dpms force on
+    info 'Monitors turned on'
 }

@@ -173,7 +173,8 @@ optional-dependencies: .bootstrap
 
 .post-install-services:
 	sudo systemctl daemon-reload
-	sudo systemctl enable "resume@${USERNAME}"
+	sudo systemctl enable "wmrc-suspend@${USERNAME}"
+	sudo systemctl enable "wmrc-resume@${USERNAME}"
 	sudo systemctl enable --now sshd
 	sudo systemctl enable --now cronie
 	sudo systemctl enable --now NetworkManager

@@ -18,7 +18,7 @@ start() {
         --timer "$blank_timeout" \
             "xset dpms force off" '' \
         --timer "$lock_timeout" \
-            "wmrc call screen/lock smart_lock" '' \
+            "wmrc start screen/lock detach" '' \
         > /dev/null &
     daemon_set_pid "$!"
 }

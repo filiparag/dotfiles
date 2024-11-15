@@ -12,9 +12,11 @@ APPS='unclutter -idle 1
       thunderbird
       signal-desktop --start-in-tray
       dino --gapplication-service
+      snixembed --fork
       safeeyes
       gromit-mpx
       blueman-applet
+      openrgb -c ff6f00 -b 100
       '
 
 app_list() {
