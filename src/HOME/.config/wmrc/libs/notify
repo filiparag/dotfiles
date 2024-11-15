@@ -3,7 +3,7 @@
 export WMRC_DEPENDENCIES='notify-send'
 
 export _module
-PROMPT_DEFAULT_EXPIRATION=300000 #milliseconds
+WMRC_PROMPT_EXPIRATION="${WMRC_PROMPT_EXPIRATION:-300000}" #milliseconds
 
 notify() {
     _log_level=''
@@ -46,14 +46,18 @@ notify() {
         error 'Empty notification title'
         return 1
     fi
-    info 'Displaying notification' "$1"
+    __title="$1"
+    __body="$2"
+    __escaped_body="$( echo "$__body" | sed 's|\\n|\\\\n|g; s|\\t|\\\\t|g;')"
+    debug 'Displaying notification' "$__title"
     NOTIFY_OUTPUT="$(
-        eval "$_log_level '$1' ${2:+\'}$2${2:+\'} '${_actions:+[}$_actions${_actions:+]}'; notify-send $_kwargs '$1' '$2'"
+        eval "$_log_level '$__title' $__escaped_body '${_actions:+[}$_actions${_actions:+]}'; notify-send $_kwargs '$__title' '$__body'"
     )"
+
 }
 
 prompt() {
-    if ! notify -a "wmrc::$_module" -i dialog-question -t "$PROMPT_DEFAULT_EXPIRATION" -w "$@"; then
+    if ! notify -a "wmrc::$_module" -i dialog-question -t "$WMRC_PROMPT_EXPIRATION" -w "$@"; then
         error 'Error displaying notification'
     fi
     if [ -n "$NOTIFY_OUTPUT" ]; then
@@ -61,9 +65,9 @@ prompt() {
             echo "$_actions" | sed 's/|/\n/g' | \
             awk -v choice="$NOTIFY_OUTPUT" 'NR == choice + 1 {print $0}'
         )"
-        info 'Prompt answer' "$NOTIFY_OUTPUT"
+        debug 'Prompt answer' "$NOTIFY_OUTPUT"
     else
-        warn 'Prompt not answered'
+        debug 'Prompt not answered'
         return 1
     fi
 }
