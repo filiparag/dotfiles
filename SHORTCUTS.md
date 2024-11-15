@@ -124,6 +124,13 @@ Quit bspwm `super + shift + e : Return`
 Reload config `super + alt + r`
 
 
+## Input device control
+
+Toggle enable touchscreen input `super + alt + t`
+
+Toggle enable mouse and touchpad input `super + shift + t`
+
+
 ## System lock and power
 
 Sleep `super + @Delete`

@@ -140,6 +140,7 @@ optional-dependencies: .bootstrap
 			printf("`%s`\n\n", $$0); c=0 \
 		} \
 	}' | sudo tee /usr/share/doc/dotfiles/shortcuts.md 1>/dev/null
+	cp /usr/share/doc/dotfiles/shortcuts.md ${SRCDIR}/../SHORTCUTS.md
 	cat "${SRCDIR}/HOME/.config/sxhkd/sxhkdrc" | awk \
 	'BEGIN { \
 		first = 1; \

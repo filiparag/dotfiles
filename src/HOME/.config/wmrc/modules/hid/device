@@ -1,0 +1,156 @@
+#!/bin/sh
+
+export WMRC_DEPENDENCIES='awk xinput'
+export WMRC_LIBRARIES='notify'
+
+WMRC_NOTIFICATION_TIMEOUT="${WMRC_NOTIFICATION_TIMEOUT:-1000}" #milliseconds
+WMRC_DEVICE_MOUSE="${WMRC_DEVICE_MOUSE:-}"
+WMRC_DEVICE_KEYBOARD="${WMRC_DEVICE_KEYBOARD:-}"
+WMRC_DEVICE_TOUCHPAD="${WMRC_DEVICE_TOUCHPAD:-}"
+WMRC_DEVICE_TRACKPOINT="${WMRC_DEVICE_TRACKPOINT:-}"
+WMRC_DEVICE_TOUCHSCREEN="${WMRC_DEVICE_TOUCHSCREEN:-}"
+
+get_name_map() {
+    name_map="$(
+        xinput list --short | \
+        awk -F '\t' '{
+            match($1, /(∼|↳)\s+(([^ ]+ )*[^ ]+)/, name);
+            match($2, /id=([0-9]+)/, id);
+            if (name[2] != "" && id[1] != "")
+                print id[1] "\t" name[2]
+        }'
+    )"
+}
+
+name_to_id() {
+    if [ -z "$1" ]; then
+        return
+    fi
+    if [ -z "$name_map" ]; then
+        get_name_map
+    fi
+    id="$(
+        echo "$name_map" | \
+        awk -F '\t' -v name="$1" '$2 == name { print $1 }'
+    )"
+    if [ -z "$id" ]; then
+        error 'Device ID not found' "$1"
+        return 1
+    fi
+    debug 'Device ID found' "id=$id name='$1'"
+}
+
+id_to_name() {
+    if [ -z "$1" ]; then
+        return
+    fi
+    if [ -z "$name_map" ]; then
+        get_name_map
+    fi
+    name="$(
+        echo "$name_map" | \
+        awk -F '\t' -v id="$1" '(($1+0)==(id+0)) { print $2 }'
+    )"
+    if [ -z "$name" ]; then
+        error 'Device name not found' "$1"
+        return 1
+    fi
+    debug 'Device name found' "id=$1 name='$name'"
+}
+
+detect_ids() {
+    newline="
+"
+    case "$1" in
+        mouse|Mouse)
+            type='Mouse'
+            name_to_id "$WMRC_DEVICE_MOUSE"
+            ids="$id"
+            ;;
+        keyboard|Keyboard)
+            type='Keyboard'
+            name_to_id "$WMRC_DEVICE_KEYBOARD"
+            ids="$id"
+            ;;
+        touchpad|Touchpad)
+            type='Touchpad'
+            name_to_id "$WMRC_DEVICE_TOUCHPAD"
+            ids="$id"
+            ;;
+        trackpoint|Trackpoint|TrackPoint)
+            type='TrackPoint'
+            name_to_id "$WMRC_DEVICE_TRACKPOINT"
+            ids="$id"
+            ;;
+        touchscreen|Touchscreen)
+            type='Touchscren'
+            name_to_id "$WMRC_DEVICE_TOUCHSCREEN"
+            ids="$id"
+            ;;
+        *)
+            error 'Unknown input device type'
+            return 1;;
+    esac
+    debug 'Detecting connected devices' "$type"
+    ids="$ids${ids:+$newline}$(
+        xinput list --short | \
+        awk "/$type/ { match(\$0, /id=([0-9]+)/, arr); print arr[1]; }"
+    )"
+    ids="$(
+        echo "$ids" | sort | uniq
+    )"
+    if [ -z "$ids" ]; then
+        warn 'No input devices detected' "$type"
+    fi
+}
+
+get_state() {
+    state="$(
+        xinput list-props "$1" | \
+        awk '/^\s+Device Enabled/ { print $NF }'
+    )"
+}
+
+set_state() {
+    detect_ids "$2"
+    message=''
+    for id in $ids; do
+        xinput "$1" "$id"
+        debug 'Set device state' "id=$id state=$1"
+        id_to_name "$id"
+        message="$message${message:+\n}$name is ${1}d"
+    done
+    if [ -n "$message" ]; then
+        notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i mouse \
+            'Set input device state' "$message"
+    fi
+}
+
+enable() {
+    set_state enable "$1"
+}
+
+disable() {
+   set_state disable "$1"
+}
+
+toggle() {
+    detect_ids "$1"
+    message=''
+    for id in $ids; do
+        get_state "$id"
+        if [ "$state" = '0' ]; then
+            new_state='enable'
+        else
+            new_state='disable'
+        fi
+        xinput "$new_state" "$id"
+        debug 'Toggled device state' "id=$id old_state=$state new_state=$new_state"
+        id_to_name "$id"
+        message="$message${message:+\n}${name:-id=$id} is ${new_state}d"
+    done
+    if [ -n "$message" ]; then
+        notify -t "$WMRC_NOTIFICATION_TIMEOUT" -u low -i mouse \
+            'Toggle input device state' "$message"
+    fi
+}

@@ -277,6 +277,17 @@ super + alt + r
 			'wmrc' 'An error occurred while reloading desktop configuration.'; \
 	fi
 
+## Input device control
+
+# Toggle enable touchscreen input
+super + alt + t
+	wmrc call hid/device toggle touchscreen
+
+# Toggle enable mouse and touchpad input
+super + shift + t
+	wmrc call hid/device toggle mouse; \
+	wmrc call hid/device toggle touchpad
+
 ## System lock and power
 
 # Sleep
