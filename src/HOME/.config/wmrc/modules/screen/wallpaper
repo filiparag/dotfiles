@@ -2,14 +2,15 @@
 
 export WMRC_DEPENDENCIES='feh'
 
+WMRC_WALLPAPER="${WMRC_WALLPAPER:-$HOME/Pictures/wallpaper.png}"
+WMRC_WALLAPER_FIT="${WMRC_WALLAPER_FIT:-fill}"
+
 init() {
-  info 'Set static wallpaper'
-  BCK_IMG="$HOME/Pictures/wallpaper.png"
-  if ! [ -f "$BCK_IMG" ]; then
-    error "Wallpaper image '$BCK_IMG' is missing!"
-    exit 2
+  image="$WMRC_WALLPAPER"
+  info 'Set static wallpaper' "$image"
+  if ! test -f "$image" ; then
+    error 'Wallpaper image not found' "$image"
+    return 1
   fi
-
-  DISPLAY=$DISPLAY feh --bg-fill "$BCK_IMG"
-
+  DISPLAY=$DISPLAY feh "--bg-$WMRC_WALLAPER_FIT" "$image"
 }

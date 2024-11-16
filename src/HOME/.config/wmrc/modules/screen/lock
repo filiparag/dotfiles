@@ -2,9 +2,9 @@
 
 export WMRC_DEPENDENCIES='services/notifications hid/device screen/backlight i3lock sha1sum awk perl magick xdotool xrandr xkb-switch xset'
 
-WMRC_LOCKSCREEN="${WMRC_LOCKSCREEN:-$HOME/Pictures/lockscreen.png}"
+WMRC_LOCKSCREEN="${WMRC_LOCKSCREEN:-$HOME/Pictures/wallpaper.png}"
 
-cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/lockscreen"
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wmrc/imagen"
 
 create_cache_dir() {
     if ! mkdir -p "$cache_dir"; then

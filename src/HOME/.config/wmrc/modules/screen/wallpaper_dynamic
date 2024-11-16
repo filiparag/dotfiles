@@ -1,100 +1,254 @@
 #!/bin/sh
 
-export WMRC_DEPENDENCIES='feh convert jq curl bc printf xargs'
+export WMRC_DEPENDENCIES='awk feh convert jq curl bc printf xargs'
 
-BCK_IMG="$HOME/Pictures/wallpaper-%s.png"
-COMPOSITE="convert -colorspace Gray \( $BCK_IMG -evaluate multiply %.2f \) \( $BCK_IMG -evaluate multiply %.2f \) -compose plus -composite %s"
-DELAY="$((150))"
+wallpaper_prefix="${WMRC_WALLPAPER%.*}"
+wallpaper_suffix="${WMRC_WALLPAPER#"$wallpaper_prefix"}"
 
-LATLNG="$(echo "$WMRC_LOCATION" | sed 's|_|.|g; s|N|?lat=|; s|S|\&lng=|;')"
+WMRC_WALLPAPER_DAY="${WMRC_WALLPAPER_DAY:-$wallpaper_prefix-day$wallpaper_suffix}"
+WMRC_WALLPAPER_NIGHT="${WMRC_WALLPAPER_NIGHT:-$wallpaper_prefix-night$wallpaper_suffix}"
 
-start() {
-	if ! test -f "$(printf "$BCK_IMG" 'day')" || ! test -f "$(printf "$BCK_IMG" 'night')"; then
-		error "Wallpaper images are missing!"
-		return 1
-	fi
-	if daemon_get_pid; then
-		error "Dynamic wallpaper daemon is already running!"
-		return 1
-	else
-		daemon &
-		daemon_set_pid "$!"
-	fi
+WMRC_WALLAPER_FADE_PERIOD="${WMRC_WALLAPER_FADE_PERIOD:-3600}" # seconds
+WMRC_WALLAPER_INTERVAL="${WMRC_WALLAPER_INTERVAL:-30}" # seconds
+WMRC_WALLAPER_FIT="${WMRC_WALLAPER_FIT:-fill}"
+
+cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/wmrc/imagen"
+
+location_param() {
+    location="$(
+        echo "$WMRC_LOCATION" | \
+        awk '{ gsub(/[^ .0-9-]/,"",$0); printf("?lat=%s&lng=%s", $1, $2); }'
+    )"
+    debug 'Location query parameters' "$location"
+}
+
+init() {
+    location_param
+    echo "$location"
+    echo "prefix = ${wallpaper_prefix}"
+    echo "suffix = ${wallpaper_suffix}"
+    echo "DAY = $WMRC_WALLPAPER_DAY"
+    echo "NIGHT = $WMRC_WALLPAPER_NIGHT"
+}
+
+create_cache_dir() {
+    if ! mkdir -p "$cache_dir"; then
+        error 'Unable to create cache directory' "$cache_dir"
+        return 1
+    fi
+    if ! mkdir -p "$cache_dir/$1"; then
+        error 'Unable to create cache image subdirectory' "$cache_dir"
+        return 1
+    fi
+}
+
+api_fetch() {
+    location_param
+    api_new_date="$(LC_ALL=C date +%D)"
+    if [ "$api_response" = '' ] || [ "$api_new_date" != "$api_date" ]; then
+        api_date="$api_new_date"
+        api_url="https://api.sunrise-sunset.org/json$location&formatted=0"
+        api_response="$(curl --max-time 10 --silent "$api_url")"
+        if [ -n "$api_response" ]; then
+            sunrise="$(echo "$api_response" | jq -r '.results.sunrise' | xargs date +%s -d)"
+            sunset="$(echo "$api_response" | jq -r '.results.sunset' | xargs date +%s -d)"
+            if [ -z "$sunrise" ] || [ -z "$sunset" ]; then
+                error 'Unable to parse API response'
+            fi
+        else
+            warn 'Unable to fetch sun tracking data' "$api_url"
+        fi
+    else
+        debug 'Use cached sun tracking data for today'
+    fi
+    if [ -z "$sunrise" ] || [ -z "$sunset" ]; then
+        debug 'Using fallback sun tracking values'
+        sunrise="$(LC_ALL=C date +%s -d 'today 06:00 am')"
+        sunset="$(LC_ALL=C date +%s -d 'today 09:00')"
+        return
+    fi
+    debug 'Sunrise timestamp' "$sunrise"
+    debug 'Sunset timestamp' "$sunset"
+}
+
+day_part() {
+    if ! api_fetch; then
+        return 1
+    fi
+    fade_period="$WMRC_WALLAPER_FADE_PERIOD"
+    now="$(date +%s)"
+    debug 'Current timestamp' "$now"
+    prev_part="$part"
+    part='night'
+    if [ "$now" -gt $((sunset - fade_period / 2)) ]; then
+        if [ "$now" -lt $((sunset + fade_period / 2)) ]; then
+            part='sunset'
+        fi
+    elif [ "$now" -gt $((sunrise - fade_period / 2)) ]; then
+        if [ "$now" -lt $((sunrise + fade_period / 2)) ]; then
+            part='sunrise'
+        else
+            part='day'
+        fi
+    fi
+    if [ "$part" = 'day' ] || [ "$part" = 'night' ]; then
+        if [ "$part" = "$prev_part" ]; then
+            debug 'Day part is unchanged'
+            return 1
+        fi
+    fi
+}
+
+fade_coeffs() {
+    if ! day_part && [ -n "$day_mul" ] && [ -n "$night_mul" ]; then
+        return
+    fi
+    debug 'Day part changed' "$part"
+    case "$part" in
+        day)
+            day_mul=1
+            night_mul=0
+            ;;
+        night)
+            day_mul=0
+            night_mul=1
+            ;;
+        sunrise)
+            day_mul="$(echo "scale=2;($now-($sunrise-$fade_period/2))/$fade_period" | bc)";
+            night_mul="$(echo "scale=2;(1-$day_mul)" | bc)";
+            ;;
+        sunset)
+            night_mul="$(echo "scale=2;($now-($sunset-$fade_period/2))/$fade_period" | bc)";
+            day_mul="$(echo "scale=2;(1-$night_mul)" | bc)";
+            ;;
+    esac
+    day_mul="$(printf "%.2f" "$day_mul")"
+    night_mul="$(printf "%.2f" "$night_mul")"
+    debug 'Day multiplier' "$day_mul"
+    debug 'Night multiplier' "$night_mul"
+}
+
+generate_composite() {
+
+    image_day="$WMRC_WALLPAPER_DAY"
+    image_night="$WMRC_WALLPAPER_NIGHT"
+    image_day_hash="$(
+        sha1sum "$image_day" | cut -d ' ' -f1
+    )"
+    image_night_hash="$(
+        sha1sum "$image_night" | cut -d ' ' -f1
+    )"
+
+    if ! fade_coeffs; then
+        error 'Error calculating fade coefficients'
+        return 1
+    fi
+
+    composite_hash="$(
+        echo "$image_day_hash$image_night_hash" | sha1sum | cut -d ' ' -f1
+    )"
+    composite_name="${day_mul}.${night_mul}"
+    if ! create_cache_dir "$composite_hash"; then
+        return 1
+    fi
+    composite_image="$cache_dir/$composite_hash/$composite_name.png"
+
+    if test -f "$composite_image"; then
+        debug 'Composite image exists' "$composite_image"
+        return
+    fi
+
+    case "$part" in
+        day)
+            magick "$image_day" "$composite_image" 1>/dev/null 2>/dev/null
+            ;;
+        night)
+            magick "$image_night" "$composite_image" 1>/dev/null 2>/dev/null
+            ;;
+        sunrise|sunset)
+            magick -colorspace Gray \
+                \( "$image_day" -evaluate multiply "$day_mul" \) \
+                \( "$image_night" -evaluate multiply "$night_mul" \) \
+                -compose plus -composite "$composite_image" 1>/dev/null 2>/dev/null
+            ;;
+    esac
+    # shellcheck disable=SC2181
+    if [ "$?" != '0' ]; then
+        error 'Composite image generation failed'
+        return 1
+    fi
+
+    info 'Generated composite image' "$composite_image"
+
+}
+
+set_wallpaper() {
+    if [ -z "$composite_image" ]; then
+        error 'Unexpected invocation'
+        return 1
+    fi
+    if [ "$composite_image" = "$prev_composite_image" ]; then
+        return
+    fi
+    prev_composite_image="$composite_image"
+    info 'Set dynamic wallpaper' "$part"
+    DISPLAY=$DISPLAY feh "--bg-$WMRC_WALLAPER_FIT" "$composite_image"
+}
+
+smart_sleep() {
+    if [ -z "$part" ] || [ -z "$fade_period" ] || \
+        [ -z "$sunrise" ] || [ -z "$sunset" ]; then
+        error 'Missing sun tracking data'
+        return 1
+    fi
+    now="$(date +%s)"
+    duration="$(
+        awk -v now="$now" -v part="$part" \
+            -v sunrise="$sunrise" -v sunset="$sunset" \
+            -v interval="$WMRC_WALLAPER_INTERVAL" \
+            -v fade_period="$WMRC_WALLAPER_FADE_PERIOD" \
+        'END {
+            day = 24 * 3600;
+            sunrise -= day;
+            if (part == "day") {
+                duration = (sunset-now) - (fade_period/2);
+            } else if (part == "night") {
+                if (sunrise>now) {
+                    duration = (sunrise-now) - (fade_period/2);
+                } else {
+                    duration = (sunrise+day-now) - (fade_period/2);
+                }    
+            } else {
+                duration = interval;
+            }
+            print (duration>interval) ? duration : interval;
+        }' < /dev/null
+    )"
 }
 
 daemon() {
-	while true; do
-		api
-		background
-		sleep "$DELAY"
-		debug "Next wallpaper" "$DELAY seconds"
-	done
+    while true; do
+        generate_composite && set_wallpaper
+        smart_sleep
+        debug 'Sleep until' "$(date '+%D +%T' -d "now + ${duration}sec")"
+        sleep "$duration"
+    done
 }
 
-api() {
-	api_new_date="$(date -u +%D)"
-	if [ "$api_response" = '' ] || [ "$api_new_date" != "$api_date" ]; then
-		api_date="$api_new_date"
-		api_response="$(curl --silent "https://api.sunrise-sunset.org/json$LATLNG&formatted=0")"
-		sunrise="$(echo "$api_response" | jq -r '.results.sunrise' | xargs date +%s -d)"
-		sunset="$(echo "$api_response" | jq -r '.results.sunset' | xargs date +%s -d)"
-	fi
-	debug 'Sunrise' "$sunrise"
-	debug 'Sunset' "$sunset"
-}
-
-background() {
-	fade_period=3600
-	now="$(date -u +%s)"
-	prev_part="$part"
-	part='night'
-	if [ "$now" -gt $((sunset - fade_period / 2)) ]; then
-		if [ "$now" -lt $((sunset + fade_period / 2)) ]; then
-			part='sunset'
-		fi
-	elif [ "$now" -gt $((sunrise - fade_period / 2)) ]; then
-		if [ "$now" -lt $((sunrise + fade_period / 2)) ]; then
-			part='sunrise'
-		else
-			part='day'
-		fi
-	fi
-	if [ "$part" = 'day' ] || [ "$part" = 'night' ]; then
-		if [ "$part" = "$prev_part" ]; then
-			debug "Skiping dynamic wallpaper update"
-			return 0
-		fi
-	fi
-	command=''
-	case "$part" in
-		'night'|'day')
-			command="$(printf "DISPLAY=$DISPLAY feh --bg-fill $BCK_IMG\n" "$part")";
-			;;
-		'sunrise')
-			day_mul="$(echo "scale=2;($now-($sunrise-$fade_period/2))/$fade_period" | bc)";
-			night_mul="$(echo "scale=2;(1-$day_mul)" | bc)";
-			debug "Day multiplier" "$day_mul"
-			debug "Night multiplier" "$day_mul"
-			command="$(
-				printf "$COMPOSITE && DISPLAY=$DISPLAY feh --bg-fill %s" \
-				'day' "$day_mul" 'night' "$night_mul" \
-				"/tmp/dynamic_wallpaper.$USER.png" \
-				"/tmp/dynamic_wallpaper.$USER.png"
-			)";
-			;;
-		'sunset')
-			night_mul="$(echo "scale=2;($now-($sunset-$fade_period/2))/$fade_period" | bc)";
-			day_mul="$(echo "scale=2;(1-$night_mul)" | bc)";
-			debug "Day multiplier" "$day_mul"
-			debug "Night multiplier" "$day_mul"
-			command="$(
-				printf "$COMPOSITE && DISPLAY=$DISPLAY feh --bg-fill %s" \
-				'day' "$day_mul" 'night' "$night_mul" \
-				"/tmp/dynamic_wallpaper.$USER.png" \
-				"/tmp/dynamic_wallpaper.$USER.png"
-			)";
-			;;
-	esac
-	info "Updating dynamic wallpaper" "$part"
-	eval "$command"
+start() {
+    if ! test -f "$WMRC_WALLPAPER_DAY" || ! test -f "$WMRC_WALLPAPER_NIGHT"; then
+        error 'Wallpaper images are missing!' "$WMRC_WALLPAPER_DAY $WMRC_WALLPAPER_NIGHT"
+        return 1
+    fi
+    if [ -z "$WMRC_LOCATION" ]; then
+        error 'Location variable for sun tracking is not set!'
+        return 1
+    fi
+    if daemon_get_pid; then
+        error 'Dynamic wallpaper daemon is already running!'
+        return 1
+    else
+        daemon &
+        daemon_set_pid "$!"
+    fi
 }
