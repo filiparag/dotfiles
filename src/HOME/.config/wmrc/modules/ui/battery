@@ -3,6 +3,8 @@
 export WMRC_DEPENDENCIES=''
 export WMRC_LIBRARIES='notify'
 
+WMRC_MAIN_BATTERY="${WMRC_MAIN_BATTERY:-BAT0}"
+
 daemon() {
   info "Started low battery daemon"
   WARN_LEVEL=20
@@ -13,8 +15,8 @@ daemon() {
 
   while true; do
 
-    CURR_LEVEL=$(cat /sys/class/power_supply/BAT0/capacity)
-    CURR_STATUS=$(cat /sys/class/power_supply/BAT0/status)
+    CURR_LEVEL=$(cat "/sys/class/power_supply/$WMRC_MAIN_BATTERY/capacity")
+    CURR_STATUS=$(cat "/sys/class/power_supply/$WMRC_MAIN_BATTERY/status")
     CURR_TIMEST=$(date +%s)
 
     debug "Check battery level"
@@ -43,9 +45,9 @@ daemon() {
 }
 
 start() {
-  if ! test -d "/sys/class/power_supply/BAT0"; then
-    error "System has no battery!" 'BAT0'
-    return 1
+  if ! test -d "/sys/class/power_supply/$WMRC_MAIN_BATTERY"; then
+    warn "System has no battery!" "$WMRC_MAIN_BATTERY"
+    return
   fi
   if daemon_get_pid; then
 		error "Low battery daemon is already running!"

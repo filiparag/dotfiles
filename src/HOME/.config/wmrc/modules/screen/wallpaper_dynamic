@@ -217,7 +217,7 @@ smart_sleep() {
                     duration = (sunrise-now) - (fade_period/2);
                 } else {
                     duration = (sunrise+day-now) - (fade_period/2);
-                }    
+                }
             } else {
                 duration = interval;
             }

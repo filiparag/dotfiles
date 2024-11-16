@@ -12,19 +12,21 @@ detect_model() {
 	if grep -q "ThinkPad" "/sys/devices/virtual/dmi/id/product_family"; then
 		thinkpad_model="$(cut -d' ' -f2 /sys/devices/virtual/dmi/id/product_family)"
 		if [ -z "$thinkpad_model" ]; then
-			error "Device is not a ThinkPad"
-			exit 1
+			warn "Device is not a ThinkPad"
+			return 1
 		fi
 		debug "Detected model" "ThinkPad $thinkpad_model"
 		return 0
 	else
-		error "Device is not a ThinkPad"
-		exit 1
+		warn "Device is not a ThinkPad"
+		return 1
 	fi
 }
 
 configure_trackpoint() {
-	detect_model
+	if ! detect_model; then
+		return 1
+	fi
 	file_sensitivity="$(find /sys/devices/platform/i8042/ -name 'sensitivity')"
 	file_select="$(find /sys/devices/platform/i8042/ -name 'press_to_select')"
 	info 'Set TrackPoint sensitivity'

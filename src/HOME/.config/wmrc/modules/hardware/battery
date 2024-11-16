@@ -5,7 +5,7 @@ export WMRC_LIBRARIES='notify'
 
 WMRC_BATTERY_CHARGE_START="${WMRC_BATTERY_CHARGE_START:-75}"
 WMRC_BATTERY_CHARGE_STOP="${WMRC_BATTERY_CHARGE_STOP:-80}"
-WMRC_BATTERY_STATE_TIMEOUT="${WMRC_BATTERY_STATE_TIMEOUT:-1500}" #milliseconds
+WMRC_BATTERY_STATE_TIMEOUT="${WMRC_BATTERY_STATE_TIMEOUT:-1500}" # milliseconds
 
 test_battery() {
     if ! find /sys/class/power_supply/ -type l -name 'BAT*' | grep -qv '^$'; then
@@ -41,12 +41,12 @@ full() {
 start() {
   if ! upower --enumerate | grep -qi 'battery'; then
     warn "Battery not present, exiting daemon!"
-    return 1
+    return
   fi
   if daemon_get_pid; then
 		error "Charge event daemon is already running!"
 		return 1
-	fi
+  fi
   daemon &
   daemon_set_pid "$!"
 }

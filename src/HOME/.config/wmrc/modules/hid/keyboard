@@ -16,7 +16,7 @@ layout() {
 }
 
 keybinds() {
-  if call hardware/thinkpad detect_model; then
+  if WMRC_LOG_LEVEL=none call hardware/thinkpad detect_model; then
     info "Change key bindings for ThinkPad"
     xmodmap -e "keycode 112 = Home"
     xmodmap -e "keycode 117 = End"
