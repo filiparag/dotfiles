@@ -23,9 +23,3 @@ suspend() {
 	sudo systemctl suspend
 }
 
-init() {
-	info 'Disable unprivileged shutdown'
-	sudo systemd-inhibit \
-		--why='Prevent unprivileged shutdown' \
-		--mode=block tail -f /dev/null &
-}
