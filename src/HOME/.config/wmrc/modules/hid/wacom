@@ -93,26 +93,27 @@ bind_buttons() {
     profile="$1"
     case "$profile" in
         'Inkscape')
-            set_pressure '0 0 10 15'
+            set_pressure '0 0 10 15';
             xsetwacom set "$WACOM_PAD" Button 1 'key +ctrl z';
             xsetwacom set "$WACOM_PAD" Button 2 'key +ctrl +shift z';
             xsetwacom set "$WACOM_PAD" Button 3 'key s';
             xsetwacom set "$WACOM_PAD" Button 8 'key c';;
+        'krita')
+            set_pressure '0 50 100 10';
+            xsetwacom set "$WACOM_PAD" Button 1 'key +ctrl z';
+            xsetwacom set "$WACOM_PAD" Button 2 'key +ctrl +shift z';
+            xsetwacom set "$WACOM_PAD" Button 3 'key +shift';
+            xsetwacom set "$WACOM_PAD" Button 8 'key +ctrl';
+            ;;
         'rnote')
-            set_pressure
-            # xsetwacom set "$WACOM_STYLUS" Button 1 'button 1';
-            # xsetwacom set "$WACOM_STYLUS" Button 2 'button 2';
-            # xsetwacom set "$WACOM_STYLUS" Button 3 'button 3';
+            set_pressure;
             xsetwacom set "$WACOM_PAD" Button 1 'key +ctrl z';
             xsetwacom set "$WACOM_PAD" Button 2 'key +ctrl +shift z';
             xsetwacom set "$WACOM_PAD" Button 3 'key +ctrl +minus';
             xsetwacom set "$WACOM_PAD" Button 8 'key +ctrl +shift +plus';;
         *)
             profile='Gromit-MPX (default)'
-            set_pressure
-            # xsetwacom set "$WACOM_STYLUS" Button 1 'button 1';
-            # xsetwacom set "$WACOM_STYLUS" Button 2 'button 2';
-            # xsetwacom set "$WACOM_STYLUS" Button 3 'button 3';
+            set_pressure;
             xsetwacom set "$WACOM_PAD" Button 1 'key F8';
             xsetwacom set "$WACOM_PAD" Button 2 'key +shift F8';
             xsetwacom set "$WACOM_PAD" Button 3 'key +shift F9';
