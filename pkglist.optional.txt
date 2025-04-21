@@ -19,11 +19,11 @@ neofetch	System information tool
 otf-latin-modern	Computer Modern fonts
 otf-latinmodern-math	Computer Modern fonts (math component)
 peek	Simple screen recorder
-pulseaudio-bluetooth	Bluetooth support for PulseAudio
-pulseaudio-zeroconf	Zeroconf support for PulseAudio
+pipewire-zeroconf	Zeroconf support for PipeWire
 python-pip	Tool for installing Python packages
 qbittorrent	An advanced BitTorrent client
 redshift-qt	Screen temperature changer
+ripgrep-all	Search text files, PDFs, documents, archives...
 rsync	Fast and versatile file copying tool
 safeeyes	Reduce and prevent repetitive strain injury
 signal-desktop	Signal Private Messenger

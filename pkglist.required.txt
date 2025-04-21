@@ -61,10 +61,10 @@ pavucontrol
 pcmanfm
 perl
 picom
+pipewire
+pipewire-alsa
 playerctl
 polybar
-pulseaudio
-pulseaudio-alsa
 qt5ct
 qt5-styleplugins
 qt6ct
