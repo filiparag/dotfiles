@@ -35,11 +35,6 @@ symlink: .bootstrap .type-symlink .configure .prepare-symlink .rename-firefox-pr
 	$(eval USER_EMAIL=$(shell dialog --title 'Configuration' --inputbox "Email" 8 30 "${DEFAULT_EMAIL}" --output-fd 1))
 
 dependencies: .bootstrap
-	if ! grep -q 'filiparag' /etc/pacman.conf; then \
-		dialog --title 'Package installation' --yesno 'Use build server for AUR packages' 5 40 && \
-		printf "[filiparag]\nSigLevel = Optional TrustAll\nServer = https://pkg.filiparag.com/archlinux/\n" | sudo tee -a /etc/pacman.conf || \
-		true; \
-	fi
 	paru -Syu
 	paru -S --needed - < pkglist.required.txt
 	paru -S qt5-styleplugins qt6gtk2
