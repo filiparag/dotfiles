@@ -5635,6 +5635,7 @@ YᵒᵘOᶰˡʸLᶤᵛᵉOᶰᶜᵉ	kaomoji/yolo
 ₚ	math/indexP
 ₛ	math/indexS
 ₜ	math/indexT
+⃗	math/combining-right-arrow-above
 ̂	math/combining-convex-circumflex-above
 ̂	math/combining-concave-circumflex-above
 ̃	math/combining-tilde-above

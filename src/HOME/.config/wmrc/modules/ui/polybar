@@ -13,7 +13,7 @@ start() {
 
   if daemon_get_pid; then
 		error "Polybar is already running!"
-		return 1
+		# return 1
 	fi
 
   info "Starting polybar"

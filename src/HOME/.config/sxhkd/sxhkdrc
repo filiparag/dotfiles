@@ -264,7 +264,7 @@ super + @F1
 ## Bspwm
 
 # Quit bspwm
-super + shift + e : Return
+super + shift + e ; Return
 	bspc quit 1
 
 # Reload config
@@ -295,11 +295,11 @@ super + @Delete
 	wmrc unit suspend
 
 # Shut down
-super + shift + @Delete : Return
+super + shift + @Delete ; Return
 	wmrc call hardware/power off
 
 # Reboot
-super + shift + ctrl + @Delete : Return
+super + shift + ctrl + @Delete ; Return
 	wmrc call hardware/power reboot
 
 # Hibernate
@@ -322,6 +322,10 @@ super + {Prior, Next}
 
 # Change volume using media keys for default sink
 {XF86AudioRaiseVolume,XF86AudioLowerVolume}
+	wmrc call hardware/audio speakers_volume_{increase,decrease}
+
+# Change volume using scroll wheel for default sink
+super + shift + {@button4, @button5}
 	wmrc call hardware/audio speakers_volume_{increase,decrease}
 
 # Toggle volume using standard keys for default sink

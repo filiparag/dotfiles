@@ -6,17 +6,17 @@ APPS='unclutter -idle 1
       redshift-qt
       libinput-gestures-setup start
       xhost +si:localuser:$USER
+      snixembed --fork
       keepassxc
       kdeconnect-indicator
       flameshot
       thunderbird
       signal-desktop --start-in-tray
       dino --gapplication-service
-      snixembed --fork
       safeeyes
       gromit-mpx
       blueman-applet
-      openrgb -c ff6f00 -b 100
+      openrgb -c ff6f00 -b 10
       '
 
 app_list() {
