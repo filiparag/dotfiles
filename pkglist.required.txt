@@ -58,7 +58,7 @@ paper-icon-theme
 paprefs
 paru-bin
 pavucontrol
-pcmanfm
+pcmanfm-qt
 perl
 picom
 pipewire
