@@ -177,6 +177,7 @@ optional-dependencies: .bootstrap
 	sudo systemctl enable --now systemd-resolved
 	sudo systemctl enable --now systemd-timesyncd
 	sudo systemctl enable --now ufw
+	sudo systemctl enable --now auto-cpufreq || yes
 
 .post-install-firewall:
 	sudo ufw default deny incoming
