@@ -2,17 +2,20 @@ audacity	Manipulate digital audio waveforms
 auto-cpufreq	Automatic CPU speed & power optimizer
 bat	Cat clone with syntax highlighting
 blueman	GTK+ Bluetooth Manager
-code	Visual Studio Code editor
-code-features	Unblock some features in Code OSS
+cpupower	Linux kernel tool to examine and tune power saving related features of your processor
 croc	Send things from one computer to another
 dino	Modern XMPP (Jabber) chat client
+docker-compose	Fast, isolated development environments using Docker
+docker	Pack, ship and run any application as a lightweight container
+dosfstools	DOS filesystem utilities
 ethtool	Utility for controlling network hardware
-fcitx	Context-aware Input Tool
 fcitx-configtool	GTK based config tool for Fcitx
+fcitx	Context-aware Input Tool
 fcitx-googlepinyin	Fcitx Wrapper for googlepinyin
 flameshot	Simple to use screenshot software
 flatpak	Linux application sandboxing
 gimp	GNU Image Manipulation Program
+gptfdisk	A text-mode partitioning tool that works on GUID Partition Table (GPT) disks
 gromit-mpx	On-screen annotation tool
 htop	Interactive process viewer
 inkscape	Professional vector graphics editor
@@ -23,22 +26,29 @@ libreoffice-fresh	Office productivity software suite
 neofetch	System information tool
 otf-latin-modern	Computer Modern fonts
 otf-latinmodern-math	Computer Modern fonts (math component)
+pandoc-bin	Conversion between documentation formats
 peek	Simple screen recorder
 pipewire-zeroconf	Zeroconf support for PipeWire
+powertop	A tool to diagnose issues with power consumption and power management
 python-pip	Tool for installing Python packages
 qbittorrent	An advanced BitTorrent client
 redshift-qt	Screen temperature changer
 ripgrep-all	Search text files, PDFs, documents, archives...
 rsync	Fast and versatile file copying tool
 safeeyes	Reduce and prevent repetitive strain injury
+seahorse	GNOME application for managing PGP keys
+shellcheck-bin	Shell script analysis tool
 signal-desktop	Signal Private Messenger
+sshfs	FUSE client based on the SSH File Transfer Protocol
 syncthing	Continuous replication / synchronization tool
+texlive	Free software distribution for the TeX typesetting system
 thunderbird	Standalone mail and news reader
 tmux	Terminal multiplexer
 ttf-font-awesome	Iconic font designed for Bootstrap
 ttf-ms-fonts	Microsoft Windows TrueType fonts
 ttf-roboto-mono	A monospaced addition to the Roboto type family
 unclutter	Hide the mouse cursor
+visual-studio-code-bin	Editor for building and debugging modern web and cloud applications
 wikiman	Offline search engine for manual pages and documentation
 wireguard-tools	Tools for WireGuard configuration
 xnconvert	A powerful batch image-converter and resizer
