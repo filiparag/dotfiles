@@ -8,6 +8,7 @@ dino	Modern XMPP (Jabber) chat client
 docker-compose	Fast, isolated development environments using Docker
 docker	Pack, ship and run any application as a lightweight container
 dosfstools	DOS filesystem utilities
+easyeffects	Audio Effects for Pipewire applications
 ethtool	Utility for controlling network hardware
 fcitx-configtool	GTK based config tool for Fcitx
 fcitx	Context-aware Input Tool
@@ -32,6 +33,7 @@ pipewire-zeroconf	Zeroconf support for PipeWire
 powertop	A tool to diagnose issues with power consumption and power management
 python-pip	Tool for installing Python packages
 qbittorrent	An advanced BitTorrent client
+qpwgraph	PipeWire Graph Qt GUI Interface
 redshift-qt	Screen temperature changer
 ripgrep-all	Search text files, PDFs, documents, archives...
 rsync	Fast and versatile file copying tool
