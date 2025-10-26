@@ -30,5 +30,6 @@
   "terminal.integrated.defaultProfile.linux": "fish",
   "terminal.integrated.shellIntegration.decorationsEnabled": "never",
   "terminal.integrated.inheritEnv": false,
+  "extensions.ignoreRecommendations": true,
   "window.zoomLevel": 1
 }

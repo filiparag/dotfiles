@@ -119,7 +119,7 @@ Select parent node `super + @F1`
 
 ## Bspwm
 
-Quit bspwm `super + shift + e : Return`
+Quit bspwm `super + shift + e ; Return`
 
 Reload config `super + alt + r`
 
@@ -135,9 +135,9 @@ Toggle enable mouse and touchpad input `super + shift + t`
 
 Sleep `super + @Delete`
 
-Shut down `super + shift + @Delete : Return`
+Shut down `super + shift + @Delete ; Return`
 
-Reboot `super + shift + ctrl + @Delete : Return`
+Reboot `super + shift + ctrl + @Delete ; Return`
 
 Hibernate `super + alt + @Delete`
 
@@ -151,6 +151,8 @@ Lock screen and turn off screen `super + l`
 Change volume using standard keys for default sink `super + {Prior, Next}`
 
 Change volume using media keys for default sink `{XF86AudioRaiseVolume,XF86AudioLowerVolume}`
+
+Change volume using scroll wheel for default sink `super + shift + {@button4, @button5}`
 
 Toggle volume using standard keys for default sink `super + Insert`
 

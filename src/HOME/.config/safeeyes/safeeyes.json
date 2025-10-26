@@ -8,7 +8,7 @@
         }
     ],
     "meta": {
-        "config_version": "6.0.3"
+        "config_version": "6.0.4"
     },
     "persist_state": false,
     "plugins": [
@@ -33,9 +33,10 @@
             "id": "audiblealert",
             "settings": {
                 "post_break_alert": false,
-                "pre_break_alert": true
+                "pre_break_alert": true,
+                "volume": 50
             },
-            "version": "0.0.3"
+            "version": "0.0.4"
         },
         {
             "enabled": true,
@@ -43,6 +44,10 @@
             "settings": {
                 "allow_disabling": true,
                 "disable_options": [
+                    {
+                        "time": 5,
+                        "unit": "minute"
+                    },
                     {
                         "time": 30,
                         "unit": "minute"
@@ -54,13 +59,9 @@
                     {
                         "time": 2,
                         "unit": "hour"
-                    },
-                    {
-                        "time": 3,
-                        "unit": "hour"
                     }
                 ],
-                "show_time_in_tray": false
+                "show_time_in_tray": true
             },
             "version": "0.0.3"
         },
@@ -97,7 +98,7 @@
             "version": "0.0.1"
         },
         {
-            "enabled": false,
+            "enabled": true,
             "id": "limitconsecutiveskipping",
             "settings": {
                 "number_of_allowed_skips_in_a_row": 2
@@ -105,10 +106,10 @@
             "version": "0.0.1"
         }
     ],
-    "postpone_duration": 1,
+    "postpone_duration": 15,
+    "postpone_unit": "seconds",
     "pre_break_warning_time": 5,
     "random_order": true,
-    "rpc_port": 7200,
     "short_break_duration": 20,
     "short_break_interval": 20,
     "short_breaks": [
@@ -119,6 +120,5 @@
     "shortcut_disable_time": 0,
     "shortcut_postpone": 65,
     "shortcut_skip": 9,
-    "strict_break": true,
-    "use_rpc_server": true
+    "strict_break": true
 }

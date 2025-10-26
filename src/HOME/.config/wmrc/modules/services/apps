@@ -17,6 +17,7 @@ APPS='unclutter -idle 1
       gromit-mpx
       blueman-applet
       openrgb -c ff6f00 -b 10
+      udiskie -s
       '
 
 app_list() {

@@ -47,6 +47,7 @@ tmux	Terminal multiplexer
 ttf-font-awesome	Iconic font designed for Bootstrap
 ttf-ms-fonts	Microsoft Windows TrueType fonts
 ttf-roboto-mono	A monospaced addition to the Roboto type family
+udiskie	Removable disk automounter using udisks
 unclutter	Hide the mouse cursor
 visual-studio-code-bin	Editor for building and debugging modern web and cloud applications
 wikiman	Offline search engine for manual pages and documentation

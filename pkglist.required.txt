@@ -43,6 +43,7 @@ matcha-gtk-theme
 moreutils
 mpv
 mpv-mpris
+net-tools
 networkmanager
 nfs-utils
 noto-color-emoji-fontconfig

@@ -4,7 +4,7 @@ export WMRC_DEPENDENCIES='sudo ddcutil xset'
 export _module
 
 WMRC_BACKLIGHT_DEFAULT="${WMRC_BACKLIGHT_DEFAULT:-100}"
-WMRC_BACKLIGHT_STEP="${WMRC_BACKLIGHT_STEP:-10}"
+WMRC_BACKLIGHT_STEP="${WMRC_BACKLIGHT_STEP:-2}"
 
 internal_vendor="$(find /sys/class/backlight/ -mindepth 1 -maxdepth 1 -printf '%P' | head -n 1)"
 internal_file="/sys/class/backlight/$internal_vendor/brightness"
