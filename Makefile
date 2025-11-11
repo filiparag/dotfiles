@@ -167,6 +167,9 @@ optional-dependencies: .bootstrap
 	sudo locale-gen
 
 .post-install-services:
+	sudo install -m 644 ${SRCDIR}/etc/systemd/resolved.conf /etc/systemd/resolved.conf
+	sudo install -m 644 ${SRCDIR}/etc/NetworkManager/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+	sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
 	sudo systemctl daemon-reload
 	sudo systemctl enable "wmrc-suspend@${USERNAME}"
 	sudo systemctl enable "wmrc-resume@${USERNAME}"

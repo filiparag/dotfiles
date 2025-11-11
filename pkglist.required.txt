@@ -3,6 +3,7 @@ adobe-source-code-pro-fonts
 alacritty
 alsa-utils
 arandr
+avahi
 base
 base-devel
 bc
