@@ -18,6 +18,7 @@ APPS='unclutter -idle 1
       blueman-applet
       openrgb -c ff6f00 -b 10
       udiskie -s
+      tailscale systray
       '
 
 app_list() {

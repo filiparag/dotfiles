@@ -3839,7 +3839,6 @@
 🍍	food-fruit/pineapple
 🥭	food-fruit/mango
 🍎	food-fruit/red-apple
-🫝	food-fruit/apple-core
 🍏	food-fruit/green-apple
 🍐	food-fruit/pear
 🍑	food-fruit/peach
@@ -5265,7 +5264,6 @@ d[-_-]	kaomoji/bdj
 ╭(ʘ̆~◞౪◟~ʘ̆)╮	kaomoji/chubby
 (͡°͜ʖ͡°)	kaomoji/claro
 ԅ(≖‿≖ԅ)	kaomoji/creep
-ƪ(ړײ)‎ƪ​​	kaomoji/creepcute
 (✜︵✜)	kaomoji/crim3s
 (╥﹏╥)	kaomoji/cry
 (╥﹏╥)ノシ	kaomoji/crywave

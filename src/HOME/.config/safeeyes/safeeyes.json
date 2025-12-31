@@ -34,7 +34,7 @@
             "settings": {
                 "post_break_alert": false,
                 "pre_break_alert": true,
-                "volume": 50
+                "volume": 100
             },
             "version": "0.0.4"
         },
@@ -44,10 +44,6 @@
             "settings": {
                 "allow_disabling": true,
                 "disable_options": [
-                    {
-                        "time": 5,
-                        "unit": "minute"
-                    },
                     {
                         "time": 30,
                         "unit": "minute"
@@ -59,9 +55,13 @@
                     {
                         "time": 2,
                         "unit": "hour"
+                    },
+                    {
+                        "time": 3,
+                        "unit": "hour"
                     }
                 ],
-                "show_time_in_tray": true
+                "show_time_in_tray": false
             },
             "version": "0.0.3"
         },
@@ -101,13 +101,13 @@
             "enabled": true,
             "id": "limitconsecutiveskipping",
             "settings": {
-                "number_of_allowed_skips_in_a_row": 2
+                "number_of_allowed_skips_in_a_row": 2.0
             },
             "version": "0.0.1"
         }
     ],
-    "postpone_duration": 15,
-    "postpone_unit": "seconds",
+    "postpone_duration": 1,
+    "postpone_unit": "minutes",
     "pre_break_warning_time": 5,
     "random_order": true,
     "short_break_duration": 20,
